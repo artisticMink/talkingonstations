@@ -1,0 +1,6 @@
+command,class,tags,syntax,help
+tos.provider.list,maver.talkingonstations.command.ContextProviderListCommand,talkingonstations,"",""
+tos.provider.enable,maver.talkingonstations.command.ContextProviderEnableCommand,talkingonstations,<key>,""
+tos.provider.disable,maver.talkingonstations.command.ContextProviderDisableCommand,talkingonstations,<key>,""
+tos.provider.reload,maver.talkingonstations.command.ContextProviderReloadCommand,talkingonstations,"",""
+tos.inspect,maver.talkingonstations.command.InspectCommand,talkingonstations,<className> [item],

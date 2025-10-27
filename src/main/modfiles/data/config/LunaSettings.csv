@@ -1,0 +1,5 @@
+fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
+tos_serviceHeader,Service Header,Header,API,,,,,Service
+tos_api,Service,Radio,OpenAI Compatible,OpenAI Compatible,,,,Service
+tos_apiUrl,API Url,String,https://openrouter.ai/api/v1/responses,,The endpoint to connect to. Used when 'Other' is selected.,,,Service
+tos_apiKey,API Key,String,"",,An authentification token provided by a service. Usually required.,,,Service

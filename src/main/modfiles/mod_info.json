@@ -1,0 +1,21 @@
+{
+  "id":"maver_talkingonstations",
+  "name":"Talking on Stations",
+  "author":"Maver",
+  "version":"1.0.0",
+  "description":"",
+  "gameVersion":"0.98a-RC8",
+  "modPlugin":"maver.talkingonstations.plugins.TalkingOnStationsPlugin",
+  "jars": ["jars/TalkingOnStations.jar"],
+  "dependencies":
+  [
+    {
+      "id": "lunalib",
+      "name": "LunaLib"
+    },
+    {
+      "id": "lw_console",
+      "name": "Console Commands"
+    }
+  ]
+}

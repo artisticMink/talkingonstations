@@ -1,0 +1,46 @@
+{
+  "defaultModel": "mistralai/mistral-small-3.2-24b-instruct",
+  "defaultInstruction": "",
+  "models": [
+    {
+      "model": {
+        "name": "mistralai/mistral-small-3.2-24b-instruct",
+        "maxTokens": 400
+      },
+      "settings": {
+        "system": "ooc: This is a roleplay in the universe of the PC Game Starsector. The characters are {{player}} and {{npc}}. Your task is to continue this multi-turn roleplay for your character {{npc}} and create an immersive and rich roleplay experience.\n\nBe proactive within the constraints of the scene. Adapt to your roleplay partners post length, flow and style. Only write the dialogue and actions your own character {{npc}}. You will be provided with background information regarding {{player}} and {{npc}} as well as some meta information about the world. We use a short, informal text style. Happy writing!\n\n In-Character from here on.",
+        "sampler": {
+          "temperature": 0.7,
+          "topP": 1
+        }
+      }
+    },
+    {
+      "model": {
+        "name": "deepseek/deepseek-v3.1-terminus",
+        "maxTokens": 800
+      },
+      "settings": {
+        "system": "",
+        "reasoning": "medium",
+        "sampler": {
+          "temperature": 0.6,
+          "topP": 0.95
+        }
+      }
+    },
+    {
+      "model": {
+        "name": "google/gemini-2.5-pro",
+        "maxTokens": 400
+      },
+      "settings": {
+        "system": "",
+        "sampler": {
+          "temperature": 1.4,
+          "topP": 0.92
+        }
+      }
+    }
+  ]
+}
