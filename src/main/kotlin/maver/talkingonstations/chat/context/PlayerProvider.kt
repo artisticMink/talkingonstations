@@ -3,17 +3,18 @@ package maver.talkingonstations.chat.context
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.impl.SharedUnlockData.SKILLS
 import com.fs.starfarer.api.impl.campaign.ids.Skills
-import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.llm.ContextProviderInterface
+import maver.talkingonstations.llm.dto.GameInfoInterface
 
 class PlayerProvider() : ContextProviderInterface {
     private val player: PersonAPI = Global.getSector().playerPerson
     override var enabled: Boolean = false
 
-    override fun canExecute(context: Chat.ChatContextInterface): Boolean = Global.getSector().playerPerson != null
+    override fun canExecute(context: GameInfoInterface) = true
 
-    override fun getText(chatContext: Chat.ChatContextInterface): String {
+    override fun getText(gameInfo: GameInfoInterface): String {
         try {
             return "Player description (${playerName()})\n" +
                     "${playerName()} appears ${playerGender()}. Either by clothing or other means you can make out that ${player.heOrShe} ${playerFaction()}." +
@@ -82,11 +83,15 @@ class PlayerProvider() : ContextProviderInterface {
             )
         )
 
-        return "In terms of combat ability the person in front of you $combatProficiency and are $technologyProficiency In terms of presence they $leadershipProficiency. $industryProficiency."
+        return "The person in front of you $combatProficiency and are $technologyProficiency In terms of presence they $leadershipProficiency. $industryProficiency."
     }
 
+    // ToDo: Doesn't work. Rethink.
     private fun getSkillLevelDescription(skill: String, levelDescription: Array<String>): String {
         val skillLevel = player.stats.getSkillLevel(skill)
+
+        player.stats.getSkillLevel(Skills.APT_COMBAT)
+
         return when (skillLevel) {
             in 3f..5f -> levelDescription[1]
             in 6f..8f -> levelDescription[2]

@@ -2,36 +2,56 @@ package maver.talkingonstations.chat
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.command.InspectableInterface
+import maver.talkingonstations.httpapi.HttpApiRegistry
+import maver.talkingonstations.llm.LLMContext
+import maver.talkingonstations.llm.LLMService
+import maver.talkingonstations.llm.dto.GameInfo
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
-import maver.talkingonstations.httpapi.HttpApiInterface
-import maver.talkingonstations.llm.LLMContext
 
+/**
+ * Represents a chat interaction between a player and an NPC, along with associated functionality
+ * for managing messages, enhancing content, and submitting it to a client.
+ *
+ * @property player The player involved in the conversation
+ * @property npc The NPC involved in the conversation
+ * @property market The market from which this conversation has been triggered
+ */
 class Chat(
     private val player: PersonAPI,
     private val npc: PersonAPI,
     private val market: MarketAPI,
-    private val api: HttpApiInterface,
-): LLMContext(ChatContext(player,npc,market)), InspectableInterface {
+) : LLMContext(GameInfo(player, npc, market)), InspectableInterface {
     var beforeContinueAsPlayer: ((message: String) -> Unit)? = null
     var afterChatResponse: ((message: String) -> Unit)? = null
 
-    private val chatInstructions get() = getSystemMessagesMerged()
-    private val chatHistory get() = getPublicMessages()
+    private val chatHistory get() = publicMessages
     private val enhancer: MessageEnhancer = MessageEnhancer(this)
+    private val llmService: LLMService = LLMService(HttpApiRegistry.getSelectedApi())
 
     init {
         TosRegistry.register(this)
+
+        val instruction = llmService.getModelSettings().system
+        if (instruction.isNotEmpty()) this.systemInstructions["main"] = instruction
     }
 
     fun setModelSettings(modelSettings: ModelSettings) {
-        return api.setModelSettings(modelSettings)
+        return llmService.setModelSettings(modelSettings)
     }
 
+    /**
+     * Continues the conversation as the player.
+     *
+     * - Adds the given string as a new player message and invokes
+     *    the associated callback function.
+     *
+     * @param content The player message content
+     *
+     * Note: This function performs a network call.
+     */
     suspend fun continueChatAsPlayer(content: String) {
         if (content.isEmpty()) return
 
@@ -40,18 +60,28 @@ class Chat(
         continueChat()
     }
 
+    /**
+     * Continues the ongoing chat session by sending the current chat context
+     * and instructions to the API, receiving a response message, and appending
+     * it to the chat history. Applies any necessary transformations or enhancements
+     * to the message.
+     *
+     * - If the chat history is empty, it returns without performing any action,
+     *   else appends the last message received to the conversation.
+     * - Optionally invokes a callback function, if defined, with the content of
+     *   the last chat message.
+     *
+     * Note: This function performs a network call.
+     */
     suspend fun continueChat() {
         if (chatHistory.isEmpty()) return
 
-        val nextMessage: Message = withContext(Dispatchers.IO) {
-            api.send( getChatInstructionsCopy(), getChatHistoryCopy())
-        }
+        val nextMessage: Message = llmService.send(this)
 
         enhancer.revertMessage(nextMessage)
         chatHistory.add(nextMessage)
         afterChatResponse?.invoke(chatHistory.last().content)
     }
-
 
     suspend fun retryLastMessage() {
         if (!endsWithPlayerMessage()) {
@@ -79,7 +109,7 @@ class Chat(
     }
 
     fun getChatMessages(): List<Message> = chatHistory.toList()
-    fun getModelSettings(): ModelSettings = api.getModelSettings()
+    fun getModelSettings(): ModelSettings = llmService.getModelSettings()
     fun getPlayer(): PersonAPI = player
     fun getNpc(): PersonAPI = npc
 
@@ -105,20 +135,8 @@ class Chat(
     }
 
     private fun getChatInstructionsCopy(): String {
-        var instructions = enhancer.replacePlayerPlaceholder(chatInstructions)
-            instructions = enhancer.replaceNpcPlaceholder(instructions)
+        var instructions = enhancer.replacePlayerPlaceholder(getSystemInstructionsMerged())
+        instructions = enhancer.replaceNpcPlaceholder(instructions)
         return instructions
     }
-
-    interface ChatContextInterface {
-        val player: PersonAPI?
-        val npc: PersonAPI?
-        val market: MarketAPI?
-    }
-
-    data class ChatContext(
-        override val player: PersonAPI? = null,
-        override val npc: PersonAPI? = null,
-        override val market: MarketAPI? = null
-        ): ChatContextInterface
 }

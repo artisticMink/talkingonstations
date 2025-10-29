@@ -1,21 +1,38 @@
 package maver.talkingonstations.llm
 
 import maver.talkingonstations.TosSettings
-import maver.talkingonstations.chat.Chat
+import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.Message
 import java.util.*
 
-open class LLMContext(
-    private val chatContext: Chat.ChatContextInterface
-) {
-    private var systemInstructions: SortedMap<String, String> = sortedMapOf()
-    private val publicMessages: MutableList<Message> = mutableListOf()
-    private val contextProvider: List<ContextProviderInterface> = TosSettings.getContextProvider()
+/**
+ * LLMContext can be extended to represent a more specific context.
+ *
+ * Represents a LLM interaction in the most generic sense.
+ *
+ * @property gameInformation Starsector objects depending on the current game state
+ * @property systemInstructions System-level instructions meant to steer LLM behavior
+ * @property publicMessages The ongoing conversation
+ * @property provider Generators that add information regarding player, NPCs and markets, etc.
+ */
 
-    fun getSystemInstructions() = systemInstructions
-    fun getSystemMessagesMerged() =
-        systemInstructions.values.joinToString("\n\n") +
-        contextProvider.filter { it.enabled }.joinToString { it.takeIf { it.canExecute(chatContext) }?.getText(chatContext) + "\n\n" }
+open class LLMContext(private val gameInformation: GameInfoInterface) {
+    private val provider: List<ContextProviderInterface> = TosSettings.getContextProvider()
 
-    fun getPublicMessages() = publicMessages
+    protected var systemInstructions: SortedMap<String, String> = sortedMapOf()
+    protected val publicMessages: MutableList<Message> = mutableListOf()
+
+    fun getSystemInstructionsMerged(withProvider: Boolean = true): String {
+        val instructionsBlock = systemInstructions.values.joinToString("\n\n")
+        val providerBlock = provider
+            .filter { it.enabled }
+            .joinToString("\n\n") { it.takeIf { it.canExecute(gameInformation) }?.getText(gameInformation) as String }
+
+        return when (withProvider) {
+            true -> instructionsBlock + providerBlock
+            false -> instructionsBlock
+        }
+    }
+
+    fun getPublicMessageCopy() = publicMessages.map { it.copy() }
 }

@@ -1,20 +1,19 @@
 package maver.talkingonstations.chat.context
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
-import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.llm.ContextProviderInterface
+import maver.talkingonstations.llm.dto.GameInfoInterface
 
 class NpcProvider: ContextProviderInterface {
     override var enabled: Boolean = false
 
-    override fun canExecute(context: Chat.ChatContextInterface): Boolean = context.npc != null && context.market != null
+    override fun canExecute(context: GameInfoInterface): Boolean = context.npc != null && context.market != null
 
-    override fun getText(chatContext: Chat.ChatContextInterface): String {
-        val npc: PersonAPI = chatContext.npc
-        val market: MarketAPI = chatContext.market
+    override fun getText(gameInfo: GameInfoInterface): String {
+        val npc: PersonAPI = requireNotNull(gameInfo.npc)
+        val market: MarketAPI = requireNotNull(gameInfo.market)
 
         return "Your description (${npc.name.fullName})\n" +
                 "The name of your character is ${npc.name.fullName}, a human ${gender(npc)}. You belong to the ${faction(npc)} faction, currently located in a Bar on ${marketName(market)}." +

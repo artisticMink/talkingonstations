@@ -194,11 +194,12 @@ class OAICompatibleHttpApi : HttpApiInterface {
             val modelJson: JSONObject = json.getJSONObject("model")
             val settingsJson: JSONObject = json.getJSONObject("settings")
             val samplerJson: JSONObject = settingsJson.getJSONObject("sampler")
+            val system = settingsJson.getString("system").takeIf { it.isNotEmpty() } ?: defaultInstruction
 
             return ModelSettings(
                 name = modelJson.getString("name"),
                 maxTokens = modelJson.getInt("maxTokens"),
-                system = settingsJson.getString("system"),
+                system = system,
                 reasoning = if (settingsJson.has("reasoning")) settingsJson.getString("reasoning") else null,
                 temperature = samplerJson.getFloat("temperature"),
                 topP = samplerJson.getFloat("topP")

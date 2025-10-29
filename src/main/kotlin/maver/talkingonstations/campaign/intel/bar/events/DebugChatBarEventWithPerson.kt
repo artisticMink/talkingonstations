@@ -8,10 +8,8 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BaseBarEventWithPerson
 import com.fs.starfarer.api.util.Misc
-import lunalib.lunaSettings.LunaSettings
 import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.campaign.BarChatCustomUiPanel
-import maver.talkingonstations.httpapi.HttpApiRegistry
 
 class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
 
@@ -28,14 +26,10 @@ class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
 
         options.clearOptions()
 
-        val apikey = requireNotNull(LunaSettings.getString("maver_talkingonstations","tos_api"))
-        val api = requireNotNull(HttpApiRegistry.getApi(apikey))
-
         val chat = Chat(
             Global.getSector().playerPerson,
             person,
-            market,
-            api
+            market
         )
 
         chat.beforeContinueAsPlayer = ::addPlayerDialogOption

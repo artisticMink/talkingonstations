@@ -1,7 +1,11 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.gradle.util.Path.path
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+/**
+ * Use the packageMod task for dev deployment.
+ * Adapt the path variable starsectorModFolder as needed.
+ */
 
 group = "maver.talkingonstations"
 
