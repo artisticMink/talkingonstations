@@ -16,9 +16,10 @@ class PlayerProvider() : ContextProviderInterface {
 
     override fun getText(gameInfo: GameInfoInterface): String {
         try {
-            return "Player description (${playerName()})\n" +
-                    "${playerName()} appears ${playerGender()}. Either by clothing or other means you can make out that ${player.heOrShe} ${playerFaction()}." +
-                    "${playerName()} ${playerMarines()}. ${playerSkills()}"
+            return """
+                Player description (${playerName()})
+                ${playerName()} appears ${playerGender()}. Either by clothing or other means you can make out that ${player.heOrShe} ${playerFaction()}.${playerName()} ${playerMarines()}. ${playerSkills()}
+            """.trimIndent()
         } catch (exception: Exception) {
             Global.getLogger(javaClass).error("Could not apply context provider. ${exception.message}")
             return ""

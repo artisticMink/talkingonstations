@@ -2,19 +2,17 @@ package maver.talkingonstations.campaign.intel.bar.events
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.characters.FullName.Gender
-import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BaseBarEventWithPerson
 import com.fs.starfarer.api.util.Misc
-import maver.talkingonstations.chat.Chat
+import maver.talkingonstations.TosSettings
 import maver.talkingonstations.campaign.BarChatCustomUiPanel
-import maver.talkingonstations.characters.types.RandomTrader
+import maver.talkingonstations.chat.Chat
 
-class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
+class ChatBarEventWithPerson : BaseBarEventWithPerson() {
 
-    // Prevent serializer from complaining when saving the game
     @Transient
     private lateinit var barChatUi: BarChatCustomUiPanel
 
@@ -23,8 +21,6 @@ class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
     }
 
     override fun init(dialog: InteractionDialogAPI, memoryMap: Map<String, MemoryAPI>) {
-        person = RandomTrader().getNewPerson(market.faction.id)
-
         super.init(dialog, memoryMap)
 
         options.clearOptions()
@@ -38,7 +34,6 @@ class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
         chat.beforeContinueAsPlayer = ::addPlayerDialogOption
         chat.afterChatResponse = ::addNpcDialogOption
 
-        // Setup custom visual panel
         barChatUi = BarChatCustomUiPanel(
             dialog,
             Global.getSector().playerPerson,
@@ -51,11 +46,15 @@ class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
         barChatUi.onPlayerQuit = ::onPlayerQuit
     }
 
-    override fun addPromptAndOption(dialog: InteractionDialogAPI, memoryMap: MutableMap<String?, MemoryAPI?>?) {
-        super.addPromptAndOption(dialog, memoryMap)
+    override fun regen(market: MarketAPI) {
+        person = TosSettings.getPersonTypes().random().getNewPerson(market.faction.id)
+        super.regen(market)
+    }
 
+    override fun addPromptAndOption(dialog: InteractionDialogAPI, memoryMap: MutableMap<String?, MemoryAPI?>?) {
         regen(dialog.interactionTarget.market)
-        dialog.optionPanel.addOption("(Talking On Stations) Start Debug Chat", this)
+        dialog.optionPanel.addOption("Dive into the crowd and see who you can find.", this)
+        super.addPromptAndOption(dialog, memoryMap)
     }
 
     fun addPlayerDialogOption(message: String) {
@@ -74,23 +73,23 @@ class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
     }
 
     override fun getPersonFaction(): String {
-        return Factions.TRITACHYON
+        return person.faction.id
     }
 
     override fun getPersonRank(): String? {
-        return Ranks.EXECUTIVE
+        return person.rankId
     }
 
     override fun getPersonPost(): String? {
-        return Ranks.EXECUTIVE
+        return person.postId
     }
 
     override fun getPersonPortrait(): String? {
-        return null
+        return person.portraitSprite
     }
 
     override fun getPersonGender(): Gender {
-        return Gender.FEMALE
+        return person.gender
     }
 
 }

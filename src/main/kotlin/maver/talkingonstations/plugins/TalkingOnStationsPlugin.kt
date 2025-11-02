@@ -3,6 +3,7 @@ package maver.talkingonstations.plugins
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager
+import maver.talkingonstations.events.ChatBarEventWithPersonCreator
 import maver.talkingonstations.events.DebugChatBarEventWithPersonCreator
 
 internal class TalkingOnStationsPlugin : BaseModPlugin() {
@@ -10,10 +11,9 @@ internal class TalkingOnStationsPlugin : BaseModPlugin() {
         super.onGameLoad(newGame)
 
         val barEventManager = BarEventManager.getInstance()
-        if (Global.getSettings().isDevMode) {
-            if (!barEventManager.hasEventCreator(DebugChatBarEventWithPersonCreator::class.java)) {
-                barEventManager.addEventCreator(DebugChatBarEventWithPersonCreator())
-            }
+        if (!barEventManager.hasEventCreator(ChatBarEventWithPersonCreator::class.java)) {
+            //barEventManager.addEventCreator(DebugChatBarEventWithPersonCreator())
+            barEventManager.addEventCreator(ChatBarEventWithPersonCreator())
         }
     }
 }
