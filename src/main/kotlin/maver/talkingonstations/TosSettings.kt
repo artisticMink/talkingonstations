@@ -1,33 +1,26 @@
 package maver.talkingonstations
 
-import maver.talkingonstations.characters.PersonTypeInterface
-import maver.talkingonstations.characters.PersonTypeLoader
-import maver.talkingonstations.llm.ContextProviderInterface
-import maver.talkingonstations.llm.ContextProviderLoader
+import maver.talkingonstations.characters.MarketPersonInterface
+import maver.talkingonstations.characters.MarketPersonLoader
+import maver.talkingonstations.characters.RandomPersonInterface
+import maver.talkingonstations.characters.RandomPersonLoader
+import maver.talkingonstations.llm.ContextMixinInterface
+import maver.talkingonstations.llm.ContextMixinLoader
 
 object TosSettings {
-    private var contextProvider: List<ContextProviderInterface> = ContextProviderLoader().load()
-    private var personTypes: List<PersonTypeInterface> = PersonTypeLoader().load()
+    private var contextMixins: List<ContextMixinInterface> = ContextMixinLoader().load()
+    private var randomPersons: List<RandomPersonInterface> = RandomPersonLoader().load()
+    private var marketPersons: List<MarketPersonInterface> = MarketPersonLoader().load()
 
-    fun getContextProvider() = contextProvider
-    fun reloadContextProvider() { contextProvider = ContextProviderLoader().load() }
+    fun getContextMixins() = contextMixins
+    fun reloadContextMixins() { contextMixins = ContextMixinLoader().load() }
+    fun enableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = true
+    fun disableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = false
 
-    fun enableContextProvider(key: String){
-        contextProvider.find { it.getKey() == key }?.enabled = true
-    }
+    fun getPersonTypes() = randomPersons
+    fun reloadPersonTypes() { randomPersons = RandomPersonLoader().load() }
+    fun enablePersonType(key: String) = randomPersons.find { it.getKey() == key }?.enabled = true
+    fun disablePersonType(key: String) = randomPersons.find { it.getKey() == key }?.enabled = false
 
-    fun disableContextProvider(key: String) {
-        contextProvider.find { it.getKey() == key }?.enabled = false
-    }
-
-    fun getPersonTypes() = personTypes
-    fun reloadPersonTypes() { personTypes = PersonTypeLoader().load() }
-
-    fun enablePersonType(key: String){
-        personTypes.find { it.getKey() == key }?.enabled = true
-    }
-
-    fun disablePersonType(key: String) {
-        personTypes.find { it.getKey() == key }?.enabled = false
-    }
+    fun getMarketPersons() = marketPersons
 }

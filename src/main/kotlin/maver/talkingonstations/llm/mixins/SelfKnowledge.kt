@@ -1,19 +1,19 @@
-package maver.talkingonstations.chat.context
+package maver.talkingonstations.llm.mixins
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import maver.talkingonstations.dto.TosPersonData
-import maver.talkingonstations.llm.ContextProviderInterface
+import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 
 /**
  * Provides contextual information about the person. Along with basic location information.
  *
  * Will fetch specific instructions if the person has been created through a PersonType
- * @see maver.talkingonstations.characters.PersonTypeInterface
+ * @see maver.talkingonstations.characters.MarketPersonInterface
  */
-class NpcProvider: ContextProviderInterface {
+class SelfKnowledge: ContextMixinInterface {
     override var enabled: Boolean = false
 
     override fun canExecute(context: GameInfoInterface): Boolean = context.npc != null && context.market != null

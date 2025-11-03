@@ -1,14 +1,13 @@
-package maver.talkingonstations.chat.context
+package maver.talkingonstations.llm.mixins
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
-import com.fs.starfarer.api.impl.SharedUnlockData.SKILLS
 import com.fs.starfarer.api.impl.campaign.ids.Skills
-import maver.talkingonstations.llm.ContextProviderInterface
+import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 
-class PlayerProvider() : ContextProviderInterface {
+class PlayerKnowledge() : ContextMixinInterface {
     private val player: PersonAPI = Global.getSector().playerPerson
     override var enabled: Boolean = false
 

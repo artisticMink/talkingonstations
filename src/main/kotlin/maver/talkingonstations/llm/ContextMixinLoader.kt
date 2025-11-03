@@ -1,10 +1,10 @@
-package maver.talkingonstations.characters
+package maver.talkingonstations.llm
 
 import maver.talkingonstations.TosClassLoader
 import org.json.JSONObject
 
-class PersonTypeLoader : TosClassLoader<PersonTypeInterface>(
-    csvPath = "data/config/PersonTypes.csv"
+class ContextMixinLoader : TosClassLoader<ContextMixinInterface>(
+    csvPath = "data/config/ContextMixin.csv"
 ) {
     override fun getClassName(row: JSONObject): String =
         row.getString("fullyQualifiedClassName")
@@ -12,11 +12,10 @@ class PersonTypeLoader : TosClassLoader<PersonTypeInterface>(
     override fun isEnabled(row: JSONObject): Boolean =
         row.getString("enabled").toBoolean()
 
-    override fun configureInstance(instance: PersonTypeInterface, row: JSONObject) {
-        instance.instructions = row.getString("instructions")
+    override fun configureInstance(instance: ContextMixinInterface, row: JSONObject) {
         instance.enabled = row.getString("enabled").toBoolean()
     }
 
-    override fun getName(instance: PersonTypeInterface): String =
+    override fun getName(instance: ContextMixinInterface): String =
         instance::class.java.simpleName
 }

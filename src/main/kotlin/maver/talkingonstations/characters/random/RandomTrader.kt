@@ -1,14 +1,14 @@
-package maver.talkingonstations.characters.types
+package maver.talkingonstations.characters.random
 
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
-import maver.talkingonstations.characters.PersonTypeInterface
+import maver.talkingonstations.characters.MarketPersonInterface
 import maver.talkingonstations.characters.RandomPerson
 import maver.talkingonstations.dto.TosPersonData
 import maver.talkingonstations.extensions.replaceFromMap
 
-object RandomTrader : PersonTypeInterface {
+object RandomTrader : MarketPersonInterface {
     override var enabled: Boolean = false
     override var instructions: String = ""
 

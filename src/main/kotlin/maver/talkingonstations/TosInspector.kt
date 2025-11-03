@@ -2,7 +2,7 @@ package maver.talkingonstations
 
 import java.lang.ref.WeakReference
 
-object TosRegistry {
+object TosInspector {
     private val instances: MutableList<WeakReference<Any>> = mutableListOf()
 
     fun register(instance: Any) = instances.add(WeakReference(instance))

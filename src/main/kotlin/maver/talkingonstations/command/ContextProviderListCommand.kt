@@ -11,7 +11,7 @@ class ContextProviderListCommand: BaseCommand {
     ): BaseCommand.CommandResult? {
         Console.showMessage("Loaded context providers:")
         Console.showMessage(
-            TosSettings.getContextProvider().joinToString { "${it.getKey()} -> ${it.enabled}\n" }
+            TosSettings.getContextMixins().joinToString { "${it.getKey()} -> ${it.enabled}\n" }
         )
 
         return BaseCommand.CommandResult.SUCCESS

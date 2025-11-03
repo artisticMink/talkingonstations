@@ -1,10 +1,10 @@
-package maver.talkingonstations.llm
+package maver.talkingonstations.characters
 
 import maver.talkingonstations.TosClassLoader
 import org.json.JSONObject
 
-class ContextProviderLoader : TosClassLoader<ContextProviderInterface>(
-    csvPath = "data/config/ContextProvider.csv"
+class MarketPersonLoader : TosClassLoader<MarketPersonInterface>(
+    csvPath = "data/config/MarketPerson.csv"
 ) {
     override fun getClassName(row: JSONObject): String =
         row.getString("fullyQualifiedClassName")
@@ -12,10 +12,11 @@ class ContextProviderLoader : TosClassLoader<ContextProviderInterface>(
     override fun isEnabled(row: JSONObject): Boolean =
         row.getString("enabled").toBoolean()
 
-    override fun configureInstance(instance: ContextProviderInterface, row: JSONObject) {
+    override fun configureInstance(instance: MarketPersonInterface, row: JSONObject) {
+        instance.instructions = row.getString("instructions")
         instance.enabled = row.getString("enabled").toBoolean()
     }
 
-    override fun getName(instance: ContextProviderInterface): String =
+    override fun getName(instance: MarketPersonInterface): String =
         instance::class.java.simpleName
 }

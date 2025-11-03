@@ -9,7 +9,7 @@ class ContextProviderReloadCommand: BaseCommand {
         p0: String,
         p1: BaseCommand.CommandContext
     ): BaseCommand.CommandResult? {
-        TosSettings.reloadContextProvider()
+        TosSettings.reloadContextMixins()
         Console.showMessage("Context provider reloaded from disk")
 
         return BaseCommand.CommandResult.SUCCESS

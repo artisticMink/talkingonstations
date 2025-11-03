@@ -2,7 +2,7 @@ package maver.talkingonstations.chat
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
-import maver.talkingonstations.TosRegistry
+import maver.talkingonstations.TosInspector
 import maver.talkingonstations.command.InspectableInterface
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
@@ -32,7 +32,7 @@ class Chat(
     private val llmService: LLMService = LLMService(HttpApiRegistry.getSelectedApi())
 
     init {
-        TosRegistry.register(this)
+        TosInspector.register(this)
 
         val instruction = llmService.getModelSettings().system
         if (instruction.isNotEmpty()) this.systemInstructions["main"] = instruction

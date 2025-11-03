@@ -1,10 +1,10 @@
 command,class,tags,syntax,help
-tos.provider.list,maver.talkingonstations.command.ContextProviderListCommand,talkingonstations,"",""
-tos.provider.enable,maver.talkingonstations.command.ContextProviderEnableCommand,talkingonstations,"",""
-tos.provider.disable,maver.talkingonstations.command.ContextProviderDisableCommand,talkingonstations,"",""
-tos.providers.reload,maver.talkingonstations.command.ContextProviderReloadCommand,talkingonstations,"",""
-tos.person.type.enable,maver.talkingonstations.command.PersonTypesEnableCommand,talkingonstations,"",""
-tos.person.type.disable,maver.talkingonstations.command.PersonTypesDisableCommand,talkingonstations,"",""
-tos.person.types.reload,maver.talkingonstations.command.PersonTypesReloadCommand,talkingonstations,"",""
+tos.mixin.list,maver.talkingonstations.command.ContextProviderListCommand,talkingonstations,"",""
+tos.mixin.enable,maver.talkingonstations.command.ContextProviderEnableCommand,talkingonstations,"",""
+tos.mixin.disable,maver.talkingonstations.command.ContextProviderDisableCommand,talkingonstations,"",""
+tos.mixin.reload,maver.talkingonstations.command.ContextProviderReloadCommand,talkingonstations,"",""
+tos.person.random.enable,maver.talkingonstations.command.PersonTypesEnableCommand,talkingonstations,"",""
+tos.person.random.disable,maver.talkingonstations.command.PersonTypesDisableCommand,talkingonstations,"",""
+tos.person.random.reload,maver.talkingonstations.command.PersonTypesReloadCommand,talkingonstations,"",""
 tos.inspect,maver.talkingonstations.command.InspectCommand,talkingonstations,<className> [item],
 tos.person.types.list,maver.talkingonstations.command.PersonTypesListCommand,talkingonstations,,

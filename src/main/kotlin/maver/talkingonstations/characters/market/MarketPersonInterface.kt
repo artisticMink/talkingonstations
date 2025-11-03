@@ -2,7 +2,7 @@ package maver.talkingonstations.characters
 
 import com.fs.starfarer.api.characters.PersonAPI
 
-interface PersonTypeInterface {
+interface MarketPersonInterface {
     var enabled: Boolean
     var instructions: String
 

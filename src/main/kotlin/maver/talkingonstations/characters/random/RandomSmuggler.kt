@@ -1,4 +1,4 @@
-package maver.talkingonstations.characters.types
+package maver.talkingonstations.characters.random
 
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Commodities

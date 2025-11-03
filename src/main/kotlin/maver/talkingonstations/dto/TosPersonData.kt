@@ -1,9 +1,9 @@
 package maver.talkingonstations.dto
 
-import maver.talkingonstations.characters.PersonTypeInterface
+import maver.talkingonstations.characters.MarketPersonInterface
 
 
 data class TosPersonData(
-    val personType: PersonTypeInterface,
+    val personType: MarketPersonInterface,
     val commodity: String
 )

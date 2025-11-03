@@ -5,7 +5,7 @@ import maver.talkingonstations.llm.dto.GameInfoInterface
 /**
  * Interface for providing contextual information to LLM interactions.
  */
-interface ContextProviderInterface {
+interface ContextMixinInterface {
 
     /**
      * Controls whether this provider should be included in the LLM context.
