@@ -2,8 +2,8 @@ package maver.talkingonstations.chat
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
+import maver.talkingonstations.InspectableInterface
 import maver.talkingonstations.TosInspector
-import maver.talkingonstations.command.InspectableInterface
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
 import maver.talkingonstations.llm.LLMService

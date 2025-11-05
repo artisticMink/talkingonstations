@@ -4,24 +4,17 @@ import com.fs.starfarer.api.Global
 import org.json.JSONObject
 
 abstract class TosClassLoader<T : Any>(
-    private val csvPath: String,
-    private val modId: String = "maver_talkingonstations"
-) {
+    csvPath: String
+): TosCsvLoader(csvPath) {
     private val classLoader: ClassLoader = Global.getSettings().scriptClassLoader
     private val logger = Global.getLogger(javaClass)
 
-    fun load(): List<T> {
-        return loadCsvRows().mapNotNull { row -> loadInstance(row) }
-    }
-
-    protected abstract fun getClassName(row: JSONObject): String
-    protected abstract fun isEnabled(row: JSONObject): Boolean
     protected open fun configureInstance(instance: T, row: JSONObject) {}
     protected abstract fun getName(instance: T): String
+    protected abstract fun getClassName(row: JSONObject): String
 
-    private fun loadCsvRows(): List<JSONObject> {
-        val csv = Global.getSettings().loadCSV(csvPath, modId)
-        return (0 until csv.length()).map { csv[it] as JSONObject }
+    fun load(): List<T> {
+        return loadCsvRows().mapNotNull { row -> loadInstance(row) }
     }
 
     private fun loadInstance(row: JSONObject): T? {

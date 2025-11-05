@@ -1,5 +1,6 @@
 package maver.talkingonstations.command
 
+import maver.talkingonstations.InspectableInterface
 import maver.talkingonstations.TosInspector
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.console.Console

@@ -113,7 +113,7 @@ class OAICompatibleHttpApi : HttpApiInterface {
         )
     }
 
-    companion object OAICompatibleHttpApiConfiguration : HttpApiConfigurationInterface {
+    companion object OAICompatibleHttpApiConfiguration {
         const val MODEL_FILE = "data/config/api/oai_compatible.json"
 
         private val models: MutableList<ModelSettings> = mutableListOf()
@@ -139,11 +139,11 @@ class OAICompatibleHttpApi : HttpApiInterface {
             return OAICompatibleHttpApi()
         }
 
-        override fun getModels(): List<ModelSettings> {
+        fun getModels(): List<ModelSettings> {
             return models.toList()
         }
 
-        override fun getApiConfiguration(): ApiSettings {
+        fun getApiConfiguration(): ApiSettings {
             return configuration
         }
 

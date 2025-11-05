@@ -3,7 +3,7 @@ package maver.talkingonstations.characters.random
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
-import maver.talkingonstations.characters.MarketPersonInterface
+import maver.talkingonstations.characters.market.MarketPersonInterface
 import maver.talkingonstations.characters.RandomPerson
 import maver.talkingonstations.dto.TosPersonData
 import maver.talkingonstations.extensions.replaceFromMap
@@ -36,7 +36,7 @@ object RandomTrader : MarketPersonInterface {
             instructions.replaceFromMap(
                 mapOf(
                     "rank" to person.rankId,
-                    "commodity" to data.commodity
+                    "commodity" to (data.commodity ?: "")
                 )
             )
         }

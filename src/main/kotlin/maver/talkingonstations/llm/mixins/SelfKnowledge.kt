@@ -11,7 +11,7 @@ import maver.talkingonstations.llm.dto.GameInfoInterface
  * Provides contextual information about the person. Along with basic location information.
  *
  * Will fetch specific instructions if the person has been created through a PersonType
- * @see maver.talkingonstations.characters.MarketPersonInterface
+ * @see maver.talkingonstations.characters.market.MarketPersonInterface
  */
 class SelfKnowledge: ContextMixinInterface {
     override var enabled: Boolean = false
@@ -25,7 +25,7 @@ class SelfKnowledge: ContextMixinInterface {
         var personInstructions = ""
         if (npc.memoryWithoutUpdate.contains("\$tosPersonData"))  {
             val tosPersonData = npc.memoryWithoutUpdate.get("\$tosPersonData") as TosPersonData
-            personInstructions = tosPersonData.personType.getText(npc)
+            personInstructions = tosPersonData.personType?.getText(npc) ?: ""
         }
 
         return """

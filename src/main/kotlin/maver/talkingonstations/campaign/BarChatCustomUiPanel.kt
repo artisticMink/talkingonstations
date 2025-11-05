@@ -8,7 +8,7 @@ import kotlinx.coroutines.*
 import maver.talkingonstations.llm.dto.ModelSettings
 import maver.talkingonstations.ui.ButtonId
 import maver.talkingonstations.ui.dto.ButtonData
-import maver.ui.TextArea
+import maver.talkingonstations.ui.TextArea
 import java.awt.Color
 
 class BarChatCustomUiPanel(val dialog: InteractionDialogAPI, val player: PersonAPI, val person: PersonAPI) : BaseCustomUIPanelPlugin() {

@@ -1,10 +1,16 @@
-package maver.ui
+package maver.talkingonstations.ui
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BaseCustomUIPanelPlugin
 import com.fs.starfarer.api.campaign.CustomUIPanelPlugin
 import com.fs.starfarer.api.input.InputEventAPI
-import com.fs.starfarer.api.ui.*
+import com.fs.starfarer.api.ui.CustomPanelAPI
+import com.fs.starfarer.api.ui.Fonts
+import com.fs.starfarer.api.ui.PositionAPI
+import com.fs.starfarer.api.ui.ScrollPanelAPI
+import com.fs.starfarer.api.ui.TextFieldAPI
+import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
 import org.lwjgl.input.Keyboard
 import org.lwjgl.util.vector.Vector2f
@@ -12,7 +18,7 @@ import java.awt.Color
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
-import java.util.*
+import java.util.EnumSet
 
 /**
  * Displays a text area

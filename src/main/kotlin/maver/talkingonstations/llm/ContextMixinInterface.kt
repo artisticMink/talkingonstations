@@ -17,7 +17,7 @@ interface ContextMixinInterface {
     /**
      * Determines if this provider can generate context text with the given game state.
      *
-     * This method should check if all required game objects are present.
+     * This method must check if all required game objects are present.
      *
      * @param context The current game state information
      * @return true if [getText] can be safely called with this context, false otherwise
@@ -27,7 +27,7 @@ interface ContextMixinInterface {
     /**
      * Generates formatted text to be included in the LLM context.
      *
-     * The returned text should be a well-formatted string.
+     * The returned text must be a well-formatted string.
      *
      * The following placeholders are supported:
      * - {{player}}, the full player name

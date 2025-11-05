@@ -1,16 +1,28 @@
 package maver.talkingonstations
 
-import maver.talkingonstations.characters.MarketPersonInterface
-import maver.talkingonstations.characters.MarketPersonLoader
-import maver.talkingonstations.characters.RandomPersonInterface
-import maver.talkingonstations.characters.RandomPersonLoader
+import maver.talkingonstations.characters.market.MarketPerson
+import maver.talkingonstations.characters.market.MarketPersonLoader
+import maver.talkingonstations.characters.random.RandomPersonInterface
+import maver.talkingonstations.characters.random.RandomPersonLoader
 import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.ContextMixinLoader
 
 object TosSettings {
+
+    /**
+     * Context mixins like npc knowledge or sector information that are to be included in the LLM context.
+     */
     private var contextMixins: List<ContextMixinInterface> = ContextMixinLoader().load()
+
+    /**
+     * Random person generated with a specific trait, i.e., trader, smuggler, ...
+     */
     private var randomPersons: List<RandomPersonInterface> = RandomPersonLoader().load()
-    private var marketPersons: List<MarketPersonInterface> = MarketPersonLoader().load()
+
+    /**
+     * Unique person tied to a specific market and listed in that markets comm directory
+     */
+    private var marketPersons: List<MarketPerson> = MarketPersonLoader().load()
 
     fun getContextMixins() = contextMixins
     fun reloadContextMixins() { contextMixins = ContextMixinLoader().load() }

@@ -1,0 +1,18 @@
+package maver.talkingonstations.characters.market.dto
+
+import com.fs.starfarer.api.characters.FullName
+
+data class MarketPersonData(
+    val gender: FullName.Gender,
+    val name: String,
+    val surename: String,
+    val faction: String,
+    val market: String,
+    val rank: String?,
+    val post: String?,
+    val portrait: String,
+    val voice: String?,
+    val tosInstructions: String?,
+    val tosLore: String?,
+    val tosKnowledge: String?
+)

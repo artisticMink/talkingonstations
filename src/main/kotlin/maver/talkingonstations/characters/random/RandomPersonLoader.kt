@@ -1,4 +1,4 @@
-package maver.talkingonstations.characters
+package maver.talkingonstations.characters.random
 
 import maver.talkingonstations.TosClassLoader
 import org.json.JSONObject

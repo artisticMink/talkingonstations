@@ -1,4 +1,4 @@
-package maver.talkingonstations.characters
+package maver.talkingonstations.characters.market
 
 import com.fs.starfarer.api.characters.PersonAPI
 
