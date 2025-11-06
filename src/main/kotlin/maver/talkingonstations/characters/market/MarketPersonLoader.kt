@@ -8,6 +8,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import maver.talkingonstations.TosCsvLoader
 import maver.talkingonstations.TosSettings
+import maver.talkingonstations.TosStrings
 import maver.talkingonstations.characters.market.dto.MarketPersonData
 import maver.talkingonstations.characters.market.dto.PersonExtensionData
 import maver.talkingonstations.extensions.toEnumOrDefault
@@ -42,7 +43,9 @@ class MarketPersonLoader : TosCsvLoader(
             val person = createPerson(data)
             val extensionData = getExtensionData(data)
 
+            person.memory.set("\$tosChatEnabled",true)
             existingMarket.commDirectory.addPerson(person)
+            existingMarket.addPerson(person)
 
             person to extensionData
         }

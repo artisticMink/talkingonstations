@@ -13,17 +13,26 @@ object TosSettings {
     /**
      * Context mixins like npc knowledge or sector information that are to be included in the LLM context.
      */
-    private var contextMixins: List<ContextMixinInterface> = ContextMixinLoader().load()
+    private lateinit var contextMixins: List<ContextMixinInterface>
 
     /**
      * Random person generated with a specific trait, i.e., trader, smuggler, ...
      */
-    private var randomPersons: List<RandomPersonInterface> = RandomPersonLoader().load()
+    private lateinit var randomPersons: List<RandomPersonInterface>
 
     /**
      * Unique person tied to a specific market and listed in that markets comm directory
      */
-    private var marketPersons: Map<PersonAPI, PersonExtensionData> = MarketPersonLoader().load()
+    private lateinit var marketPersons: Map<PersonAPI, PersonExtensionData>
+
+    fun initialize() {
+        if (::contextMixins.isInitialized) {
+            throw IllegalStateException("TosSettings already initialized")
+        }
+        contextMixins = ContextMixinLoader().load()
+        randomPersons = RandomPersonLoader().load()
+        marketPersons = MarketPersonLoader().load()
+    }
 
     fun getContextMixins() = contextMixins
     fun getContextMixin(key: String): ContextMixinInterface? = contextMixins.find { it.getKey() == key }

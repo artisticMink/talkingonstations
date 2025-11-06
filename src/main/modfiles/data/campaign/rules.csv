@@ -1,0 +1,5 @@
+id,trigger,conditions,script,text,options,notes
+tosInitPersonChat,PopulateOptions,"$isPerson
+$tosChatEnabled",,,"tos_start_chat:""Connect to Tri-Chat (unlicensed)"""
+tosStartPersonChat,DialogOptionSelected,"$isPerson
+$tosChatEnabled","TosBeginConversation",,,

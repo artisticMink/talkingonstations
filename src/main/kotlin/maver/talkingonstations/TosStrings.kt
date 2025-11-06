@@ -1,7 +1,5 @@
 package maver.talkingonstations
 
-import java.lang.ref.WeakReference
-
 sealed class TosStrings {
     object ModConfig {
         const val ID = "maver_talkingonstations"
@@ -13,6 +11,7 @@ sealed class TosStrings {
         const val CLASS_ID_COLUMN = "fullyQualifiedClassName"
     }
 
-    object Messages {
+    object Tags {
+        const val COMM_CHAT = "tos_comm_chat"
     }
 }

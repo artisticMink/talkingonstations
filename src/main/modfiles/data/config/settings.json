@@ -1,0 +1,5 @@
+{
+  "ruleCommandPackages":[
+    "maver.talkingonstations.campaign.rulecmd"
+  ]
+}
