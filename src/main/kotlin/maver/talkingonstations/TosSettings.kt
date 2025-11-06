@@ -1,7 +1,8 @@
 package maver.talkingonstations
 
-import maver.talkingonstations.characters.market.MarketPerson
+import com.fs.starfarer.api.characters.PersonAPI
 import maver.talkingonstations.characters.market.MarketPersonLoader
+import maver.talkingonstations.characters.market.dto.PersonExtensionData
 import maver.talkingonstations.characters.random.RandomPersonInterface
 import maver.talkingonstations.characters.random.RandomPersonLoader
 import maver.talkingonstations.llm.ContextMixinInterface
@@ -22,9 +23,10 @@ object TosSettings {
     /**
      * Unique person tied to a specific market and listed in that markets comm directory
      */
-    private var marketPersons: List<MarketPerson> = MarketPersonLoader().load()
+    private var marketPersons: Map<PersonAPI, PersonExtensionData> = MarketPersonLoader().load()
 
     fun getContextMixins() = contextMixins
+    fun getContextMixin(key: String): ContextMixinInterface? = contextMixins.find { it.getKey() == key }
     fun reloadContextMixins() { contextMixins = ContextMixinLoader().load() }
     fun enableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = true
     fun disableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = false

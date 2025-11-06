@@ -17,7 +17,10 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
     private lateinit var barChatUi: BarChatCustomUiPanel
 
     override fun isAlwaysShow(): Boolean {
-        return Global.getSettings().isDevMode
+        return when(Global.getSettings().isDevMode) {
+            true -> TosSettings.getPersonTypes().isNotEmpty()
+            false -> false
+        }
     }
 
     override fun init(dialog: InteractionDialogAPI, memoryMap: Map<String, MemoryAPI>) {
@@ -47,7 +50,7 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
     }
 
     override fun regen(market: MarketAPI) {
-        person = TosSettings.getPersonTypes().random().getNewPerson(market.faction.id)
+        person = TosSettings.getPersonTypes().random().getPerson(market.faction.id)
         super.regen(market)
     }
 

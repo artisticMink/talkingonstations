@@ -4,7 +4,7 @@ import maver.talkingonstations.TosClassLoader
 import org.json.JSONObject
 
 class RandomPersonLoader : TosClassLoader<RandomPersonInterface>(
-    csvPath = "data/config/RandomPerson.csv"
+    csvPath = "RandomPerson.csv"
 ) {
     override fun getClassName(row: JSONObject): String =
         row.getString("fullyQualifiedClassName")

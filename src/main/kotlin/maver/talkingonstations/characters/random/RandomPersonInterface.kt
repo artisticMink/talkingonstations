@@ -8,5 +8,5 @@ interface RandomPersonInterface {
 
     fun getKey(): String = this::class.java.simpleName
     fun getText(person: PersonAPI): String
-    fun getNewPerson(factionId: String): PersonAPI
+    fun getPerson(factionId: String): PersonAPI
 }

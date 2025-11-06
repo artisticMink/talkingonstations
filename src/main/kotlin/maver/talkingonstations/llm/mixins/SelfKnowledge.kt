@@ -11,7 +11,7 @@ import maver.talkingonstations.llm.dto.GameInfoInterface
  * Provides contextual information about the person. Along with basic location information.
  *
  * Will fetch specific instructions if the person has been created through a PersonType
- * @see maver.talkingonstations.characters.market.MarketPersonInterface
+ * @see maver.talkingonstations.characters.random.RandomPersonInterface
  */
 class SelfKnowledge: ContextMixinInterface {
     override var enabled: Boolean = false

@@ -4,7 +4,7 @@ import maver.talkingonstations.TosClassLoader
 import org.json.JSONObject
 
 class ContextMixinLoader : TosClassLoader<ContextMixinInterface>(
-    csvPath = "data/config/ContextMixin.csv"
+    csvPath = "ContextMixin.csv"
 ) {
     override fun getClassName(row: JSONObject): String =
         row.getString("fullyQualifiedClassName")

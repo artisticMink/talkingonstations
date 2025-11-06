@@ -1,2 +1,0 @@
-name,fullyQualifiedClassName,instructions,enabled
-RandomTrader,maver.talkingonstations.characters.random.RandomTrader,"You are a {{rank}}, specializing in {{commodity}}.",true

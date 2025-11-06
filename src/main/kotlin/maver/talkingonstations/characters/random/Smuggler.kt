@@ -16,7 +16,7 @@ import maver.talkingonstations.extensions.replaceFromMap
  *
  * @param factionId The ID of the faction to which the smuggler will belong. If null, a random faction is selected.
  */
-class RandomSmuggler(factionId: String? = null) {
+class Smuggler(factionId: String? = null) {
     val person: PersonAPI = RandomPerson.Companion.create(factionId ?: getRandomFaction())
     val commodity: String = getRandomUnsafeCommodity()
 

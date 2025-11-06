@@ -4,13 +4,15 @@ import maver.talkingonstations.TosSettings
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.console.Console
 
-class ContextProviderReloadCommand: BaseCommand {
+class MixinsListCommand: BaseCommand {
     override fun runCommand(
         p0: String,
         p1: BaseCommand.CommandContext
     ): BaseCommand.CommandResult? {
-        TosSettings.reloadContextMixins()
-        Console.showMessage("Context provider reloaded from disk")
+        Console.showMessage("Loaded context providers:")
+        Console.showMessage(
+            TosSettings.getContextMixins().joinToString { "${it.getKey()} -> ${it.enabled}\n" }
+        )
 
         return BaseCommand.CommandResult.SUCCESS
     }

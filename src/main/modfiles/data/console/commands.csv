@@ -1,10 +1,9 @@
 command,class,tags,syntax,help
-tos.mixin.list,maver.talkingonstations.command.ContextProviderListCommand,talkingonstations,"",""
-tos.mixin.enable,maver.talkingonstations.command.ContextProviderEnableCommand,talkingonstations,"",""
-tos.mixin.disable,maver.talkingonstations.command.ContextProviderDisableCommand,talkingonstations,"",""
-tos.mixin.reload,maver.talkingonstations.command.ContextProviderReloadCommand,talkingonstations,"",""
-tos.person.random.enable,maver.talkingonstations.command.PersonTypesEnableCommand,talkingonstations,"",""
-tos.person.random.disable,maver.talkingonstations.command.PersonTypesDisableCommand,talkingonstations,"",""
+tos.mixin.list,maver.talkingonstations.command.MixinsListCommand,talkingonstations,"",""
+tos.mixin.toggle,maver.talkingonstations.command.MixinToggleCommand,talkingonstations,"",""
+tos.mixin.reload,maver.talkingonstations.command.MixinsReloadCommand,talkingonstations,"",""
+tos.person.random.toggle,maver.talkingonstations.command.PersonTypesToggleCommand,talkingonstations,"",""
 tos.person.random.reload,maver.talkingonstations.command.PersonTypesReloadCommand,talkingonstations,"",""
 tos.inspect,maver.talkingonstations.command.InspectCommand,talkingonstations,<className> [item],
-tos.person.types.list,maver.talkingonstations.command.PersonTypesListCommand,talkingonstations,,
+tos.person.random.list,maver.talkingonstations.command.PersonTypesListCommand,talkingonstations,,
+tos.person.market.list,maver.talkingonstations.command.MarketPersonsListCommand,talkingonstations,,

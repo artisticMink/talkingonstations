@@ -3,29 +3,30 @@ package maver.talkingonstations.characters.random
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
-import maver.talkingonstations.characters.market.MarketPersonInterface
 import maver.talkingonstations.characters.RandomPerson
 import maver.talkingonstations.dto.TosPersonData
 import maver.talkingonstations.extensions.replaceFromMap
 
-object RandomTrader : MarketPersonInterface {
+class Trader : RandomPersonInterface {
     override var enabled: Boolean = false
     override var instructions: String = ""
 
-    override fun getNewPerson(factionId: String): PersonAPI {
+    override fun getPerson(factionId: String): PersonAPI {
         val person = RandomPerson.create()
         person.rankId = Ranks.POST_TRADER
-        person.postId = getRandomPost()
+        person.postId = randomPost()
 
         val commodity = when (person.postId) {
             Ranks.POST_ARMS_DEALER -> Commodities.HAND_WEAPONS
-            else -> getRandomSafeCommodity()
+            else -> randomSafeCommodity()
         }
 
-        person.memoryWithoutUpdate.set("\$tosPersonData", TosPersonData(
-            personType = RandomTrader,
-            commodity = commodity
-        ))
+        person.memoryWithoutUpdate.set(
+            "\$tosPersonData", TosPersonData(
+                personType = this,
+                commodity = commodity
+            )
+        )
 
         return person
     }
@@ -33,7 +34,7 @@ object RandomTrader : MarketPersonInterface {
     override fun getText(person: PersonAPI): String {
         if (person.memoryWithoutUpdate.contains("\$tosPersonData")) {
             val data = person.memoryWithoutUpdate.get("\$tosPersonData") as TosPersonData
-            instructions.replaceFromMap(
+            return instructions.replaceFromMap(
                 mapOf(
                     "rank" to person.rankId,
                     "commodity" to (data.commodity ?: "")
@@ -44,7 +45,7 @@ object RandomTrader : MarketPersonInterface {
         return ""
     }
 
-    private fun getRandomPost(): String {
+    private fun randomPost(): String {
         return listOf(
             Ranks.POST_TRADER,
             Ranks.POST_ARMS_DEALER,
@@ -55,7 +56,7 @@ object RandomTrader : MarketPersonInterface {
         ).random()
     }
 
-    private fun getRandomSafeCommodity(): String {
+    private fun randomSafeCommodity(): String {
         return listOf(
             Commodities.SUPPLIES,
             Commodities.FUEL,

@@ -10,7 +10,7 @@ import com.fs.starfarer.api.impl.campaign.intel.bar.events.BaseBarEventWithPerso
 import com.fs.starfarer.api.util.Misc
 import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.campaign.BarChatCustomUiPanel
-import maver.talkingonstations.characters.random.RandomTrader
+import maver.talkingonstations.characters.random.Trader
 
 class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
 
@@ -23,7 +23,7 @@ class DebugChatBarEventWithPerson : BaseBarEventWithPerson() {
     }
 
     override fun init(dialog: InteractionDialogAPI, memoryMap: Map<String, MemoryAPI>) {
-        person = RandomTrader.getNewPerson(market.faction.id)
+        person = Trader().getPerson(market.faction.id)
 
         super.init(dialog, memoryMap)
 

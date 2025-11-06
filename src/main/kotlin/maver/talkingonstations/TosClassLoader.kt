@@ -5,7 +5,7 @@ import org.json.JSONObject
 
 abstract class TosClassLoader<T : Any>(
     csvPath: String
-): TosCsvLoader(csvPath) {
+): TosCsvLoader(csvPath, TosStrings.Loader.CLASS_ID_COLUMN) {
     private val classLoader: ClassLoader = Global.getSettings().scriptClassLoader
     private val logger = Global.getLogger(javaClass)
 
@@ -21,8 +21,8 @@ abstract class TosClassLoader<T : Any>(
         val className = getClassName(row)
 
         return try {
-            val clazz = classLoader.loadClass(className)
-            val instance = clazz.newInstance() as T
+            val loadedClass = classLoader.loadClass(className)
+            val instance = loadedClass.newInstance() as T
             configureInstance(instance, row)
             instance
         } catch (e: ClassNotFoundException) {

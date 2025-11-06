@@ -1,6 +1,7 @@
 package maver.talkingonstations
 
 import java.lang.ref.WeakReference
+import kotlin.collections.removeAll
 
 object TosInspector {
     private val instances: MutableList<WeakReference<Any>> = mutableListOf()
