@@ -12,7 +12,7 @@ class TosInitConversation : BaseCommandPlugin() {
         params: MutableList<Misc.Token?>,
         memoryMap: MutableMap<String?, MemoryAPI?>?
     ): Boolean {
-        dialog.optionPanel.addOption("Connect to Tri-Chat (unlicensed).", "foo")
+        dialog.optionPanel.addOption("Connect to Tri-Chat (unlicensed).", "")
         return true
     }
 }

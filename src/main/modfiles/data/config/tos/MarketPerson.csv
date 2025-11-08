@@ -1,2 +1,2 @@
-id,gender,name,surename,faction,market,rank,post,portrait,voice,tosInstructions,tosLore,tosKnowledge
-lobmeister,male,Leopold,Lobber,independent,kantas_den,freedomFighter,specialAgent,jethro_bornanew,pather,,,"player,self"
+id,gender,name,surename,faction,market,rank,post,portrait,voice,instructionOverwrite,personLore,knowledgeWhitelist,knowledgeBlacklist
+lobmeister,male,Leopold,Lobber,independent,kantas_den,freedomFighter,specialAgent,jethro_bornanew,pather,Instruction Overwrite Test,Lore Injection Test,"",

@@ -11,7 +11,7 @@ sealed class TosStrings {
         const val CLASS_ID_COLUMN = "fullyQualifiedClassName"
     }
 
-    object Tags {
-        const val COMM_CHAT = "tos_comm_chat"
+    object MemoryId {
+        const val CHAT_ENABLED = "\$tosChatEnabled"
     }
 }

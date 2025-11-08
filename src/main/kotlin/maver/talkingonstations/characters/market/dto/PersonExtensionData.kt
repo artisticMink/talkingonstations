@@ -5,5 +5,6 @@ import maver.talkingonstations.llm.ContextMixinInterface
 data class PersonExtensionData(
     val instructions: String = "",
     val lore: String = "",
-    val knowledge: List<ContextMixinInterface> = listOf()
+    val knowledgeWhitelist: List<ContextMixinInterface> = listOf(),
+    val knowledgeBlacklist: List<ContextMixinInterface> = listOf()
 )

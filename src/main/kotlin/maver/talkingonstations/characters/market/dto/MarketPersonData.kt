@@ -12,7 +12,8 @@ data class MarketPersonData(
     val post: String?,
     val portrait: String,
     val voice: String?,
-    val tosInstructions: String?,
-    val tosLore: String?,
-    val tosKnowledge: String?
+    val instructionOverwrite: String?,
+    val personLore: String?,
+    val knowledgeWhitelist: String?,
+    val knowledgeBlacklist: String?
 )

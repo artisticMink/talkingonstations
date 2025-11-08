@@ -33,17 +33,18 @@ class MarketPersonLoader : TosCsvLoader(
                 post = row.getString("post"),
                 portrait = row.getString("portrait"),
                 voice = row.getString("voice"),
-                tosInstructions = row.getString("tosInstructions"),
-                tosLore = row.getString("tosLore"),
-                tosKnowledge = row.getString("tosKnowledge"),
+                instructionOverwrite = row.getString("instructionOverwrite"),
+                personLore = row.getString("personLore"),
+                knowledgeWhitelist = row.getString("knowledgeWhitelist"),
+                knowledgeBlacklist = row.getString("knowledgeBlacklist"),
             )
-        }.associate { data ->
-            val existingMarket = Global.getSector().economy.getMarket(data.market)
-                .let { existingMarket -> existingMarket ?: throw Exception("Market ${data.market} not found") }
-            val person = createPerson(data)
-            val extensionData = getExtensionData(data)
+        }.associate { marketPersonData ->
+            val existingMarket = Global.getSector().economy.getMarket(marketPersonData.market)
+                .let { existingMarket -> existingMarket ?: throw Exception("Market ${marketPersonData.market} not found") }
+            val person = createPerson(marketPersonData)
+            val extensionData = getExtensionData(marketPersonData)
 
-            person.memory.set("\$tosChatEnabled",true)
+            person.memory.set(TosStrings.MemoryId.CHAT_ENABLED,true)
             existingMarket.commDirectory.addPerson(person)
             existingMarket.addPerson(person)
 
@@ -70,14 +71,21 @@ class MarketPersonLoader : TosCsvLoader(
     }
 
     private fun getExtensionData(data: MarketPersonData): PersonExtensionData {
+        val mixins = TosSettings.getContextMixins().filter { it.enabled }
+
         return PersonExtensionData(
-            instructions = data.tosInstructions ?: "",
-            lore = data.tosLore ?: "",
-            knowledge = data.tosKnowledge
+            instructions = data.instructionOverwrite ?: "",
+            lore = data.personLore ?: "",
+            knowledgeWhitelist = data.knowledgeWhitelist
                 ?.split(",")
-                ?.mapNotNull {
-                    TosSettings.getContextMixin(it)
-                } ?: listOf()
+                ?.mapNotNull { mixinKey ->
+                    mixins.firstOrNull { mixin -> mixin.getKey() == mixinKey.trim() }
+                }.orEmpty(),
+            knowledgeBlacklist = data.knowledgeBlacklist
+                ?.split(",")
+                ?.mapNotNull { mixinKey ->
+                    mixins.firstOrNull { mixin -> mixin.getKey() == mixinKey.trim() }
+                }.orEmpty()
         )
     }
 

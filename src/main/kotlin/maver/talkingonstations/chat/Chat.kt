@@ -8,6 +8,7 @@ import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
 import maver.talkingonstations.llm.LLMService
 import maver.talkingonstations.llm.dto.GameInfo
+import maver.talkingonstations.llm.dto.Instruction
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
 
@@ -34,8 +35,8 @@ class Chat(
     init {
         TosInspector.register(this)
 
-        val instruction = llmService.getModelSettings().system
-        if (instruction.isNotEmpty()) this.systemInstructions["main"] = instruction
+        val systemPrompt = llmService.getModelSettings().system
+        if (systemPrompt.isNotEmpty()) systemInstructions.add(Instruction("main", systemPrompt))
     }
 
     fun setModelSettings(modelSettings: ModelSettings) {
@@ -112,6 +113,17 @@ class Chat(
     fun getModelSettings(): ModelSettings = llmService.getModelSettings()
     fun getPlayer(): PersonAPI = player
     fun getNpc(): PersonAPI = npc
+
+    fun addInstruction(instruction: Instruction, toTop: Boolean = false) {
+        when(toTop) {
+            true -> systemInstructions.add(0, instruction)
+            false -> systemInstructions.add(instruction)
+        }
+    }
+
+    fun updateInstruction(instruction: Instruction) {
+        systemInstructions.find { it.key == instruction.key }?.let { it.value = instruction.value }
+    }
 
     private fun endsWithNpcMessage() = chatHistory.isNotEmpty() && chatHistory.last().role == ChatRoles.ASSISTANT
     private fun endsWithPlayerMessage() = chatHistory.isNotEmpty() && chatHistory.last().role == ChatRoles.USER

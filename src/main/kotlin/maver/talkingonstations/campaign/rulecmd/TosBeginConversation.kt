@@ -1,23 +1,18 @@
 package maver.talkingonstations.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CommDirectoryEntryAPI
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
-import com.fs.starfarer.api.campaign.RuleBasedDialog
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
-import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
+import maver.talkingonstations.TosSettings
 import maver.talkingonstations.campaign.BarChatCustomUiPanel
+import maver.talkingonstations.characters.market.dto.PersonExtensionData
+import maver.talkingonstations.chat.Chat
+import maver.talkingonstations.llm.dto.Instruction
 
-/**
- * Person must have been added to SectorAPI.getImportantPeople().
- *
- * BeginConversation <person id> <minimal mode (no faction shown), optional> <show relationship bar>
- *
- * <person id> can also be POST:<post id> which will find the first person in the comm directory with that post.
-</post></person></show></minimal></person> */
 class TosBeginConversation : BaseCommandPlugin() {
+
     override fun execute(
         ruleId: String?,
         dialog: InteractionDialogAPI?,
@@ -26,73 +21,55 @@ class TosBeginConversation : BaseCommandPlugin() {
     ): Boolean {
         if (dialog == null) return false
 
-        val barChatUi = BarChatCustomUiPanel(
+        val person = dialog.interactionTarget.activePerson
+        //val person: PersonAPI = params[0]!!.getObject(memoryMap) as PersonAPI? ?: return false
+
+        val chat = Chat(
+            Global.getSector().playerPerson,
+            person,
+            person.market
+        )
+        chat.beforeContinueAsPlayer = { message -> dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) }
+        chat.afterChatResponse = { message -> dialog.textPanel.addPara(message) }
+
+        val personExtensionData: PersonExtensionData = TosSettings.getMarketPersons()[person] ?: PersonExtensionData()
+
+        // Overwrite instructions with character-specific ones
+        if (personExtensionData.instructions.isNotEmpty()) {
+            chat.updateInstruction(Instruction("main", personExtensionData.instructions))
+        }
+
+        // Build our own context when applicable.
+        if (personExtensionData.knowledgeWhitelist.isNotEmpty()) {
+            chat.addOverrideMixins(personExtensionData.knowledgeWhitelist)
+        } else if (personExtensionData.knowledgeBlacklist.isNotEmpty()) {
+            val filteredMixins = TosSettings.getContextMixins() - personExtensionData.knowledgeBlacklist.toSet()
+            chat.addOverrideMixins(filteredMixins)
+        }
+
+        val chatUi = BarChatCustomUiPanel(
             dialog,
             Global.getSector().playerPerson,
             dialog.interactionTarget.activePerson
         )
 
-        var id: String? = null
-        var person: PersonAPI? = null
-
-        val o = params.get(0)!!.getObject(memoryMap)
-        if (o is PersonAPI) {
-            person = o
-        } else {
-            id = params.get(0)!!.getStringWithTokenReplacement(ruleId, dialog, memoryMap)
-        }
+        chatUi.onModelSelectClick = { modelSettings -> chat.setModelSettings(modelSettings) }
+        chatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
+        chatUi.onSendButtonClick = { message -> chat.continueChatAsPlayer(message) }
+        chatUi.onPlayerQuit = { dialog.dismiss() }
 
         var minimal = false
         var showRel = true
         if (params.size > 1) {
-            minimal = params.get(1)!!.getBoolean(memoryMap)
+            minimal = params[1]!!.getBoolean(memoryMap)
         }
         if (params.size > 2) {
-            showRel = params.get(2)!!.getBoolean(memoryMap)
+            showRel = params[2]!!.getBoolean(memoryMap)
         }
 
-        if (person == null) {
-            val data = Global.getSector().getImportantPeople().getData(id)
-
-            if (data == null) {
-                if (dialog.getInteractionTarget() != null && dialog.getInteractionTarget().getMarket() != null) {
-                    if (id!!.startsWith("POST:")) {
-                        val postId = id.substring(id.indexOf(":") + 1)
-                        for (entry in dialog.getInteractionTarget().getMarket().getCommDirectory().getEntriesCopy()) {
-                            if (entry.getType() == CommDirectoryEntryAPI.EntryType.PERSON && entry.getEntryData() is PersonAPI) {
-                                val curr = entry.getEntryData() as PersonAPI
-                                if (postId == curr.getPostId()) {
-                                    person = curr
-                                    break
-                                }
-                            }
-                        }
-                    } else {
-                        for (curr in dialog.getInteractionTarget().getMarket().getPeopleCopy()) {
-                            if (curr.getId() == id) {
-                                person = curr
-                                break
-                            }
-                        }
-                        if (person == null) {
-                            val entry =
-                                dialog.getInteractionTarget().getMarket().getCommDirectory().getEntryForPerson(id)
-                            if (entry != null) {
-                                person = entry.getEntryData() as PersonAPI?
-                            }
-                        }
-                    }
-                }
-            } else {
-                person = data.getPerson()
-            }
-        }
-
-        if (person == null) return false
-
-        dialog.getInteractionTarget().setActivePerson(person)
-        (dialog.getPlugin() as RuleBasedDialog).notifyActivePersonChanged()
-        dialog.getVisualPanel().showPersonInfo(person, minimal, showRel)
+        //dialog.interactionTarget.activePerson = person
+        //(dialog.plugin as RuleBasedDialog).notifyActivePersonChanged()
+        dialog.visualPanel.showPersonInfo(person, minimal, showRel)
 
         return true
     }
