@@ -1,14 +1,51 @@
 package maver.talkingonstations
 
-import java.lang.ref.WeakReference
+import com.fs.starfarer.api.characters.PersonAPI
+import maver.talkingonstations.characters.market.MarketPersonLoader
+import maver.talkingonstations.characters.market.dto.PersonExtensionData
+import maver.talkingonstations.characters.archetypes.CharacterArchetypeInterface
+import maver.talkingonstations.characters.archetypes.RandomPersonLoader
+import maver.talkingonstations.llm.ContextMixinInterface
+import maver.talkingonstations.llm.ContextMixinLoader
 
+/**
+ * Singleton providing instances of Tos-related data
+ */
 object TosRegistry {
-    private val instances: MutableList<WeakReference<Any>> = mutableListOf()
 
-    fun register(instance: Any) = instances.add(WeakReference(instance))
+    /**
+     * Context mixins like npc knowledge or sector information that are to be included in the LLM context.
+     */
+    private lateinit var contextMixins: List<ContextMixinInterface>
 
-    fun get(className: String): List<Any> {
-        instances.removeAll { it.get() == null }
-        return instances.mapNotNull { it.get() }.filter { it::class.simpleName == className }
+    /**
+     * Random person generated with a specific trait, i.e., trader, smuggler, ...
+     */
+    private lateinit var archetypes: List<CharacterArchetypeInterface>
+
+    /**
+     * Unique person tied to a specific market and listed in that markets comm directory
+     */
+    private lateinit var marketPersons: Map<PersonAPI, PersonExtensionData>
+
+    fun initialize() {
+        contextMixins = ContextMixinLoader().load()
+        archetypes = RandomPersonLoader().load()
+        marketPersons = MarketPersonLoader().load()
     }
+
+    fun isInitialized() = ::contextMixins.isInitialized
+
+    fun getContextMixins() = contextMixins
+    fun getContextMixin(key: String): ContextMixinInterface? = contextMixins.find { it.getKey() == key }
+    fun reloadContextMixins() { contextMixins = ContextMixinLoader().load() }
+    fun enableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = true
+    fun disableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = false
+
+    fun getArchetypes() = archetypes
+    fun reloadArchetypes() { archetypes = RandomPersonLoader().load() }
+    fun enableArchetype(key: String) = archetypes.find { it.getKey() == key }?.enabled = true
+    fun disableArchetype(key: String) = archetypes.find { it.getKey() == key }?.enabled = false
+
+    fun getMarketPersons() = marketPersons
 }

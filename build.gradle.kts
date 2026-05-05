@@ -1,9 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.gradle.util.Path.path
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "maver.talkingonstations"
+
+val starsectorModFolder = "/run/media/system/SSD_1/DevSector/mods"
 
 plugins {
     kotlin("jvm") version "2.1.20"
@@ -16,10 +17,8 @@ repositories {
     mavenCentral()
 }
 
-application {
-    mainClass.set("maver.ChatTestKt")
-}
 
+// Target Java 17
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -72,7 +71,6 @@ tasks.withType<ShadowJar> {
 tasks.register<Copy>("packageMod") {
     dependsOn(tasks.shadowJar)
 
-    val starsectorModFolder = "D:/StarsectorDev/mods"
     val tosFolder = "$starsectorModFolder/TalkingOnStations"
 
     doFirst {

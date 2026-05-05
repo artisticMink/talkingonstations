@@ -1,19 +1,16 @@
 package maver.talkingonstations
 
-import maver.talkingonstations.llm.ContextProviderInterface
-import maver.talkingonstations.llm.ContextProviderLoader
+import lunalib.lunaSettings.LunaSettings
 
 object TosSettings {
-    private var contextProvider: List<ContextProviderInterface> = ContextProviderLoader().load()
+    val ignoredFactions: Set<String> = commaSet("tos_ignoredFactions")
+    val ignoredMarkets: Set<String> = commaSet("tos_ignoredMarkets")
+    val ignoredConditions: Set<String> = commaSet("tos_ignoredConditions")
 
-    fun getContextProvider() = contextProvider
-    fun reloadContextProvider() { contextProvider = ContextProviderLoader().load() }
-
-    fun enableContextProvider(key: String){
-        contextProvider.find { it.getKey() == key }?.enabled = true
-    }
-
-    fun disableContextProvider(key: String) {
-        contextProvider.find { it.getKey() == key }?.enabled = false
-    }
+    private fun commaSet(key: String): Set<String> =
+        (LunaSettings.getString("maver_talkingonstations", key) ?: "")
+            .split(',')
+            .map(String::trim)
+            .filter(String::isNotEmpty)
+            .toSet()
 }

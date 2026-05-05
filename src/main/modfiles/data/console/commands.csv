@@ -1,6 +1,11 @@
 command,class,tags,syntax,help
-tos.provider.list,maver.talkingonstations.command.ContextProviderListCommand,talkingonstations,"",""
-tos.provider.enable,maver.talkingonstations.command.ContextProviderEnableCommand,talkingonstations,<key>,""
-tos.provider.disable,maver.talkingonstations.command.ContextProviderDisableCommand,talkingonstations,<key>,""
-tos.provider.reload,maver.talkingonstations.command.ContextProviderReloadCommand,talkingonstations,"",""
+tos.mixin.list,maver.talkingonstations.command.MixinListCommand,talkingonstations,"",""
+tos.mixin.toggle,maver.talkingonstations.command.MixinToggleCommand,talkingonstations,"",""
+tos.mixin.reload,maver.talkingonstations.command.MixinReloadCommand,talkingonstations,"",""
+tos.person.random.toggle,maver.talkingonstations.command.PersonTypesToggleCommand,talkingonstations,"",""
+tos.person.random.reload,maver.talkingonstations.command.PersonTypesReloadCommand,talkingonstations,"",""
 tos.inspect,maver.talkingonstations.command.InspectCommand,talkingonstations,<className> [item],
+tos.person.random.list,maver.talkingonstations.command.PersonTypesListCommand,talkingonstations,,
+tos.person.market.list,maver.talkingonstations.command.MarketPersonsListCommand,talkingonstations,,
+tos.ui.probe,maver.talkingonstations.command.UiProbeCommand,talkingonstations,,Opens a scratchpad dialog with a draggable DebugProbe. LMB to drag; arrows to nudge (Shift=x10); Ctrl+C copies corners.
+tos.mixin.show,maver.talkingonstations.command.MixinShowCommand,talkingonstations,<mixin> [market_id],

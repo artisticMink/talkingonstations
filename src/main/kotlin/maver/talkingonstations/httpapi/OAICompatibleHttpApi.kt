@@ -33,7 +33,7 @@ class OAICompatibleHttpApi : HttpApiInterface {
 
     override fun send(instructions: String, messages: List<Message>): Message {
         val tmpMessages = messages.toMutableList()
-        tmpMessages.add(0, Message(ChatRoles.USER, instructions))
+        tmpMessages.add(0, Message(ChatRoles.SYSTEM, instructions))
 
         val requestBody = OAICompatibleRequestBody(
             model = activeModel,
@@ -43,7 +43,7 @@ class OAICompatibleHttpApi : HttpApiInterface {
             topP = activeModelSettings.topP,
             //reasoning = if (activeModelSettings.reasoning != null) OAICompatibleRequestReasoning(activeModelSettings.reasoning ?: "") else null,
             //instructions = activeModelSettings.system.ifEmpty { defaultInstruction } + "\n\n" + instructions
-            instructions = instructions
+            instructions = "" // Probably not needed
         )
 
         val jsonBody = Json.encodeToString(requestBody)
@@ -88,7 +88,7 @@ class OAICompatibleHttpApi : HttpApiInterface {
     }
 
     override fun getName(): String {
-        return "OpenAI Compatible"
+        return "OAI Compatible (Response API)"
     }
 
     override fun getModel(): String {
@@ -113,7 +113,7 @@ class OAICompatibleHttpApi : HttpApiInterface {
         )
     }
 
-    companion object OAICompatibleHttpApiConfiguration : HttpApiConfigurationInterface {
+    companion object OAICompatibleHttpApiConfiguration {
         const val MODEL_FILE = "data/config/api/oai_compatible.json"
 
         private val models: MutableList<ModelSettings> = mutableListOf()
@@ -139,11 +139,11 @@ class OAICompatibleHttpApi : HttpApiInterface {
             return OAICompatibleHttpApi()
         }
 
-        override fun getModels(): List<ModelSettings> {
+        fun getModels(): List<ModelSettings> {
             return models.toList()
         }
 
-        override fun getApiConfiguration(): ApiSettings {
+        fun getApiConfiguration(): ApiSettings {
             return configuration
         }
 
@@ -194,11 +194,12 @@ class OAICompatibleHttpApi : HttpApiInterface {
             val modelJson: JSONObject = json.getJSONObject("model")
             val settingsJson: JSONObject = json.getJSONObject("settings")
             val samplerJson: JSONObject = settingsJson.getJSONObject("sampler")
+            val system = settingsJson.getString("system").takeIf { it.isNotEmpty() } ?: defaultInstruction
 
             return ModelSettings(
                 name = modelJson.getString("name"),
                 maxTokens = modelJson.getInt("maxTokens"),
-                system = settingsJson.getString("system"),
+                system = system,
                 reasoning = if (settingsJson.has("reasoning")) settingsJson.getString("reasoning") else null,
                 temperature = samplerJson.getFloat("temperature"),
                 topP = samplerJson.getFloat("topP")

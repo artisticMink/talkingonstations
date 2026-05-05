@@ -1,0 +1,9 @@
+name,fullyQualifiedClassName,description,enabled,section
+NPC,maver.talkingonstations.llm.mixins.SelfKnowledge,"""""",true,PERSON
+Player,maver.talkingonstations.llm.mixins.PlayerKnowledge,"""""",true,PERSON
+MarketLore,maver.talkingonstations.llm.mixins.MarketLore,"""""",true,MARKET
+MarketEconomy,maver.talkingonstations.llm.mixins.MarketEconomy,"""""",true,MARKET
+MarketMilitary,maver.talkingonstations.llm.mixins.MarketMilitary,"""""",true,MARKET
+FactionLore,maver.talkingonstations.llm.mixins.FactionLore,"""""",true,SECTOR
+FactionDiplomacy,maver.talkingonstations.llm.mixins.FactionDiplomacy,"""""",true,SECTOR
+BaseSystemInstruction,maver.talkingonstations.llm.mixins.BaseSystemInstruction,"""""",true,INSTRUCTION

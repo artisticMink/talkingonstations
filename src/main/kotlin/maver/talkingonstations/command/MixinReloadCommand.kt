@@ -1,0 +1,17 @@
+package maver.talkingonstations.command
+
+import maver.talkingonstations.TosRegistry
+import org.lazywizard.console.BaseCommand
+import org.lazywizard.console.Console
+
+class MixinReloadCommand: BaseCommand {
+    override fun runCommand(
+        p0: String,
+        p1: BaseCommand.CommandContext
+    ): BaseCommand.CommandResult? {
+        TosRegistry.reloadContextMixins()
+        Console.showMessage("Context provider reloaded from disk")
+
+        return BaseCommand.CommandResult.SUCCESS
+    }
+}

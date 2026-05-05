@@ -1,0 +1,3 @@
+name,fullyQualifiedClassName,enabled
+Trader,maver.talkingonstations.characters.archetypes.Trader,true
+Smuggler,maver.talkingonstations.characters.archetypes.Smuggler,true

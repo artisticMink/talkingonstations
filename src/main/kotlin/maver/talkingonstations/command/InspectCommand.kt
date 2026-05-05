@@ -1,6 +1,7 @@
 package maver.talkingonstations.command
 
-import maver.talkingonstations.TosRegistry
+import maver.talkingonstations.InspectableInterface
+import maver.talkingonstations.TosInspector
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.console.Console
 
@@ -15,7 +16,7 @@ class InspectCommand: BaseCommand {
         val className: String = segments[0]
         val item: String? = segments.getOrNull(1)
 
-        val instances: List<Any> = TosRegistry.get(className)
+        val instances: List<Any> = TosInspector.get(className)
         if (instances.isEmpty()) {
             Console.showMessage("No instances of $className are available in this context.")
             return BaseCommand.CommandResult.WRONG_CONTEXT

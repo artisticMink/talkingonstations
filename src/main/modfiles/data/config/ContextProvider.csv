@@ -1,3 +1,0 @@
-name,fullyQualifiedClassName,description,enabled
-Player,maver.talkingonstations.chat.context.PlayerProvider,Helpful description,true
-NPC,maver.talkingonstations.chat.context.NpcProvider,"""""",true

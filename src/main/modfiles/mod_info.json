@@ -3,7 +3,7 @@
   "name":"Talking on Stations",
   "author":"Maver",
   "version":"1.0.0",
-  "description":"",
+  "description":"Adds LLM-powered encounters",
   "gameVersion":"0.98a-RC8",
   "modPlugin":"maver.talkingonstations.plugins.TalkingOnStationsPlugin",
   "jars": ["jars/TalkingOnStations.jar"],
