@@ -2,9 +2,9 @@ package maver.talkingonstations
 
 import com.fs.starfarer.api.characters.PersonAPI
 import maver.talkingonstations.characters.market.MarketPersonLoader
-import maver.talkingonstations.characters.market.dto.PersonExtensionData
 import maver.talkingonstations.characters.archetypes.CharacterArchetypeInterface
 import maver.talkingonstations.characters.archetypes.RandomPersonLoader
+import maver.talkingonstations.characters.market.dto.MarketPersonData
 import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.ContextMixinLoader
 
@@ -26,7 +26,7 @@ object TosRegistry {
     /**
      * Unique person tied to a specific market and listed in that markets comm directory
      */
-    private lateinit var marketPersons: Map<PersonAPI, PersonExtensionData>
+    private lateinit var marketPersons: Map<PersonAPI, MarketPersonData>
 
     fun initialize() {
         contextMixins = ContextMixinLoader().load()
