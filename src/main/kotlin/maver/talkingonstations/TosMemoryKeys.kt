@@ -2,7 +2,8 @@ package maver.talkingonstations
 
 object TosMemoryKeys {
     const val ARCHETYPE = "\$tosArchetype"
-    const val ARCHETYPE_TEXT = "\$tosArchetypeText"
-    const val KNOWLEDGE_ADD_KEYS = "\$tosKnowledgeAddKeys"      // used in Step 6
-    const val KNOWLEDGE_REMOVE_KEYS = "\$tosKnowledgeRemoveKeys" // used in Step 6
+    const val MARKET_PERSON_DATA = "\$tosMarketPersonData"
+    const val IS_MARKET_PERSON = "\$tosIsMarketPerson"
+    const val IS_BAR_PERSON = "\$tosIsBarPerson"
+    const val CHAT_ENABLED = "\$tosChatEnabled"
 }
