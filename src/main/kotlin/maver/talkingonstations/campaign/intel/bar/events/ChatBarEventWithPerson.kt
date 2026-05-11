@@ -11,6 +11,7 @@ import com.fs.starfarer.api.util.Misc
 import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
 import maver.talkingonstations.chat.Chat
+import maver.talkingonstations.httpapi.HttpApiRegistry
 
 /**
  * A 1:1 conversation that appears when visitng a market and bringing up the bar interface
@@ -49,7 +50,7 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
             Global.getSector().playerPerson
         )
 
-        barChatUi.onModelSelectClick = { modelSettings -> chat.setModelSettings(modelSettings) }
+        barChatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
         barChatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
         barChatUi.onSendButtonClick = { message -> chat.continueChatAsPlayer(message) }
         barChatUi.onPlayerQuit = ::onPlayerQuit
@@ -61,6 +62,9 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
     }
 
     override fun addPromptAndOption(dialog: InteractionDialogAPI, memoryMap: MutableMap<String?, MemoryAPI?>?) {
+        // We need at least one HTTP API to initialize the UI
+        if (HttpApiRegistry.getDefaultApi() == null) return
+
         regen(dialog.interactionTarget.market)
         dialog.optionPanel.addOption("Dive into the crowd and see who you can find.", this)
         super.addPromptAndOption(dialog, memoryMap)

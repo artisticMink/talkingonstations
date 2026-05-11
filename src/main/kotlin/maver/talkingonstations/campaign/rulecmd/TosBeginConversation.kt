@@ -5,15 +5,15 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
-import maver.talkingonstations.TosRegistry
+import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.TosStrings
 import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
-import maver.talkingonstations.characters.market.dto.PersonExtensionData
 import maver.talkingonstations.chat.Chat
+import maver.talkingonstations.httpapi.HttpApiRegistry
 
 /**
  * Hook, gets executed whenever a conversation with a market contact is started.
- * ToDo: Condition whether it should hijack the conversation or not
+ * @see /data/campaign/rules.csv
  */
 class TosBeginConversation : BaseCommandPlugin() {
 
@@ -26,7 +26,12 @@ class TosBeginConversation : BaseCommandPlugin() {
         if (dialog == null) return false
 
         val person = dialog.interactionTarget.activePerson
-        if (person == null || !person.memory.getBoolean(TosStrings.MemoryId.CHAT_ENABLED)) return false
+
+        // Hijack if this is a ToS person
+        if (person == null || !person.memory.getBoolean(TosMemoryKeys.CHAT_ENABLED)) return false
+
+        // We need at least one HTTP API to make use of the UI
+        if (HttpApiRegistry.getDefaultApi() == null) return false
 
         val chat = Chat(
             Global.getSector().playerPerson,
@@ -43,23 +48,14 @@ class TosBeginConversation : BaseCommandPlugin() {
             Global.getSector().playerPerson,
         )
 
-        chatUi.onModelSelectClick = { modelSettings -> chat.setModelSettings(modelSettings) }
+        chatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
         chatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
         chatUi.onSendButtonClick = { message -> chat.continueChatAsPlayer(message) }
         chatUi.onPlayerQuit = { dialog.dismiss() }
 
-        var minimal = false
-        var showRel = true
-        if (params.size > 1) {
-            minimal = params[1]!!.getBoolean(memoryMap)
-        }
-        if (params.size > 2) {
-            showRel = params[2]!!.getBoolean(memoryMap)
-        }
-
-        //dialog.interactionTarget.activePerson = person
+        dialog.interactionTarget.activePerson = person
         //(dialog.plugin as RuleBasedDialog).notifyActivePersonChanged()
-        dialog.visualPanel.showPersonInfo(person, minimal, showRel)
+        //dialog.visualPanel.showPersonInfo(person, minimal, showRel)
 
         return true
     }
