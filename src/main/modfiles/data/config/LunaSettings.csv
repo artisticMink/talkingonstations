@@ -1,8 +1,16 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
 tos_serviceHeader,Service Header,Header,API,,,,,Service
-tos_api,Service,Radio,OAI Compatible (Response API),OAI Compatible (Response API)|OpenAI Compatible (v1),,,,Service
-tos_apiUrl,API Url,String,https://openrouter.ai/api/v1/responses,,The endpoint to connect to.,,,Service
+tos_api,Service,Radio,Openrouter,"Chat-Completion, Openrouter",,,,Service
+tos_apiUrl,API Url,String,https://openrouter.ai/api/v1/chat/completions,,The endpoint to connect to.,,,Service
 tos_apiKey,API Key,String,"",,An authentification token provided by a service. Usually required.,,,Service
 tos_ignoredFactions,Ignored Factions,String,"neutral, remnant, omega, mercenary, ML_bounty, scavengers, sleeper, poor, derelict, nex_derelict, threat, dweller, player, nex_temp",,Factions ignored during content creation,,,Service
 tos_ignoredMarkets,Ignored Markets,String,"",,"Market IDs ignored during content creation (comma-separated).",,,Service
 tos_ignoredConditions,Ignored Market Conditions,String,"",,"Market condition IDs filtered out of market context (comma-separated).",,,Service
+tos_samplerText,-Note-,Text,Default settings for newly created characters. Can be changed on a per-character basis. Character settings persist across saves and [take precedence] over the defaults listed here.,,,,,Sampler
+tos_temperature,Temperature,Double,1,,"A lower temperature makes it more likely that the conversation stays on track but might get repetitive, a higher temperature allows for a more diverse output that's prone to incoherence.",0,2,Sampler
+tos_topK,Top k,Double,0,,Limits the pool of words in a conversation to the K highest candidates.,0,500,Sampler
+tos_topP,Top p,Double,0.95,,Limits the pool of words in a conversation to those of whose probabilities sum up to P.,0,1,Sampler
+tos_settingsText,-Note-,Text,Affects all saves.,,,,,Sampler
+tos_guardrailsEnabled,Add Guardrails,Boolean,true,,Add Guardrails to every message. The guardrails aim to keep the model on track and allow for content appropriate for Starsectors dystopian setting while restricting certain topics. Effectivity varies depending on the model. Enabled by default.,,,Settings
+tos_maxTokens,Max Tokens,Int,1000,,The max amount of tokens that are returned in an answer. A token is roughly 0.8 words. Thinking models may need considerably more tokens as the thinking process also takes from this budget.,0,25000,Settings
+tos_reasoningEffort,Reasoning Effort,Radio,medium,"none,minimal,low,medium,high,xhigh",Only affects models capable of reasoning. Common values are medium or high.,,,Settings

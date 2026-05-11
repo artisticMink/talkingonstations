@@ -6,12 +6,11 @@ sealed class TosStrings {
     }
 
     object Loader {
-        const val PATH = "data/config/tos/"
         const val CSV_ID_COLUMN = "id"
         const val CLASS_ID_COLUMN = "fullyQualifiedClassName"
     }
 
-    object MemoryId {
-        const val CHAT_ENABLED = "\$tosChatEnabled"
+    object Path {
+        const val CONFIG_FOLDER = "data/config/tos/"
     }
 }
