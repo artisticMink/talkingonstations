@@ -27,7 +27,7 @@ class Smuggler(factionId: String? = null): CharacterArchetypeInterface {
 
         person.rankId = Ranks.POST_SMUGGLER
         person.postId = Ranks.POST_SMUGGLER
-        person.memory.set(TosMemoryKeys.ARCHETYPE, "trader" )
+        person.memory.set(TosMemoryKeys.ARCHETYPE, "smuggler" )
 
         return person
     }
