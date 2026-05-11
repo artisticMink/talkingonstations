@@ -75,7 +75,11 @@ class OpenrouterHttpApi : HttpApiInterface {
         if (response.code != 200) {
             Global.getLogger(javaClass).warn("Request failed with error code ${response.code}")
             if (Global.getSettings().isDevMode) Global.getLogger(javaClass).warn("${response.body}")
-            throw HttpApiRequestException("Request failed")
+            throw HttpApiRequestException(
+                "Request failed",
+                response.code,
+                jsonBody,
+            )
         }
 
         val responseBodyString = response.body?.string() ?: "{\"error\":\"Empty response body\"}"

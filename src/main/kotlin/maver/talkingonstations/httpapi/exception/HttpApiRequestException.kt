@@ -1,5 +1,8 @@
 package maver.talkingonstations.httpapi.exception
 
-class HttpApiRequestException(message: String): Exception(message) {
-
-}
+class HttpApiRequestException(
+    message: String,
+    val statusCode: Int? = null,
+    val responseBody: String? = null,
+    cause: Throwable? = null,
+) : Exception(message, cause)

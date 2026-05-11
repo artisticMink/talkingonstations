@@ -21,6 +21,10 @@ object TosInspector {
         Global.getLogger(classRef.java).info(message)
     }
 
+    fun error(message: String, classRef: KClass<*>) {
+        Global.getLogger(classRef.java).error(message)
+    }
+
     fun debug(message: String, classRef: KClass<*>) {
         Global.getLogger(classRef.java).debug(message)
     }
