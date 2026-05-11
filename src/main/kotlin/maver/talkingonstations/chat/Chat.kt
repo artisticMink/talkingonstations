@@ -31,15 +31,13 @@ class Chat(
     var afterChatResponse: ((message: String) -> Unit)? = null
 
     private val chatHistory get() = publicMessages
-    private val enhancer: MessageEnhancer = MessageEnhancer(this)
-    private val llmService: LLMService = LLMService(HttpApiRegistry.getSelectedApi())
+    private val api = HttpApiRegistry.getSelectedApi()
+    private val llmService: LLMService = LLMService(api)
+
+    var modelSettings: ModelSettings = ModelSettings.create(api.getDefaultModelName())
 
     init {
         TosInspector.register(this)
-    }
-
-    fun setModelSettings(modelSettings: ModelSettings) {
-        return llmService.setModelSettings(modelSettings)
     }
 
     /**
@@ -67,9 +65,8 @@ class Chat(
     suspend fun continueChat() {
         if (chatHistory.isEmpty()) return
 
-        val nextMessage: Message = llmService.send(this)
+        val nextMessage: Message = llmService.send(this, modelSettings)
 
-        enhancer.revertMessage(nextMessage)
         chatHistory.add(nextMessage)
         afterChatResponse?.invoke(chatHistory.last().content)
     }
@@ -104,7 +101,6 @@ class Chat(
     }
 
     fun getChatMessages(): List<Message> = chatHistory.toList()
-    fun getModelSettings(): ModelSettings = llmService.getModelSettings()
     fun getPlayer(): PersonAPI = player
     fun getNpc(): PersonAPI = npc
 
@@ -117,14 +113,8 @@ class Chat(
 
     override fun inspect(item: String): String {
         return when (item) {
-            "chatHistory" -> getChatHistoryCopy().joinToString("\n\n")
+            "chatHistory" -> getPublicMessageCopy().joinToString("\n\n")
             else -> ""
         }
-    }
-
-    private fun getChatHistoryCopy(): List<Message> {
-        val chatHistoryCopy = chatHistory.filter { it.role == ChatRoles.USER || it.role == ChatRoles.ASSISTANT }.map { it.copy() }
-        enhancer.prepareAll(chatHistoryCopy)
-        return chatHistoryCopy
     }
 }
