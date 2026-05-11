@@ -6,7 +6,7 @@ import maver.talkingonstations.llm.enum.Section
 import org.json.JSONObject
 
 class ContextMixinLoader : TosClassLoader<ContextMixinInterface>(
-    csvPath = "ContextMixin.csv"
+    csvFile = "ContextMixin.csv"
 ) {
     override fun getClassName(row: JSONObject): String =
         row.getString("fullyQualifiedClassName")

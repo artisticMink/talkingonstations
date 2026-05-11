@@ -7,7 +7,7 @@ import org.json.JSONObject
  * Base loader for CSV data files, merged via Starsector's
  * [getMergedSpreadsheetDataForMod] to support mod load-order overrides.
  *
- * Expects files to be in [TosStrings.Loader.PATH]
+ * Expects files to be in [TosStrings.Path.CONFIG_FOLDER]
  */
 abstract class TosCsvLoader(
     private val csvFile: String,
@@ -23,7 +23,7 @@ abstract class TosCsvLoader(
      * @return Array of JSONObjects representing the rows
      */
     protected fun loadCsvRows(): List<JSONObject> {
-        val data = Global.getSettings().getMergedSpreadsheetDataForMod(idColumn, TosStrings.Loader.PATH + csvFile, TosStrings.ModConfig.ID)
+        val data = Global.getSettings().getMergedSpreadsheetDataForMod(idColumn, TosStrings.Path.CONFIG_FOLDER + csvFile, TosStrings.ModConfig.ID)
 
         return (0 until data.length())
             .map { data[it] as JSONObject }

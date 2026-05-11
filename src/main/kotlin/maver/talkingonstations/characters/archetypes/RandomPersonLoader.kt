@@ -5,7 +5,7 @@ import maver.talkingonstations.TosInspector
 import org.json.JSONObject
 
 class RandomPersonLoader : TosClassLoader<CharacterArchetypeInterface>(
-    csvPath = "Archetypes.csv"
+    csvFile = "Archetypes.csv"
 ) {
     override fun getClassName(row: JSONObject): String =
         row.getString("fullyQualifiedClassName")

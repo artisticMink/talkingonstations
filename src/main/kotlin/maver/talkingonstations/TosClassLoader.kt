@@ -12,8 +12,8 @@ import org.json.JSONObject
  */
 
 abstract class TosClassLoader<T : Any>(
-    csvPath: String
-): TosCsvLoader(csvPath, TosStrings.Loader.CLASS_ID_COLUMN) {
+    csvFile: String
+): TosCsvLoader(csvFile, TosStrings.Loader.CLASS_ID_COLUMN) {
     private val classLoader: ClassLoader = Global.getSettings().scriptClassLoader
     private val logger = Global.getLogger(javaClass)
 
