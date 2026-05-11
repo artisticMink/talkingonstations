@@ -7,9 +7,10 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonObject
 import maver.talkingonstations.TosStrings
 import maver.talkingonstations.chat.ChatRoles
-import maver.talkingonstations.httpapi.body.ChatCompletionRequestBody
-import maver.talkingonstations.httpapi.body.ChatCompletionResponseBody
-import maver.talkingonstations.httpapi.body.ChatCompletionsMessage
+import maver.talkingonstations.httpapi.body.OpenrouterMessage
+import maver.talkingonstations.httpapi.body.OpenrouterReasoning
+import maver.talkingonstations.httpapi.body.OpenrouterRequestBody
+import maver.talkingonstations.httpapi.body.OpenrouterResponseBody
 import maver.talkingonstations.httpapi.exception.HttpApiRequestException
 import maver.talkingonstations.llm.dto.ApiSettings
 import maver.talkingonstations.llm.dto.Message
@@ -22,9 +23,9 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
-class ChatCompletionHttpApi : HttpApiInterface {
+class OpenrouterHttpApi : HttpApiInterface {
     private val client = OkHttpClient()
-    private val configPath = "${TosStrings.Path.CONFIG_FOLDER}api/chat_completion.json"
+    private val configPath = "${TosStrings.Path.CONFIG_FOLDER}api/openrouter.json"
 
     private val models: Map<String, String>
     private val defaultModelId: String
@@ -49,16 +50,17 @@ class ChatCompletionHttpApi : HttpApiInterface {
 
     override fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message {
         val modelId = models[model.name] ?: defaultModelId
-        val chatMessages = mutableListOf(ChatCompletionsMessage.fromInstructions(instructions))
-        chatMessages.addAll(ChatCompletionsMessage.fromMessages(messages))
+        val chatMessages = mutableListOf(OpenrouterMessage.fromInstructions(instructions))
+        chatMessages.addAll(OpenrouterMessage.fromMessages(messages))
 
-        val requestBody = ChatCompletionRequestBody(
+        val requestBody = OpenrouterRequestBody(
             model = modelId,
             messages = chatMessages,
             maxTokens = model.maxTokens,
             temperature = model.temperature,
             topP = model.topP,
-            reasoningEffort = model.reasoningEffort
+            topK = model.topK,
+            reasoning = OpenrouterReasoning(model.reasoningEffort),
         )
 
         val jsonBody = Json.encodeToString(requestBody)
@@ -81,26 +83,27 @@ class ChatCompletionHttpApi : HttpApiInterface {
         val jsonResponse: JsonElement = Json.parseToJsonElement(responseBodyString)
         val errorElem = jsonResponse.jsonObject["error"]
         if (errorElem != null && errorElem != JsonNull) {
-            Global.getLogger(javaClass).error("Chat Completions API returned error: $jsonResponse")
+            Global.getLogger(javaClass).error("OpenRouter API returned error: $jsonResponse")
             return Message(ChatRoles.INFO, "Could not get an answer. Check starsector.log for more information.")
         }
 
         return try {
-            Json.decodeFromString<ChatCompletionResponseBody>(responseBodyString).getLastMessage()
+            Json.decodeFromString<OpenrouterResponseBody>(responseBodyString).getLastMessage()
         } catch (exception: Exception) {
             Global.getLogger(javaClass).error("Error parsing response body: $exception")
             Message(ChatRoles.INFO, "Could not process the answer. Check starsector.log for more information.")
         }
     }
 
-    override fun getName() = "Chat-Completion"
+    override fun getName() = "OpenRouter"
     override fun getModels(): Map<String, String> = models
     override fun getDefaultModelName(): String = defaultModelName
 
     private fun getHeaders() = arrayOf(
         "content-type", "application/json",
         "accept", "application/json",
-        "X-Title", "Starsector/TalkingOnStations"
+        "HTTP-Referer", "https://github.com/artisticMink/talkingonstations",
+        "X-Title", "Starsector/TalkingOnStations",
     )
 
     private fun getAuthHeader() = arrayOf(

@@ -1,21 +1,24 @@
 package maver.talkingonstations.httpapi
 
-import lunalib.lunaSettings.LunaSettings
+import maver.talkingonstations.TosSettings
 
 object HttpApiRegistry {
-    private val apiList: List<HttpApiInterface> = listOf(
-        OAICompatibleHttpApi.create(),
-        ChatCompletionHttpApi.create()
-    )
+    private val apiList: List<HttpApiInterface> = HttpApiLoader().load()
 
     fun getSelectedApi(): HttpApiInterface {
-        val identifier = requireNotNull(LunaSettings.getString("maver_talkingonstations","tos_api"))
+        val identifier = TosSettings.api
 
-        return getApi(identifier) ?: throw Exception("No API with name $identifier")
+        // Fallback to default api when requested api is not available
+        // ToDo: Should have user-facing feedback.
+        return getApi(identifier) ?: getDefaultApi() ?: throw Exception("No API available")
     }
 
     fun getApi(name: String): HttpApiInterface? {
         return apiList.find { it.getName() == name }
+    }
+
+    fun getDefaultApi(): HttpApiInterface? {
+        return apiList.firstOrNull()
     }
 
     fun getApiNames(): List<String> {

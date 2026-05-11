@@ -14,6 +14,8 @@ data class ChatCompletionRequestBody(
     val temperature: Float,
     @SerialName("top_p")
     val topP: Float,
+    @SerialName("reasoning_effort")
+    val reasoningEffort: String,
 )
 
 @Serializable
