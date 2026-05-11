@@ -7,5 +7,5 @@ tos.person.random.reload,maver.talkingonstations.command.PersonTypesReloadComman
 tos.inspect,maver.talkingonstations.command.InspectCommand,talkingonstations,<className> [item],
 tos.person.random.list,maver.talkingonstations.command.PersonTypesListCommand,talkingonstations,,
 tos.person.market.list,maver.talkingonstations.command.MarketPersonsListCommand,talkingonstations,,
-tos.ui.probe,maver.talkingonstations.command.UiProbeCommand,talkingonstations,,Opens a scratchpad dialog with a draggable DebugProbe. LMB to drag; arrows to nudge (Shift=x10); Ctrl+C copies corners.
 tos.mixin.show,maver.talkingonstations.command.MixinShowCommand,talkingonstations,<mixin> [market_id],
+tos.person.market.show,maver.talkingonstations.command.MarketPersonShowCommand,talkingonstations,<id>,Render the merged system prompt for a MarketPerson (looked up by id) as the LLM would see it.

@@ -31,16 +31,19 @@ class MixinShowCommand : BaseCommand {
         }
 
         // ToDo: Add random npc for testing NPC-dependent mixins
-        Console.showMessage("----- $mixinName @ ${market.name} -----")
-        Console.showMessage(
-            mixin.getText(
-                GameInfo(
-                    Global.getSector().playerPerson,
-                    null,
-                    market,
-                )
+        Console.showMessage("Dumping $mixinName at ${market.name}")
+        val rendered = mixin.render(
+            GameInfo(
+                Global.getSector().playerPerson,
+                null,
+                market,
             )
         )
+        if (rendered == null) {
+            Console.showMessage("(mixin opted out — render returned null for this context)")
+        } else {
+            Console.showMessage(rendered)
+        }
 
         Console.showMessage("\n")
         return BaseCommand.CommandResult.SUCCESS
