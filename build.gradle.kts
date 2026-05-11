@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "maver.talkingonstations"
 
-val starsectorModFolder = "/run/media/system/SSD_1/DevSector/mods"
+val starsectorModFolder: String = providers.gradleProperty("starsectorModFolder").get()
 
 plugins {
     kotlin("jvm") version "2.1.20"
