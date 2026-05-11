@@ -1,9 +1,12 @@
 name,fullyQualifiedClassName,description,enabled,section
-NPC,maver.talkingonstations.llm.mixins.SelfKnowledge,"""""",true,PERSON
-Player,maver.talkingonstations.llm.mixins.PlayerKnowledge,"""""",true,PERSON
-MarketLore,maver.talkingonstations.llm.mixins.MarketLore,"""""",true,MARKET
-MarketEconomy,maver.talkingonstations.llm.mixins.MarketEconomy,"""""",true,MARKET
-MarketMilitary,maver.talkingonstations.llm.mixins.MarketMilitary,"""""",true,MARKET
-FactionLore,maver.talkingonstations.llm.mixins.FactionLore,"""""",true,SECTOR
-FactionDiplomacy,maver.talkingonstations.llm.mixins.FactionDiplomacy,"""""",true,SECTOR
-BaseSystemInstruction,maver.talkingonstations.llm.mixins.BaseSystemInstruction,"""""",true,INSTRUCTION
+NPC,maver.talkingonstations.llm.mixins.SelfKnowledge,"Adds information about the NPC (person details, occupation, faction, background, etc.)",true,PERSON
+Player,maver.talkingonstations.llm.mixins.PlayerKnowledge,Adds detailed information about the one and only J.S. This includes the custom character background if present.,true,PERSON
+MarketLore,maver.talkingonstations.llm.mixins.MarketLore,"Adds information about the current market (Size, industries, status, etc.)",true,MARKET
+MarketEconomy,maver.talkingonstations.llm.mixins.MarketEconomy,Adds information bout the open market when present on the planet. ,true,MARKET
+MarketMilitary,maver.talkingonstations.llm.mixins.MarketMilitary,Adds details about the colonies military strength and buildings.,true,MARKET
+FactionLore,maver.talkingonstations.llm.mixins.FactionLore,Adds publicly available information about the known factions of the Sector.,true,SECTOR
+FactionDiplomacy,maver.talkingonstations.llm.mixins.FactionDiplomacy,Adds detailed information about relationships between factions.,true,SECTOR
+BaseSystemInstruction,maver.talkingonstations.llm.mixins.BaseInstruction,Adds instructions for the llm about the context and how to respond.,true,INSTRUCTION
+GuardrailsInstruction,maver.talkingonstations.llm.mixins.GuardrailsInstruction,Adds guardrails to keep the experience close to T-rated.,true,INSTRUCTION
+CommsInstruction,maver.talkingonstations.llm.mixins.CommsInstruction,Adds specific comms scenario instructions.,true,INSTRUCTION
+BarInstruction,maver.talkingonstations.llm.mixins.BarInstruction,Add specific planetside bar scenario instructions.,true,INSTRUCTION
