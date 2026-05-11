@@ -15,9 +15,7 @@ class PlayerKnowledge : ContextMixinInterface {
     override var enabled: Boolean = false
     override lateinit var section: Section
 
-    override fun canExecute(context: GameInfoInterface) = true
-
-    override fun getText(gameInfo: GameInfoInterface): String = markdown {
+    override fun render(gameInfo: GameInfoInterface): String = markdown {
         h2("Player description (${playerName()})")
         p("${playerName()} appears ${playerGender()}. Either by clothing or other means you can make out that ${player.heOrShe} ${playerFaction()}.")
         p("${playerName()} ${playerMarines()}.")

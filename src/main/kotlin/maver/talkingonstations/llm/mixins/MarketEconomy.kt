@@ -22,47 +22,45 @@ class MarketEconomy : ContextMixinInterface {
     override var enabled: Boolean = false
     override lateinit var section: Section
 
-    override fun canExecute(context: GameInfoInterface): Boolean {
-        val market = context.market ?: return false
-        return market.id !in TosSettings.ignoredMarkets
-    }
+    override fun render(gameInfo: GameInfoInterface): String? {
+        val market = gameInfo.market ?: return null
+        if (market.id in TosSettings.ignoredMarkets) return null
 
-    override fun getText(gameInfo: GameInfoInterface): String = markdown {
-        val market = requireNotNull(gameInfo.market)
+        return markdown {
+            h2("Economy of ${market.name}")
 
-        h2("Economy of ${market.name}")
+            val industries = market.industries.filter { !it.isHidden }
+            if (industries.isNotEmpty()) {
+                h3("Industries and structures")
+                list(industries.map(::industryLine))
+            }
 
-        val industries = market.industries.filter { !it.isHidden }
-        if (industries.isNotEmpty()) {
-            h3("Industries and structures")
-            list(industries.map(::industryLine))
+            h3("Trade posture")
+            list(tradePosture(market))
+
+            shortages(market).takeIf { it.isNotEmpty() }?.let {
+                h3("Current shortages")
+                list(it)
+            }
+
+            surpluses(market).takeIf { it.isNotEmpty() }?.let {
+                h3("Current surpluses")
+                list(it)
+            }
+
+            val events = market.conditions
+                .filter { it.id in MarketLore.ECONOMY_CONDITIONS && it.id != Conditions.FREE_PORT }
+                .filter { it.id !in TosSettings.ignoredConditions }
+                .map(MarketConditionAPI::getName)
+                .filter { it.isNotBlank() }
+
+            if (events.isNotEmpty()) {
+                h3("Ongoing economic events")
+                list(events)
+            }
+
+            line()
         }
-
-        h3("Trade posture")
-        list(tradePosture(market))
-
-        shortages(market).takeIf { it.isNotEmpty() }?.let {
-            h3("Current shortages")
-            list(it)
-        }
-
-        surpluses(market).takeIf { it.isNotEmpty() }?.let {
-            h3("Current surpluses")
-            list(it)
-        }
-
-        val events = market.conditions
-            .filter { it.id in MarketLore.ECONOMY_CONDITIONS && it.id != Conditions.FREE_PORT }
-            .filter { it.id !in TosSettings.ignoredConditions }
-            .map(MarketConditionAPI::getName)
-            .filter { it.isNotBlank() }
-
-        if (events.isNotEmpty()) {
-            h3("Ongoing economic events")
-            list(events)
-        }
-
-        line()
     }
 
     private fun industryLine(industry: Industry): String {

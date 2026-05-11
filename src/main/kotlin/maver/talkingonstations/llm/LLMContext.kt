@@ -17,21 +17,44 @@ open class LLMContext(private val gameInformation: GameInfoInterface) {
     protected val publicMessages: MutableList<Message> = mutableListOf()
 
     /**
+     * Template variables substituted into system instructions and public
+     * message content.
+     */
+    protected open fun getTemplateVariables(): Map<String, String> = buildMap {
+        gameInformation.player?.let { put("{{player}}", it.name.fullName) }
+        gameInformation.npc?.let { put("{{npc}}", it.name.fullName) }
+    }
+
+    private fun applyTemplateVariables(text: String, vars: Map<String, String>): String =
+        vars.entries.fold(text) { acc, (key, value) -> acc.replace(key, value) }
+
+    /**
      * Merges all system instructions into a single string.
      * @param withMixins If true, appends context mixin output after the instructions.
      */
     fun getSystemInstructionsMerged(withMixins: Boolean = true): String {
-        return markdown {
-            h1("SYSTEM INSTRUCTION")
-            +mixins.filter { mixin -> mixin.section == Section.INSTRUCTION && mixin.canExecute(gameInformation) }.joinToString("\n\n")
+        val merged = markdown {
+            h1("BASE INSTRUCTIONS")
+            +renderSection(Section.INSTRUCTION)
             h1("CHARACTER SHEETS")
-            +mixins.filter { mixin -> mixin.section == Section.PERSON && mixin.canExecute(gameInformation) }.joinToString("\n\n")
-            h1("STATE OF THE PERSEAN SECTOR")
-            +mixins.filter { mixin -> mixin.section == Section.SECTOR && mixin.canExecute(gameInformation) }.joinToString("\n\n")
+            +renderSection(Section.PERSON)
             h1("CURRENT LOCATION")
-            +mixins.filter { mixin -> mixin.section == Section.MARKET && mixin.canExecute(gameInformation) }.joinToString("\n\n")
+            +renderSection(Section.MARKET)
+            h1("STATE OF THE PERSEAN SECTOR")
+            +renderSection(Section.SECTOR)
         }
+
+        return applyTemplateVariables(merged, getTemplateVariables())
     }
 
-    fun getPublicMessageCopy() = publicMessages.toList()
+    private fun renderSection(section: Section): String =
+        mixins
+            .filter { it.section == section }
+            .mapNotNull { it.render(gameInformation) }
+            .joinToString("\n")
+
+    fun getPublicMessageCopy(): List<Message> {
+        val vars = getTemplateVariables()
+        return publicMessages.map { it.copy(content = applyTemplateVariables(it.content, vars)) }
+    }
 }

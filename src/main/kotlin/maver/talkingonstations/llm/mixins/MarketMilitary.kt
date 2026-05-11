@@ -13,38 +13,37 @@ import maver.talkingonstations.llm.markdown
 /**
  * Describes the military posture of the current market: garrisoned forces, orbital
  * defenses, and active threats (blockades, pirate and pather activity). Self-silences
- * via [canExecute] when the market has nothing notable to report.
+ * when the market has nothing notable to report.
  */
 class MarketMilitary : ContextMixinInterface {
     override var enabled: Boolean = false
     override lateinit var section: Section
 
-    override fun canExecute(context: GameInfoInterface): Boolean {
-        val market = context.market ?: return false
-        if (market.id in TosSettings.ignoredMarkets) return false
-        return threatConditions(market).isNotEmpty() || defensiveIndustries(market).isNotEmpty()
-    }
-
-    override fun getText(gameInfo: GameInfoInterface): String = markdown {
-        val market = requireNotNull(gameInfo.market)
-
-        h2("Military posture of ${market.name}")
+    override fun render(gameInfo: GameInfoInterface): String? {
+        val market = gameInfo.market ?: return null
+        if (market.id in TosSettings.ignoredMarkets) return null
 
         val defenses = defensiveIndustries(market)
-        if (defenses.isNotEmpty()) {
-            h3("Garrison and defenses")
-            list(defenses.map(::industryLine))
-        }
-
         val threats = threatConditions(market)
             .map(MarketConditionAPI::getName)
             .filter { it.isNotBlank() }
-        if (threats.isNotEmpty()) {
-            h3("Active threats and security events")
-            list(threats)
-        }
+        if (defenses.isEmpty() && threats.isEmpty()) return null
 
-        line()
+        return markdown {
+            h2("Military posture of ${market.name}")
+
+            if (defenses.isNotEmpty()) {
+                h3("Garrison and defenses")
+                list(defenses.map(::industryLine))
+            }
+
+            if (threats.isNotEmpty()) {
+                h3("Active threats and security events")
+                list(threats)
+            }
+
+            line()
+        }
     }
 
     private fun defensiveIndustries(market: MarketAPI): List<Industry> =

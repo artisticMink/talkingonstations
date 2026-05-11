@@ -15,41 +15,39 @@ class MarketLore : ContextMixinInterface {
     override var enabled: Boolean = false
     override lateinit var section: Section
 
-    override fun canExecute(context: GameInfoInterface): Boolean {
-        val market = context.market ?: return false
-        return market.id !in TosSettings.ignoredMarkets
-    }
+    override fun render(gameInfo: GameInfoInterface): String? {
+        val market = gameInfo.market ?: return null
+        if (market.id in TosSettings.ignoredMarkets) return null
 
-    override fun getText(gameInfo: GameInfoInterface): String = markdown {
-        val market = requireNotNull(gameInfo.market)
+        return markdown {
+            h2("Current location: ${market.name}")
+            p(intro(market))
+            p("${market.name} is ${sizeDescriptor(market.size)} and its day-to-day rule is ${stabilityDescriptor(market.stabilityValue)}.")
 
-        h2("Current location: ${market.name}")
-        p(intro(market))
-        p("${market.name} is ${sizeDescriptor(market.size)} and its day-to-day rule is ${stabilityDescriptor(market.stabilityValue)}.")
-
-        planetLore(market)?.let {
-            h3("Canonical lore")
-            p(it)
-        }
-
-        val flavorConditions = market.conditions
-            .filter { it.id !in TosSettings.ignoredConditions }
-            .filter { it.id !in ECONOMY_CONDITIONS && it.id !in MILITARY_CONDITIONS }
-            .map(MarketConditionAPI::getName)
-            .filter { it.isNotBlank() }
-
-        if (flavorConditions.isNotEmpty()) {
-            h3("Local conditions and character")
-            list(flavorConditions)
-        }
-
-        market.admin?.let { admin ->
-            if (!market.isPlayerOwned) {
-                p("The colony is administered by ${admin.name.fullName}.")
+            planetLore(market)?.let {
+                h3("Canonical lore")
+                p(it)
             }
-        }
 
-        line()
+            val flavorConditions = market.conditions
+                .filter { it.id !in TosSettings.ignoredConditions }
+                .filter { it.id !in ECONOMY_CONDITIONS && it.id !in MILITARY_CONDITIONS }
+                .map(MarketConditionAPI::getName)
+                .filter { it.isNotBlank() }
+
+            if (flavorConditions.isNotEmpty()) {
+                h3("Local conditions and character")
+                list(flavorConditions)
+            }
+
+            market.admin?.let { admin ->
+                if (!market.isPlayerOwned) {
+                    p("The colony is administered by ${admin.name.fullName}.")
+                }
+            }
+
+            line()
+        }
     }
 
     private fun intro(market: MarketAPI): String {

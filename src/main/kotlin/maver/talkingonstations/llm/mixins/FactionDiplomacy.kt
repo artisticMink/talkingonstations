@@ -2,6 +2,7 @@ package maver.talkingonstations.llm.mixins
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
+import com.fs.starfarer.api.campaign.RepLevel
 import maver.talkingonstations.TosSettings
 import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
@@ -17,13 +18,10 @@ class FactionDiplomacy : ContextMixinInterface {
     override var enabled: Boolean = false
     override lateinit var section: Section
 
-    override fun canExecute(context: GameInfoInterface): Boolean {
-        return true
-    }
-
-    override fun getText(gameInfo: GameInfoInterface): String = markdown {
+    override fun render(gameInfo: GameInfoInterface): String = markdown {
         val factions = Global.getSector().allFactions.filter { it.id !in excluded }
-        h2("Diplomatic standings between factions of the Persean Sector")
+        h2("Diplomatic standings between factions")
+        p("Relations from worst to best are: vengeful, hostile, inhospitable, suspicious, neutral, favorable, welcoming, friendly, cooperativ.")
         +factions.joinToString(
             separator = "\n\n",
             transform = { faction -> getFactionBlock(faction, factions) }
@@ -32,11 +30,17 @@ class FactionDiplomacy : ContextMixinInterface {
     }
 
     private fun getFactionBlock(faction: FactionAPI, others: List<FactionAPI>): String = markdown {
-        h3(faction.displayName)
-        list(
-            others
-                .filter { it.id != faction.id }
-                .map { other -> "${other.displayName}: ${faction.getRelationshipLevel(other).displayName}" }
-        )
+        val standings = others
+            .filter { it.id != faction.id }
+            .mapNotNull { other ->
+                val level = faction.getRelationshipLevel(other)
+                if (level.displayName == RepLevel.NEUTRAL.displayName) null
+                else "${other.displayName}: ${level.displayName}"
+            }
+
+        if (standings.isNotEmpty()) {
+            h3(faction.displayName)
+            list(standings)
+        }
     }
 }
