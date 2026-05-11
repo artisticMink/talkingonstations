@@ -38,6 +38,5 @@ bin/
 .DS_Store
 
 # Starsector
-/starfarer.api
 /libs
-/Nexerelin/
+/reference
