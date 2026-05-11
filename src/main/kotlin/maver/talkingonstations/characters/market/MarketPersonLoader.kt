@@ -6,12 +6,12 @@ import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Voices
+import maver.talkingonstations.TosClassLoader
 import maver.talkingonstations.TosCsvLoader
 import maver.talkingonstations.TosInspector
-import maver.talkingonstations.TosRegistry
+import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.TosStrings
 import maver.talkingonstations.characters.market.dto.MarketPersonData
-import maver.talkingonstations.characters.market.dto.PersonExtensionData
 import maver.talkingonstations.extensions.toEnumOrDefault
 import org.json.JSONObject
 
@@ -31,16 +31,20 @@ class MarketPersonLoader : TosCsvLoader(
     /**
      * Parses all enabled rows from the CSV, creates [PersonAPI] instances,
      * registers them in their target market's comm directory, and returns
-     * the associated [PersonExtensionData] for each.
+     * the associated [MarketPersonData] for each.
      *
      * @throws Exception if a referenced market ID does not exist.
      */
-    fun load(): Map<PersonAPI, PersonExtensionData> {
+    fun load(): Map<PersonAPI, MarketPersonData> {
+        // Instantiate available person extensions first
+        val personExtensions: List<MarketPersonInterface> = MarketPersonExtensionLoader().load()
+
         return loadCsvRows().mapNotNull { row ->
             val marketPersonData = MarketPersonData(
+                id = row.getString("id"),
                 gender = row.getString("gender").toEnumOrDefault(Gender.ANY),
                 name = row.getString("name"),
-                surename = row.getString("surename"),
+                surname = row.getString("surname"),
                 faction = row.getString("faction"),
                 market = row.getString("market"),
                 rank = row.getString("rank"),
@@ -49,6 +53,7 @@ class MarketPersonLoader : TosCsvLoader(
                 voice = row.getString("voice"),
                 background = row.getString("background"),
                 knowledgeBlacklist = row.getString("knowledgeBlacklist"),
+                personExtension = personExtensions.find { it.id == row.getString("id") },
             )
 
             val existingMarket = Global.getSector().economy.getMarket(marketPersonData.market)
@@ -63,14 +68,16 @@ class MarketPersonLoader : TosCsvLoader(
             existingMarket.commDirectory.removePerson(person)
             existingMarket.removePerson(person)
 
-            val extensionData = getExtensionData(marketPersonData)
-            person.memory.set(TosStrings.MemoryId.CHAT_ENABLED, true)
+            person.memory.set(TosMemoryKeys.CHAT_ENABLED, true)
+            person.memory.set(TosMemoryKeys.IS_MARKET_PERSON, true)
+            person.memory.set(TosMemoryKeys.MARKET_PERSON_DATA, marketPersonData)
+
             existingMarket.commDirectory.addPerson(person)
             existingMarket.addPerson(person)
 
             TosInspector.info("Created ${person.name.fullName} at ${existingMarket.name}", this::class)
 
-            person to extensionData
+            person to marketPersonData
         }.toMap()
     }
 
@@ -84,25 +91,12 @@ class MarketPersonLoader : TosCsvLoader(
             rankId = data.rank ?: Ranks.CITIZEN
             name.apply {
                 first = data.name
-                last = data.surename
+                last = data.surname
             }
             portraitSprite = portraitPath
             voice = data.voice ?: Voices.SPACER
             importance = PersonImportance.MEDIUM
         }
-    }
-
-    private fun getExtensionData(data: MarketPersonData): PersonExtensionData {
-        val mixins = TosRegistry.getContextMixins().filter { it.enabled }
-
-        return PersonExtensionData(
-            background = data.background ?: "",
-            knowledgeBlacklist = data.knowledgeBlacklist
-                ?.split(",")
-                ?.mapNotNull { mixinKey ->
-                    mixins.firstOrNull { mixin -> mixin.getKey() == mixinKey.trim() }
-                }.orEmpty()
-        )
     }
 }
 
