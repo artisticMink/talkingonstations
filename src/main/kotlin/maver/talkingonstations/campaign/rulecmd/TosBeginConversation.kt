@@ -2,14 +2,14 @@ package maver.talkingonstations.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
+import com.fs.starfarer.api.campaign.RuleBasedDialog
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import maver.talkingonstations.TosMemoryKeys
-import maver.talkingonstations.TosStrings
-import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
 import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.httpapi.HttpApiRegistry
+import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
 
 /**
  * Hook, gets executed whenever a conversation with a market contact is started.
@@ -46,6 +46,7 @@ class TosBeginConversation : BaseCommandPlugin() {
         val chatUi = TriChatCustomVisualPanel(
             dialog.visualPanel,
             Global.getSector().playerPerson,
+            person,
         )
 
         chatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
@@ -54,8 +55,6 @@ class TosBeginConversation : BaseCommandPlugin() {
         chatUi.onPlayerQuit = { dialog.dismiss() }
 
         dialog.interactionTarget.activePerson = person
-        //(dialog.plugin as RuleBasedDialog).notifyActivePersonChanged()
-        //dialog.visualPanel.showPersonInfo(person, minimal, showRel)
 
         return true
     }

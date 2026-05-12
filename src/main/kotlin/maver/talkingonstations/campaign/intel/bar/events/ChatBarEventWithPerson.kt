@@ -47,7 +47,8 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
 
         barChatUi = TriChatCustomVisualPanel(
             dialog.visualPanel,
-            Global.getSector().playerPerson
+            Global.getSector().playerPerson,
+            person,
         )
 
         barChatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
