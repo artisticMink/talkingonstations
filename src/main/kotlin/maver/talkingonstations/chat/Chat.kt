@@ -65,9 +65,9 @@ class Chat(
     suspend fun continueChat() {
         if (chatHistory.isEmpty()) return
 
-        val nextMessage: Message = llmService.send(this, modelSettings)
+        val responseMessage: Message = llmService.send(this, modelSettings)
 
-        chatHistory.add(nextMessage)
+        chatHistory.add(responseMessage)
         afterChatResponse?.invoke(chatHistory.last().content)
     }
 

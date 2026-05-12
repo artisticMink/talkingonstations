@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import maver.talkingonstations.TosInspector
 import maver.talkingonstations.llm.dto.ModelSettings
 import maver.talkingonstations.ui.ButtonId
 import maver.talkingonstations.ui.TextArea
@@ -25,12 +26,20 @@ import java.awt.Color
  * UI Panel Plugin
  * 
  */
-class TriChatCustomVisualPanel(visualPanelAPI: VisualPanelAPI, val playerPerson: PersonAPI) : BaseCustomUIPanelPlugin() {
+class TriChatCustomVisualPanel(
+    visualPanelAPI: VisualPanelAPI,
+    val playerPerson: PersonAPI,
+    val npcPerson: PersonAPI,
+) : BaseCustomUIPanelPlugin() {
     private object UIConstants {
         const val CHAT_PANEL_WIDTH = 500f
         const val CHAT_PANEL_HEIGHT = 100f
         const val PORTRAIT_BOX_WIDTH = 500f
         const val PORTRAIT_BOX_HEIGHT = 100f
+        const val NPC_INFO_WIDTH = 300f
+        const val NPC_INFO_HEIGHT = 400f
+        const val NPC_PORTRAIT_SIZE = 128f
+        const val FACTION_CREST_SIZE = 32f
         const val MODEL_SETTINGS_WIDTH = 100f
         const val MODEL_SETTINGS_HEIGHT = 300f
         const val BUTTON_WIDTH = 100f
@@ -55,13 +64,36 @@ class TriChatCustomVisualPanel(visualPanelAPI: VisualPanelAPI, val playerPerson:
 
     init {
         drawUi()
-        val probe = DebugProbe(mainPanel, w = 200f, h = 100f)
-        probe.placeInTL(mainPanel, 50f, 50f)
+
+        //ToDo: Remove debug
+        TosInspector.addVisualProbe(mainPanel)
     }
 
     private fun drawUi() {
-        renderChatBoxBottomLeft(Vector2f(-500f, 500f))
-        renderPortraitBoxBottomRight(Vector2f(0f, 500f))
+        renderChatBoxBottomLeft(Vector2f(-515f, 410f))
+        renderNpcInfoTopRight(Vector2f(00f, 0f))
+        renderPortraitBoxBottomRight(Vector2f(200f, 400f))
+    }
+
+    fun renderNpcInfoTopRight(at: Vector2f = Vector2f(0f, 0f)) {
+        val section: TooltipMakerAPI =
+            mainPanel.createUIElement(UIConstants.NPC_INFO_WIDTH, UIConstants.NPC_INFO_HEIGHT, false)
+        section.position.inTL(at.x, at.y)
+
+        section.addImage(npcPerson.portraitSprite, UIConstants.NPC_PORTRAIT_SIZE, 4f)
+        section.addPara(npcPerson.nameString, 6f)
+
+        val rank = if (!npcPerson.rank.contains("Unknown")) "${npcPerson.rank} — ${npcPerson.post}" else npcPerson.post
+        section.addPara(rank, 0f)
+
+        val crest = npcPerson.faction.crest
+        if (!crest.isNullOrEmpty()) {
+            section.addImage(crest, UIConstants.FACTION_CREST_SIZE, 6f)
+        }
+        section.addPara(npcPerson.faction.displayName, npcPerson.faction.baseUIColor, 0f)
+        section.addRelationshipBar(npcPerson, UIConstants.NPC_INFO_WIDTH - 20f, 8f)
+
+        mainPanel.addUIElement(section)
     }
 
     fun renderChatBoxBottomLeft(at: Vector2f = Vector2f(0f, 0f)) {
@@ -69,11 +101,11 @@ class TriChatCustomVisualPanel(visualPanelAPI: VisualPanelAPI, val playerPerson:
             mainPanel.createUIElement(UIConstants.CHAT_PANEL_WIDTH, UIConstants.CHAT_PANEL_HEIGHT, false)
         bottomLeftSection.position.inTL(at.x, at.y)
 
-        val bottomLeftSectionLabel = bottomLeftSection.addTitle("Tri-Chat (TM)")
-        bottomLeftSectionLabel.position.setSize(100f, 20f)
+        //val bottomLeftSectionLabel = bottomLeftSection.addTitle("Tri-Chat (TM)")
+        //bottomLeftSectionLabel.position.setSize(100f, 20f)
 
         textArea = TextArea(bottomLeftSection)
-        textArea.getPosition()?.inTL(20f,30f)
+        textArea.getPosition()?.inTL(0f,0f)
 
         createButton(
             bottomLeftSection,
