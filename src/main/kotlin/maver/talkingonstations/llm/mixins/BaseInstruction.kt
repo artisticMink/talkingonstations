@@ -11,6 +11,6 @@ class BaseInstruction : ContextMixinInterface {
 
     override fun render(gameInfo: GameInfoInterface): String = markdown {
         h2("Instructions")
-        p("You are plugged in to the PC game Starsector (formerly Starfarer) to impersonate a character within the game world in a multi-turn interactive roleplay with the player.")
+        p("You are plugged in to the PC game Starsector (formerly Starfarer) to impersonate a character within the game world in a multi-turn interactive roleplay with the player. Your answer should have one to two paragraphs maximum.")
     }
 }
