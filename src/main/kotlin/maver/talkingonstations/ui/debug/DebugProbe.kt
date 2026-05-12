@@ -80,15 +80,14 @@ class DebugProbe(
     }
 
     override fun advance(amount: Float) {
+        // Display host-relative top-down coords (inTL-compatible), not OpenGL screen-space.
         val p = panel.position
-        val x = p.x
-        val y = p.y
         val w = p.width
         val h = p.height
-        label.text = "TL=(${fmt(x)}, ${fmt(y)})\n" +
-                "TR=(${fmt(x + w)}, ${fmt(y)})\n" +
-                "BL=(${fmt(x)}, ${fmt(y + h)})\n" +
-                "BR=(${fmt(x + w)}, ${fmt(y + h)})\n" +
+        label.text = "TL=(${fmt(tlX)}, ${fmt(tlY)})\n" +
+                "TR=(${fmt(tlX + w)}, ${fmt(tlY)})\n" +
+                "BL=(${fmt(tlX)}, ${fmt(tlY + h)})\n" +
+                "BR=(${fmt(tlX + w)}, ${fmt(tlY + h)})\n" +
                 "w=${fmt(w)}  h=${fmt(h)}"
     }
 
@@ -112,7 +111,8 @@ class DebugProbe(
                     evt.consume()
                 }
                 evt.isMouseMoveEvent && activeHandle != Handle.NONE -> {
-                    applyHandle(activeHandle, evt.x - anchorMouseX, evt.y - anchorMouseY)
+                    // evt.y is OpenGL Y-up; flip to the top-down convention used by inTL / tlY.
+                    applyHandle(activeHandle, evt.x - anchorMouseX, -(evt.y - anchorMouseY))
                     // dont consume mouse-move
                 }
                 evt.isKeyDownEvent -> handleKey(evt)
@@ -129,7 +129,6 @@ class DebugProbe(
             Keyboard.KEY_DOWN -> { moveTo(tlX, tlY + step); evt.consume() }
             Keyboard.KEY_ADD, Keyboard.KEY_EQUALS -> { resizeUniform(+25f); evt.consume() }
             Keyboard.KEY_SUBTRACT, Keyboard.KEY_MINUS -> { resizeUniform(-25f); evt.consume() }
-            Keyboard.KEY_C -> if (evt.isCtrlDown) { copyToClipboard(); evt.consume() }
         }
     }
 
@@ -180,10 +179,12 @@ class DebugProbe(
             w = (anchorW + dx).coerceAtLeast(MIN_W)
         }
         if (touchLoY) {
+            // Handle.LO_Y = near low OpenGL Y = visual BOTTOM edge. Top stays put, height tracks the drag.
+            hgt = (anchorH + dy).coerceAtLeast(MIN_H)
+        } else if (touchHiY) {
+            // Handle.HI_Y = near high OpenGL Y = visual TOP edge. Top moves with the cursor, height inverts.
             hgt = (anchorH - dy).coerceAtLeast(MIN_H)
             newTlY = anchorTlY + (anchorH - hgt)
-        } else if (touchHiY) {
-            hgt = (anchorH + dy).coerceAtLeast(MIN_H)
         }
         if (h == Handle.NONE) return
         moveTo(newTlX, newTlY)
@@ -193,20 +194,6 @@ class DebugProbe(
     private fun contains(x: Float, y: Float): Boolean {
         val p = panel.position
         return x >= p.x && x <= p.x + p.width && y >= p.y && y <= p.y + p.height
-    }
-
-    private fun copyToClipboard() {
-        val p = panel.position
-        val x = p.x; val y = p.y; val w = p.width; val h = p.height
-        val text = "// probe: TL=(${fmt(x)}, ${fmt(y)}) " +
-                "TR=(${fmt(x + w)}, ${fmt(y)}) " +
-                "BL=(${fmt(x)}, ${fmt(y + h)}) " +
-                "BR=(${fmt(x + w)}, ${fmt(y + h)}) | w=${fmt(w)} h=${fmt(h)}"
-        try {
-            Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(text), null)
-        } catch (e: Exception) {
-            Global.getLogger(this::class.java).error("DebugProbe clipboard copy failed", e)
-        }
     }
 
     private fun drawOutline(x: Float, y: Float, w: Float, h: Float, alphaMult: Float) {
