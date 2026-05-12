@@ -1,5 +1,6 @@
 package maver.talkingonstations.llm
 
+import com.fs.starfarer.api.Global
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import maver.talkingonstations.TosInspector
@@ -26,7 +27,9 @@ class LLMService(
             }
         } catch (exception: HttpApiRequestException) {
             TosInspector.error("Request failed with status code ${exception.statusCode}", this::class )
-            TosInspector.error("Request body: ${exception.message}", this::class )
+            TosInspector.error("Response body: ${exception.responseBody}", this::class )
+
+            if (Global.getSettings().isDevMode) TosInspector.error("Request body: ${exception.requestBody.toString()}", this::class )
 
             return Message(ChatRoles.INFO, "Request failed with status code ${exception.statusCode}. Please retry or consult starsector.log")
         }

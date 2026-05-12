@@ -65,20 +65,21 @@ class OpenrouterHttpApi : HttpApiInterface {
 
         val jsonBody = Json.encodeToString(requestBody)
         val mediaType = "application/json; charset=utf-8".toMediaType()
+        val header = Headers.headersOf(*getAuthHeader(), *getHeaders())
         val request = Request.Builder()
             .url(apiSettings.url.toHttpUrl())
-            .headers(Headers.headersOf(*getAuthHeader(), *getHeaders()))
+            .headers(header)
             .post(jsonBody.toRequestBody(mediaType))
             .build()
 
         val response: Response = client.newCall(request).execute()
         if (response.code != 200) {
             Global.getLogger(javaClass).warn("Request failed with error code ${response.code}")
-            if (Global.getSettings().isDevMode) Global.getLogger(javaClass).warn("${response.body}")
             throw HttpApiRequestException(
-                "Request failed",
-                response.code,
-                jsonBody,
+                message = "Request failed",
+                statusCode = response.code,
+                responseBody = response.body?.string(),
+                requestBody = jsonBody,
             )
         }
 
@@ -106,7 +107,6 @@ class OpenrouterHttpApi : HttpApiInterface {
     private fun getHeaders() = arrayOf(
         "content-type", "application/json",
         "accept", "application/json",
-        "HTTP-Referer", "https://github.com/artisticMink/talkingonstations",
         "X-Title", "Starsector/TalkingOnStations",
     )
 

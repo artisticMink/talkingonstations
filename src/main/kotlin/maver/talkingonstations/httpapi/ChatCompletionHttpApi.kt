@@ -63,9 +63,10 @@ class ChatCompletionHttpApi : HttpApiInterface {
 
         val jsonBody = Json.encodeToString(requestBody)
         val mediaType = "application/json; charset=utf-8".toMediaType()
+        val header = Headers.headersOf(*getAuthHeader(), *getHeaders())
         val request = Request.Builder()
             .url(apiSettings.url.toHttpUrl())
-            .headers(Headers.headersOf(*getAuthHeader(), *getHeaders()))
+            .headers(header)
             .post(jsonBody.toRequestBody(mediaType))
             .build()
 
@@ -74,9 +75,10 @@ class ChatCompletionHttpApi : HttpApiInterface {
             Global.getLogger(javaClass).warn("Request failed with error code ${response.code}")
             if (Global.getSettings().isDevMode) Global.getLogger(javaClass).warn("${response.body}")
             throw HttpApiRequestException(
-                "Request failed",
-                response.code,
-                jsonBody,
+                message = "Request failed",
+                statusCode = response.code,
+                responseBody = response.body?.string(),
+                requestBody = jsonBody,
             )
         }
 
