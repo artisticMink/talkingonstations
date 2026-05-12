@@ -12,7 +12,9 @@ import com.fs.starfarer.api.ui.TextFieldAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
+import org.lazywizard.console.overlay.v2.misc.setOpacity
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 import java.awt.Toolkit
@@ -31,6 +33,8 @@ class TextArea (
     private val fontPath: String = Fonts.ORBITRON_12,
     private val height: Float = 200f,
     private val width: Float = 500f,
+    private val backgroundColor: Color = Color.BLACK,
+    private val borderColor: Color = Color.BLACK
 ): CustomUIPanelPlugin {
     private val textFields: MutableList<TextFieldAPI> = mutableListOf()
     private val state: MutableSet<TextAreaState> = EnumSet.noneOf(TextAreaState::class.java)
@@ -133,7 +137,19 @@ class TextArea (
     }
 
     override fun renderBelow(p0: Float) {
-
+        val p = panel.position
+        GL11.glPushAttrib(GL11.GL_ENABLE_BIT or GL11.GL_CURRENT_BIT)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glColor4f(0f, 0f, 0f, 1f)
+        GL11.glBegin(GL11.GL_QUADS)
+        GL11.glVertex2f(p.x, p.y)
+        GL11.glVertex2f(p.x + p.width, p.y)
+        GL11.glVertex2f(p.x + p.width, p.y + p.height)
+        GL11.glVertex2f(p.x, p.y + p.height)
+        GL11.glEnd()
+        GL11.glPopAttrib()
     }
 
     override fun render(p0: Float) {
@@ -479,8 +495,8 @@ class TextArea (
 
         textField.isLimitByStringWidth = false
         textField.isUndoOnEscape = false
-        textField.setBgColor(Color.BLACK)
-        textField.borderColor = Color.BLACK
+        textField.setBgColor(this.backgroundColor)
+        textField.borderColor = this.borderColor
         textField.isHandleCtrlV = false
 
 
