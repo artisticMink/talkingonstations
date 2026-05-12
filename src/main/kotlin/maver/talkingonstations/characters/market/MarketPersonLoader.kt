@@ -82,7 +82,12 @@ class MarketPersonLoader : TosCsvLoader(
     }
 
     private fun createPerson(data: MarketPersonData): PersonAPI {
-        val portraitPath = Global.getSettings().getSpriteName("characters", data.portrait)
+        val portraitPath = if (data.portrait.contains("/")) {
+            data.portrait
+        } else {
+            Global.getSettings().getSpriteName("characters", data.portrait)
+        }
+
         return Global.getFactory().createPerson().apply {
             id = "tos_${data.name}_${data.hashCode()}"
             setFaction(data.faction)
