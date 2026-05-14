@@ -7,9 +7,9 @@ group = "maver.talkingonstations"
 val starsectorModFolder: String = providers.gradleProperty("starsectorModFolder").get()
 
 plugins {
-    kotlin("jvm") version "2.1.20"
-    kotlin("plugin.serialization") version "1.9.0"
-    id("com.gradleup.shadow") version "9.2.2"
+    kotlin("jvm") version "2.3.21"
+    kotlin("plugin.serialization") version "2.3.21"
+    id("com.gradleup.shadow") version "9.4.1"
     id("application")
 }
 
@@ -31,9 +31,8 @@ tasks.withType<KotlinCompile> {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
+    implementation("com.squareup.okhttp3:okhttp:5.3.2")
 
     // LazyLib will provide kotlin runtime
     compileOnly(kotlin("stdlib"))
