@@ -33,6 +33,7 @@ tasks.withType<KotlinCompile> {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
+    implementation("com.squareup.okhttp3:okhttp-coroutines:5.3.2")
 
     // LazyLib will provide kotlin runtime
     compileOnly(kotlin("stdlib"))

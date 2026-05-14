@@ -1,6 +1,7 @@
 package maver.talkingonstations.llm
 
 import com.fs.starfarer.api.Global
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import maver.talkingonstations.TosInspector
@@ -18,13 +19,11 @@ class LLMService(
 ) {
     suspend fun send(context: LLMContext, model: ModelSettings): Message {
         try {
-            return withContext(Dispatchers.IO) {
-                client.send(
-                    instructions = context.getSystemInstructionsMerged(),
-                    messages = context.getPublicMessageCopy(),
-                    model = model,
-                )
-            }
+            return client.send(
+                instructions = context.getSystemInstructionsMerged(),
+                messages = context.getPublicMessageCopy(),
+                model = model
+            )
         } catch (exception: HttpApiRequestException) {
             TosInspector.error("Request failed with status code ${exception.statusCode}", this::class )
             TosInspector.error("Response body: ${exception.responseBody}", this::class )

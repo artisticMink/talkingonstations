@@ -7,7 +7,7 @@ import maver.talkingonstations.llm.dto.ModelSettings
 interface HttpApiInterface {
     var apiSettings: ApiSettings
 
-    fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message
+    suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message
     fun getName(): String
     fun getModels(): Map<String, String>
     fun getDefaultModelName(): String

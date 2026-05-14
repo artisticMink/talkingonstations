@@ -8,19 +8,22 @@ import com.fs.starfarer.api.ui.ButtonAPI
 import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.CutStyle
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import maver.talkingonstations.TosInspector
+import maver.talkingonstations.chat.ChatRoles
+import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
 import maver.talkingonstations.ui.ButtonId
 import maver.talkingonstations.ui.TextArea
-import maver.talkingonstations.ui.debug.DebugProbe
 import maver.talkingonstations.ui.dto.ButtonData
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * UI Panel Plugin
@@ -51,7 +54,16 @@ class TriChatCustomVisualPanel(
         val BUTTON_TEXT_COLOR = Color(255, 255, 255)
     }
 
-    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private var activeJob: Job? = null
+    private val coroutineErrorHandler = CoroutineExceptionHandler { _, exception ->
+        if (exception is CancellationException) return@CoroutineExceptionHandler
+        TosInspector.error(
+            "A TriChatCustomVisualPanel coroutine failed unexpectedly.\n${exception.stackTraceToString()}",
+            this::class,
+        )
+    }
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob() + coroutineErrorHandler)
+
     lateinit var textArea: TextArea private set
 
     var onPlayerQuit: (() -> Unit)? = null
@@ -159,18 +171,28 @@ class TriChatCustomVisualPanel(
 
             ButtonId.CHAT_SEND_BUTTON -> {
                 val chatInputTextArea: TextArea = buttonId.customData as TextArea
-                scope.launch {
-                    onSendButtonClick?.invoke(chatInputTextArea.getText())
-                    chatInputTextArea.clearText()
-                }
+                val input = chatInputTextArea.getText()
+                chatInputTextArea.clearText()
+
+                launch { onSendButtonClick?.invoke(input) }
             }
 
-            ButtonId.CHAT_RETRY_BUTTON -> {
-                scope.launch {
-                    onRetryButtonClick?.invoke()
-                }
+            ButtonId.CHAT_RETRY_BUTTON -> launch { onRetryButtonClick?.invoke() }
+        }
+    }
+
+    private fun launch(block: suspend () -> Unit) {
+        activeJob = scope.launch {
+            try {
+                buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = false
+                buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = false
+                block()
+            } finally {
+                buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = true
+                buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = true
             }
         }
+
     }
 
     private fun createButton(
@@ -196,9 +218,4 @@ class TriChatCustomVisualPanel(
             buttons[buttonId] = it
         }
     }
-
-    fun cancelScope() {
-        scope.cancel()
-    }
-
 }

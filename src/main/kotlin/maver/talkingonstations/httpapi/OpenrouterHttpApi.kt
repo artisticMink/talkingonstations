@@ -1,6 +1,8 @@
 package maver.talkingonstations.httpapi
 
 import com.fs.starfarer.api.Global
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -22,6 +24,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import okhttp3.coroutines.executeAsync
 
 class OpenrouterHttpApi : HttpApiInterface {
     private val client = OkHttpClient()
@@ -48,7 +51,7 @@ class OpenrouterHttpApi : HttpApiInterface {
             ?: throw Exception("defaultModel '$defaultModelId' not found in models map of $configPath")
     }
 
-    override fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message {
+    override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message {
         val modelId = models[model.name] ?: defaultModelId
         val chatMessages = mutableListOf(OpenrouterMessage.fromInstructions(instructions))
         chatMessages.addAll(OpenrouterMessage.fromMessages(messages))
@@ -72,31 +75,36 @@ class OpenrouterHttpApi : HttpApiInterface {
             .post(jsonBody.toRequestBody(mediaType))
             .build()
 
-        val response: Response = client.newCall(request).execute()
-        if (response.code != 200) {
-            Global.getLogger(javaClass).warn("Request failed with error code ${response.code}")
-            throw HttpApiRequestException(
-                message = "Request failed",
-                statusCode = response.code,
-                responseBody = response.body?.string(),
-                requestBody = jsonBody,
-            )
-        }
+        val call = client.newCall(request)
 
-        val responseBodyString = response.body?.string() ?: "{\"error\":\"Empty response body\"}"
+        return call.executeAsync().use { response ->
+            withContext(Dispatchers.IO) {
+                if (response.code != 200) {
+                    Global.getLogger(javaClass).warn("Request failed with error code ${response.code}")
+                    throw HttpApiRequestException(
+                        message = "Request failed",
+                        statusCode = response.code,
+                        responseBody = response.body.string(),
+                        requestBody = jsonBody,
+                    )
+                }
 
-        val jsonResponse: JsonElement = Json.parseToJsonElement(responseBodyString)
-        val errorElem = jsonResponse.jsonObject["error"]
-        if (errorElem != null && errorElem != JsonNull) {
-            Global.getLogger(javaClass).error("OpenRouter API returned error: $jsonResponse")
-            return Message(ChatRoles.INFO, "Could not get an answer. Check starsector.log for more information.")
-        }
+                val responseBodyString = response.body.string() ?: "{\"error\":\"Empty response body\"}"
 
-        return try {
-            Json.decodeFromString<OpenrouterResponseBody>(responseBodyString).getLastMessage()
-        } catch (exception: Exception) {
-            Global.getLogger(javaClass).error("Error parsing response body: $exception")
-            Message(ChatRoles.INFO, "Could not process the answer. Check starsector.log for more information.")
+                val jsonResponse: JsonElement = Json.parseToJsonElement(responseBodyString)
+                val errorElem = jsonResponse.jsonObject["error"]
+                if (errorElem != null && errorElem != JsonNull) {
+                    Global.getLogger(javaClass).error("OpenRouter API returned error: $jsonResponse")
+                    return@withContext Message(ChatRoles.INFO, "Could not get an answer. Check starsector.log for more information.")
+                }
+
+                return@withContext try {
+                    Json.decodeFromString<OpenrouterResponseBody>(responseBodyString).getLastMessage()
+                } catch (exception: Exception) {
+                    Global.getLogger(javaClass).error("Error parsing response body: $exception")
+                    Message(ChatRoles.INFO, "Could not process the answer. Check starsector.log for more information.")
+                }
+            }
         }
     }
 
