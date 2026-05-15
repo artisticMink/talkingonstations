@@ -74,11 +74,11 @@ class ChatCompletionHttpApi : HttpApiInterface {
             .build()
 
         val call = client.newCall(request)
+
         return call.executeAsync().use { response ->
             withContext(Dispatchers.IO) {
                 if (response.code != 200) {
                     Global.getLogger(javaClass).warn("Request failed with error code ${response.code}")
-                    if (Global.getSettings().isDevMode) Global.getLogger(javaClass).warn("${response.body}")
                     throw HttpApiRequestException(
                         message = "Request failed",
                         statusCode = response.code,
