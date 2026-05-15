@@ -6,4 +6,5 @@ object TosMemoryKeys {
     const val IS_MARKET_PERSON = "\$tosIsMarketPerson"
     const val IS_BAR_PERSON = "\$tosIsBarPerson"
     const val CHAT_ENABLED = "\$tosChatEnabled"
+    const val MEMORY_STORAGE = "\$tosMemoryStorage"
 }

@@ -2,11 +2,11 @@ package maver.talkingonstations.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
-import com.fs.starfarer.api.campaign.RuleBasedDialog
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import maver.talkingonstations.TosMemoryKeys
+import maver.talkingonstations.TosSettings
 import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
@@ -16,7 +16,6 @@ import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
  * @see /data/campaign/rules.csv
  */
 class TosBeginConversation : BaseCommandPlugin() {
-
     override fun execute(
         ruleId: String?,
         dialog: InteractionDialogAPI?,
@@ -41,8 +40,6 @@ class TosBeginConversation : BaseCommandPlugin() {
         chat.beforeContinueAsPlayer = { message -> dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) }
         chat.afterChatResponse = { message -> dialog.textPanel.addPara(message) }
 
-        //val personExtensionData: PersonExtensionData = TosRegistry.getMarketPersons()[person] ?: PersonExtensionData()
-
         val chatUi = TriChatCustomVisualPanel(
             dialog.visualPanel,
             Global.getSector().playerPerson,
@@ -52,7 +49,16 @@ class TosBeginConversation : BaseCommandPlugin() {
         chatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
         chatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
         chatUi.onSendButtonClick = { message -> chat.continueChatAsPlayer(message) }
-        chatUi.onPlayerQuit = { dialog.dismiss() }
+        chatUi.onPlayerQuit = {
+            // Persistent character memory
+            // Assumes the summary mixin is active, so
+            // we have the previous summary somewhere within the context
+            if (TosSettings.enableCharacterMemory) {
+                chat.summarizeToNpcMemory()
+            }
+
+            dialog.dismiss()
+        }
 
         dialog.interactionTarget.activePerson = person
 

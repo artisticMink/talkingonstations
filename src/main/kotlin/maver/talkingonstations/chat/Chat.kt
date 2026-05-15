@@ -1,9 +1,15 @@
 package maver.talkingonstations.chat
 
+import com.fs.starfarer.api.EveryFrameScript
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
+import kotlinx.coroutines.launch
 import maver.talkingonstations.InspectableInterface
+import maver.talkingonstations.TosBackgroundScope
 import maver.talkingonstations.TosInspector
+import maver.talkingonstations.TosMemoryKeys
+import maver.talkingonstations.TosStrings
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
 import maver.talkingonstations.llm.LLMService
@@ -103,6 +109,35 @@ class Chat(
     fun getChatMessages(): List<Message> = chatHistory.toList()
     fun getPlayer(): PersonAPI = player
     fun getNpc(): PersonAPI = npc
+
+    /**
+     * Summarizes the chat thus far
+     *
+     * Starts a background request, then propagates back to main thread to update the person memory.
+     */
+    fun summarizeToNpcMemory() {
+            addPlayerMessage(TosStrings.Prompt.SUMMARY)
+            TosBackgroundScope.scope.launch {
+                val summary = llmService.send(this@Chat, modelSettings)
+                if (summary.role == ChatRoles.INFO) {
+                    // ToDo: Add user-facing error message
+                    TosInspector.error(
+                        "Post-chat summary failed for ${npc.nameString}",
+                        this::class,
+                    )
+                } else {
+                    Global.getSector().addTransientScript(object : EveryFrameScript {
+                        private var done = false
+                        override fun isDone(): Boolean = done
+                        override fun runWhilePaused(): Boolean = true
+                        override fun advance(p0: Float) {
+                            npc.memory.set(TosMemoryKeys.MEMORY_STORAGE, summary.content)
+                            done = true
+                        }
+                    })
+                }
+            }
+    }
 
     private fun endsWithNpcMessage() = chatHistory.isNotEmpty() && chatHistory.last().role == ChatRoles.ASSISTANT
     private fun endsWithPlayerMessage() = chatHistory.isNotEmpty() && chatHistory.last().role == ChatRoles.USER

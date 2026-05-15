@@ -21,7 +21,7 @@ class LLMService(
         try {
             return client.send(
                 instructions = context.getSystemInstructionsMerged(),
-                messages = context.getPublicMessageCopy(),
+                messages = context.getPublicMessageCopy().filter { message -> message.role !== ChatRoles.INFO },
                 model = model
             )
         } catch (exception: HttpApiRequestException) {

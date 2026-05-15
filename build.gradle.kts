@@ -35,7 +35,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("com.squareup.okhttp3:okhttp-coroutines:5.3.2")
 
-    // LazyLib will provide kotlin runtime
+    // LazyLib will provide kotlin runtime and coroutines
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
 }

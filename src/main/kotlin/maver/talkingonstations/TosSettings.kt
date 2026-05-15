@@ -1,7 +1,11 @@
 package maver.talkingonstations
 
+import com.fs.starfarer.api.Global
 import lunalib.lunaSettings.LunaSettings
 
+/**
+ * Wrapper for [LunaSettings]
+ */
 object TosSettings {
     private const val ID = TosStrings.ModConfig.ID
 
@@ -20,6 +24,8 @@ object TosSettings {
     val guardrailsEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_guardrailsEnabled") ?: true
     val maxTokens: Int get() = LunaSettings.getInt(ID, "tos_maxTokens") ?: 1000
     val reasoningEffort: String get() = LunaSettings.getString(ID, "tos_reasoningEffort") ?: "medium"
+    val enableCharacterMemory: Boolean get() = LunaSettings.getBoolean(ID, "tos_persistentMemory") ?: false
+    val characterMemoryBudget: Int get() = LunaSettings.getInt(ID, "tos_persistentMemoryBudget") ?: 0
 
     private fun commaSet(key: String): Set<String> =
         (LunaSettings.getString(ID, key) ?: "")
