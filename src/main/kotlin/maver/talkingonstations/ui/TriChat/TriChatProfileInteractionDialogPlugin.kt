@@ -7,8 +7,8 @@ import com.fs.starfarer.api.combat.EngagementResultAPI
 
 class TriChatProfileInteractionDialogPlugin : InteractionDialogPlugin {
     private companion object {
-        const val WIDTH = 600f
-        const val HEIGHT = 400f
+        const val WIDTH = 800f
+        const val HEIGHT = 600f
     }
 
     override fun init(dialog: InteractionDialogAPI?) {

@@ -14,8 +14,7 @@ class TriChatAbility: BaseDurationAbility() {
 
     override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean) {
         tooltip?.addTitle("Open TriChat")
-        tooltip?.addPara("Check your TriChat Profile", 10f)
-        //super.createTooltip(tooltip, expanded)
+        tooltip?.addPara("View and edit your character profile.", 10f)
     }
 
     override fun activateImpl() {
