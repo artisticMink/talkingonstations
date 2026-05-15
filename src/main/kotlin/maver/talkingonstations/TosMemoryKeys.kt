@@ -7,4 +7,5 @@ object TosMemoryKeys {
     const val IS_BAR_PERSON = "\$tosIsBarPerson"
     const val CHAT_ENABLED = "\$tosChatEnabled"
     const val MEMORY_STORAGE = "\$tosMemoryStorage"
+    const val PLAYER_PROFILE = "\$tosPlayerProfile"
 }

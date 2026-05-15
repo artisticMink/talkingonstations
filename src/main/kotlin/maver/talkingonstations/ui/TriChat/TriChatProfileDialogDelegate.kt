@@ -12,6 +12,7 @@ import com.fs.starfarer.api.ui.CustomPanelAPI
 import com.fs.starfarer.api.ui.CutStyle
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import maver.talkingonstations.TosInspector
+import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.ui.TextArea
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
@@ -36,6 +37,7 @@ class TriChatProfileDialogDelegate(
     private val panelPlugin = ProfilePanelPlugin()
 
     private val player: PersonAPI = Global.getSector().playerPerson
+    private lateinit var playerBackgroundTextArea: TextArea
 
     override fun init(panel: CustomPanelAPI, cb: DialogCallbacks) {
         callbacks = cb
@@ -73,7 +75,7 @@ class TriChatProfileDialogDelegate(
         val section: TooltipMakerAPI = panel.createUIElement(400f - PADDING, 600f - PADDING, false)
         section.addTitle("Background").position.inTL(0f, 0f)
 
-        val textArea = TextArea(
+        playerBackgroundTextArea = TextArea(
             section,
             rows = 20,
             maxRows = 50,
@@ -81,7 +83,7 @@ class TriChatProfileDialogDelegate(
             height = 480 - PADDING,
         )
 
-        textArea.getPosition()?.inTL(0f,20f)
+        playerBackgroundTextArea.getPosition()?.inTL(0f,20f)
 
         section.position.inTL(at.x, at.y)
         panel.addUIElement(section)
@@ -100,6 +102,7 @@ class TriChatProfileDialogDelegate(
     private inner class ProfilePanelPlugin : BaseCustomUIPanelPlugin() {
         override fun buttonPressed(buttonId: Any?) {
             if (buttonId == CLOSE_BUTTON_ID) {
+                player.memory.set(TosMemoryKeys.PLAYER_PROFILE, playerBackgroundTextArea.getText())
                 callbacks?.dismissDialog()
             }
         }
