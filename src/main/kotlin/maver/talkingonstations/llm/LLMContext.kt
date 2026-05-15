@@ -1,6 +1,8 @@
 package maver.talkingonstations.llm
 
+import com.fs.starfarer.api.Global
 import maver.talkingonstations.TosRegistry
+import maver.talkingonstations.TosSettings
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.enum.Section
@@ -23,6 +25,8 @@ open class LLMContext(private val gameInformation: GameInfoInterface) {
     protected open fun getTemplateVariables(): Map<String, String> = buildMap {
         gameInformation.player?.let { put("{{player}}", it.name.fullName) }
         gameInformation.npc?.let { put("{{npc}}", it.name.fullName) }
+        put("{{summaryBudget}}", TosSettings.characterMemoryBudget.toString())
+        put("{{sectorDate}}", Global.getSector().clock.cycleString)
     }
 
     private fun applyTemplateVariables(text: String, vars: Map<String, String>): String =
