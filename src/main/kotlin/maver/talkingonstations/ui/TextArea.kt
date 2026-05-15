@@ -136,24 +136,50 @@ class TextArea (
 
     }
 
+    /**
+     * Render black background
+     */
     override fun renderBelow(p0: Float) {
         val p = panel.position
+
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT or GL11.GL_CURRENT_BIT)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+
         GL11.glColor4f(0f, 0f, 0f, 1f)
         GL11.glBegin(GL11.GL_QUADS)
+        drawBoundaries(p)
+        GL11.glEnd()
+
+        GL11.glPopAttrib()
+    }
+
+    /**
+     * Render border
+     */
+    override fun render(p0: Float) {
+        val p = panel.position
+
+        GL11.glPushAttrib(GL11.GL_ENABLE_BIT or GL11.GL_CURRENT_BIT)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+
+        val borderColor = Misc.getGrayColor();
+        GL11.glColor4f(borderColor.red.toFloat(), borderColor.green.toFloat(), borderColor.blue.toFloat(), borderColor.alpha.toFloat())
+        GL11.glBegin(GL11.GL_LINE_LOOP)
+        drawBoundaries(p)
+        GL11.glEnd()
+
+        GL11.glPopAttrib()
+    }
+
+    private fun drawBoundaries(p: PositionAPI) {
         GL11.glVertex2f(p.x, p.y)
         GL11.glVertex2f(p.x + p.width, p.y)
         GL11.glVertex2f(p.x + p.width, p.y + p.height)
         GL11.glVertex2f(p.x, p.y + p.height)
-        GL11.glEnd()
-        GL11.glPopAttrib()
-    }
-
-    override fun render(p0: Float) {
-
     }
 
     override fun advance(p0: Float) {
@@ -614,6 +640,4 @@ class TextArea (
                     event.y < bounds.bottomRight.y
         }
     }
-
-
 }
