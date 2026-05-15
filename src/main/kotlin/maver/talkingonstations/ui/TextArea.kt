@@ -77,7 +77,7 @@ class TextArea (
      * LF separates lines
      */
     fun getText(from: Int = 0, to: Int = textFields.lastIndex): String {
-        val text = textFields.subList(from, to + 1).joinToString("\n") { it.text }
+        val text = textFields.subList(from, to + 1).joinToString("") { it.text.ifEmpty { "\n\n" } }
         return text.trimEnd('\n')
     }
 
