@@ -12,7 +12,7 @@ class CommsInstruction : ContextMixinInterface {
 
     override fun render(gameInfo: GameInfoInterface): String? {
         val npc = gameInfo.npc ?: return null
-        if (!npc.memoryWithoutUpdate.getBoolean(TosMemoryKeys.MARKET_PERSON_DATA)) return null
+        if (!npc.memoryWithoutUpdate.getBoolean(TosMemoryKeys.IS_MARKET_PERSON)) return null
 
         return markdown {
             p("In this scene your character, {{npc}}, is connected with the {{player}}'s fleet currently in orbit via a comms relay. A sophisticated sci-fi zoom call. ")

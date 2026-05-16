@@ -28,7 +28,7 @@ class SelfKnowledge: ContextMixinInterface {
     }
 
     private fun renderFor(person: PersonAPI, gameInfo: GameInfoInterface): String = markdown {
-        val marketPersonData: MarketPersonData? = person.memoryWithoutUpdate[TosMemoryKeys.MARKET_PERSON_DATA] as? MarketPersonData
+        val marketPersonData: MarketPersonData? = TosRegistry.getMarketPersons()[person.id]
         val personExtension: MarketPersonInterface? = marketPersonData?.personExtension
 
         h2("${person.name.fullName}")

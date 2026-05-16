@@ -26,7 +26,7 @@ object TosRegistry {
     /**
      * Unique person tied to a specific market and listed in that markets comm directory
      */
-    private lateinit var marketPersons: Map<PersonAPI, MarketPersonData>
+    private lateinit var marketPersons: Map<String, MarketPersonData>
 
     fun initialize() {
         contextMixins = ContextMixinLoader().load()

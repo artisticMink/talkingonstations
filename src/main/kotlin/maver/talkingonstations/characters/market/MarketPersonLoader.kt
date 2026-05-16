@@ -1,6 +1,8 @@
 package maver.talkingonstations.characters.market
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CommDirectoryAPI
+import com.fs.starfarer.api.campaign.CommDirectoryEntryAPI
 import com.fs.starfarer.api.campaign.PersonImportance
 import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.characters.PersonAPI
@@ -35,11 +37,17 @@ class MarketPersonLoader : TosCsvLoader(
      *
      * @throws Exception if a referenced market ID does not exist.
      */
-    fun load(): Map<PersonAPI, MarketPersonData> {
+    fun load(): Map<String, MarketPersonData> {
         // Instantiate available person extensions first
         val personExtensions: List<MarketPersonInterface> = MarketPersonExtensionLoader().load()
 
         return loadCsvRows().mapNotNull { row ->
+            val extension = personExtensions.find { it.id == row.getString("id") }
+            if (extension != null && !extension.canUse()) {
+                // Skip market person when optional conditions aren't met
+                return@mapNotNull null
+            }
+
             val marketPersonData = MarketPersonData(
                 id = row.getString("id"),
                 gender = row.getString("gender").toEnumOrDefault(Gender.ANY),
@@ -53,7 +61,7 @@ class MarketPersonLoader : TosCsvLoader(
                 voice = row.getString("voice"),
                 background = row.getString("background"),
                 knowledgeBlacklist = row.getString("knowledgeBlacklist"),
-                personExtension = personExtensions.find { it.id == row.getString("id") },
+                personExtension = extension,
             )
 
             val existingMarket = Global.getSector().economy.getMarket(marketPersonData.market)
@@ -63,21 +71,20 @@ class MarketPersonLoader : TosCsvLoader(
 
             val person = createPerson(marketPersonData)
 
-            // Remove person if already exists, basically an update.
-            // This will cause issues as soon as there's persistent data in person memory
-            existingMarket.commDirectory.removePerson(person)
-            existingMarket.removePerson(person)
+            val existingPerson: CommDirectoryEntryAPI? = existingMarket.commDirectory.getEntryForPerson(person.id)
+            if (existingPerson != null) {
+                person.memory.set(TosMemoryKeys.CHAT_ENABLED, true)
+                person.memory.set(TosMemoryKeys.IS_MARKET_PERSON, true)
 
-            person.memory.set(TosMemoryKeys.CHAT_ENABLED, true)
-            person.memory.set(TosMemoryKeys.IS_MARKET_PERSON, true)
-            person.memory.set(TosMemoryKeys.MARKET_PERSON_DATA, marketPersonData)
+                existingMarket.commDirectory.addPerson(person)
+                existingMarket.addPerson(person)
 
-            existingMarket.commDirectory.addPerson(person)
-            existingMarket.addPerson(person)
+                TosInspector.info("Created ${person.name.fullName} at ${existingMarket.name}", this::class)
+            } else {
+                TosInspector.info("Found ${person.name.fullName} at ${existingMarket.name}", this::class)
+            }
 
-            TosInspector.info("Created ${person.name.fullName} at ${existingMarket.name}", this::class)
-
-            person to marketPersonData
+            person.id to marketPersonData
         }.toMap()
     }
 

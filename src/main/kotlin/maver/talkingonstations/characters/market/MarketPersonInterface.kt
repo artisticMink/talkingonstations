@@ -7,19 +7,26 @@ package maver.talkingonstations.characters.market
  */
 interface MarketPersonInterface {
     /**
-     * Unique id for this MarketPerson
+     * Must return a id for this MarketPerson
      */
     var id: String
 
     /**
-     * Additional context for [maver.talkingonstations.llm.mixins.SelfKnowledge]
+     * Can return result of a conditions check
+     *
+     * When false, character won't be added to the market
+     */
+    fun canUse(): Boolean = true
+
+    /**
+     * Can return additional context for [maver.talkingonstations.llm.mixins.SelfKnowledge]
      *
      * Appended after character instructions.
      */
     fun getInstructions(): String
 
     /**
-     * Additional context for [maver.talkingonstations.llm.mixins.SelfKnowledge]
+     * Can return additional context for [maver.talkingonstations.llm.mixins.SelfKnowledge]
      *
      * Appended after character background.
      */
