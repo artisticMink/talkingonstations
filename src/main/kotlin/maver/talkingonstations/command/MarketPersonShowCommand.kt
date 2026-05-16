@@ -25,11 +25,17 @@ class MarketPersonShowCommand : BaseCommand {
             return BaseCommand.CommandResult.SUCCESS
         }
 
-        val (person, data) = entry
-        val market = person.market
-            ?: Global.getSector().economy.getMarket(data.market)
+        val data = entry.value
+
+        val market = Global.getSector().economy.getMarket(data.market)
         if (market == null) {
             Console.showMessage("Market ${data.market} not found")
+            return BaseCommand.CommandResult.SUCCESS
+        }
+
+        val person = market.peopleCopy.find { it.id == entry.key }
+        if (person == null) {
+            Console.showMessage("Person ${entry.key} not registered at ${market.name}")
             return BaseCommand.CommandResult.SUCCESS
         }
 

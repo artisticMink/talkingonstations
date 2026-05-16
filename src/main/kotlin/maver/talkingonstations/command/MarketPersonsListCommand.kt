@@ -9,12 +9,11 @@ class MarketPersonsListCommand: BaseCommand {
     override fun runCommand(
         p0: String,
         p1: BaseCommand.CommandContext
-    ): BaseCommand.CommandResult? {
-        Console.showMessage("Loaded context providers:")
+    ): BaseCommand.CommandResult {
+        Console.showMessage("Loaded market persons:")
         Console.showMessage(
             TosRegistry.getMarketPersons().toList().joinToString {
-                val person: PersonAPI = it.first
-                "${person.name.fullName} -> ${person.market?.id ?: "unknown"}\n"
+                "$it\n"
             }
         )
 
