@@ -5,7 +5,6 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import kotlinx.coroutines.launch
-import maver.talkingonstations.InspectableInterface
 import maver.talkingonstations.TosBackgroundScope
 import maver.talkingonstations.TosInspector
 import maver.talkingonstations.TosMemoryKeys
@@ -32,7 +31,7 @@ class Chat(
     private val player: PersonAPI,
     private val npc: PersonAPI,
     private val market: MarketAPI,
-) : LLMContext(GameInfo(player, npc, market)), InspectableInterface {
+) : LLMContext(GameInfo(player, npc, market)) {
     var beforeContinueAsPlayer: ((message: String) -> Unit)? = null
     var afterChatResponse: ((message: String) -> Unit)? = null
 
@@ -41,10 +40,6 @@ class Chat(
     private val llmService: LLMService = LLMService(api)
 
     var modelSettings: ModelSettings = ModelSettings.create(api.getDefaultModelName())
-
-    init {
-        TosInspector.register(this)
-    }
 
     /**
      * Sends [content] as a player message and requests an LLM response.
@@ -141,15 +136,4 @@ class Chat(
 
     private fun endsWithNpcMessage() = chatHistory.isNotEmpty() && chatHistory.last().role == ChatRoles.ASSISTANT
     private fun endsWithPlayerMessage() = chatHistory.isNotEmpty() && chatHistory.last().role == ChatRoles.USER
-
-    override fun canInspect(): List<String> {
-        return listOf("chatHistory", "instructions")
-    }
-
-    override fun inspect(item: String): String {
-        return when (item) {
-            "chatHistory" -> getPublicMessageCopy().joinToString("\n\n")
-            else -> ""
-        }
-    }
 }
