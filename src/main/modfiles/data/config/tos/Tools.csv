@@ -1,0 +1,2 @@
+fullyQualifiedClassName,description,parameters,enabled
+maver.talkingonstations.llm.tools.EndConversation,End the conversation. Equivalent to hanging up or leaving the room.,"{""last_message"":""The last message the player will see before the scene ends.""}",true

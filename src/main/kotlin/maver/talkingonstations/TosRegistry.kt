@@ -7,6 +7,8 @@ import maver.talkingonstations.characters.archetypes.RandomPersonLoader
 import maver.talkingonstations.characters.market.dto.MarketPersonData
 import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.ContextMixinLoader
+import maver.talkingonstations.llm.ToolInterface
+import maver.talkingonstations.llm.ToolLoader
 
 /**
  * Singleton providing instances of Tos-related data
@@ -24,6 +26,11 @@ object TosRegistry {
     private lateinit var archetypes: List<CharacterArchetypeInterface>
 
     /**
+     * A list of available tools for tool calling
+     */
+    private lateinit var tools: List<ToolInterface>
+
+    /**
      * Unique person tied to a specific market and listed in that markets comm directory
      */
     private lateinit var marketPersons: Map<String, MarketPersonData>
@@ -32,12 +39,12 @@ object TosRegistry {
         contextMixins = ContextMixinLoader().load()
         archetypes = RandomPersonLoader().load()
         marketPersons = MarketPersonLoader().load()
+        tools = ToolLoader().load()
     }
 
     fun isInitialized() = ::contextMixins.isInitialized
 
     fun getContextMixins() = contextMixins
-    fun getContextMixin(key: String): ContextMixinInterface? = contextMixins.find { it.getKey() == key }
     fun reloadContextMixins() { contextMixins = ContextMixinLoader().load() }
     fun enableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = true
     fun disableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = false
@@ -48,4 +55,6 @@ object TosRegistry {
     fun disableArchetype(key: String) = archetypes.find { it.getKey() == key }?.enabled = false
 
     fun getMarketPersons() = marketPersons
+
+    fun getTools() = tools
 }
