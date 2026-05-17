@@ -39,6 +39,7 @@ class TosBeginConversation : BaseCommandPlugin() {
         )
         chat.beforeContinueAsPlayer = { message -> dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) }
         chat.afterChatResponse = { message -> dialog.textPanel.addPara(message) }
+        chat.onProgress = { message -> dialog.textPanel.addPara(message.content, Misc.getHighlightColor()) }
 
         val chatUi = TriChatCustomVisualPanel(
             dialog.visualPanel,

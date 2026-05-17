@@ -7,13 +7,16 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonObject
+import maver.talkingonstations.TosInspector
 import maver.talkingonstations.TosStrings
 import maver.talkingonstations.chat.ChatRoles
 import maver.talkingonstations.httpapi.body.OpenrouterMessage
 import maver.talkingonstations.httpapi.body.OpenrouterReasoning
 import maver.talkingonstations.httpapi.body.OpenrouterRequestBody
 import maver.talkingonstations.httpapi.body.OpenrouterResponseBody
+import maver.talkingonstations.httpapi.body.ToolCallDefinition
 import maver.talkingonstations.httpapi.exception.HttpApiRequestException
+import maver.talkingonstations.llm.ToolInterface
 import maver.talkingonstations.llm.dto.ApiSettings
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
@@ -34,6 +37,7 @@ class OpenrouterHttpApi : HttpApiInterface {
     private val defaultModelId: String
     private val defaultModelName: String
 
+    override var supportsToolCalling: Boolean = false
     override lateinit var apiSettings: ApiSettings
 
     init {
@@ -51,7 +55,7 @@ class OpenrouterHttpApi : HttpApiInterface {
             ?: throw Exception("defaultModel '$defaultModelId' not found in models map of $configPath")
     }
 
-    override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message {
+    override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message {
         val modelId = models[model.name] ?: defaultModelId
         val chatMessages = mutableListOf(OpenrouterMessage.fromInstructions(instructions))
         chatMessages.addAll(OpenrouterMessage.fromMessages(messages))
@@ -64,7 +68,10 @@ class OpenrouterHttpApi : HttpApiInterface {
             topP = model.topP,
             topK = model.topK,
             reasoning = OpenrouterReasoning(model.reasoningEffort),
+            tools = if (supportsToolCalling) ToolCallDefinition.fromTools(tools).ifEmpty { null } else emptyList(),
         )
+
+        if (Global.getSettings().isDevMode) TosInspector.debug(requestBody.toString(), this::class)
 
         val jsonBody = Json.encodeToString(requestBody)
         val mediaType = "application/json; charset=utf-8".toMediaType()
@@ -108,7 +115,7 @@ class OpenrouterHttpApi : HttpApiInterface {
         }
     }
 
-    override fun getName() = "OpenRouter"
+    override fun getName() = "Openrouter"
     override fun getModels(): Map<String, String> = models
     override fun getDefaultModelName(): String = defaultModelName
 

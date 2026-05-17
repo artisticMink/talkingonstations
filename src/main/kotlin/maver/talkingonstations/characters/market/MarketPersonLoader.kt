@@ -72,7 +72,7 @@ class MarketPersonLoader : TosCsvLoader(
             val person = createPerson(marketPersonData)
 
             val existingPerson: CommDirectoryEntryAPI? = existingMarket.commDirectory.getEntryForPerson(person.id)
-            if (existingPerson != null) {
+            if (existingPerson == null) {
                 person.memory.set(TosMemoryKeys.CHAT_ENABLED, true)
                 person.memory.set(TosMemoryKeys.IS_MARKET_PERSON, true)
 

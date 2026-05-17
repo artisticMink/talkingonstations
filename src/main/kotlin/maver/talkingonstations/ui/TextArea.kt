@@ -487,28 +487,44 @@ class TextArea (
     }
 
     private fun insertText(text: String, fromIndex: Int = 0): Int {
-        //ToDo: Rework
-        /**
-         * var currentIndex = fromIndex
-         *         for (line in text.lines()) {
-         *             if (currentIndex >= maxRows) break
-         *
-         *             val charsPerRow = Global.getSettings().computeStringWidth(line, fontPath).toInt() - 1
-         *             stringShouldWrap()
-         *             for (segment in line.chunked(charsPerRow)) {
-         *                 if (currentIndex > textFields.lastIndex && textFields.size < maxRows) {
-         *                     appendEmptyTextField()
-         *                 }
-         *
-         *                 textFields[currentIndex].text = segment
-         *                 currentIndex++
-         *             }
-         *         }
-         *
-         *         return currentIndex
-         */
+        var currentIndex = fromIndex
+        val lines = text.replace("\r\n", "\n").replace('\r', '\n').split('\n')
 
-        return 0
+        outer@ for ((lineNo, line) in lines.withIndex()) {
+            var remaining = line
+
+            while (true) {
+                if (currentIndex > textFields.lastIndex) {
+                    if (textFields.size >= maxRows) break@outer
+                    addRow()
+                }
+
+                val field = textFields[currentIndex]
+                val sb = StringBuilder(field.text)
+
+                var consumed = 0
+                while (consumed < remaining.length) {
+                    sb.append(remaining[consumed])
+                    // Keep at least one char per row in case of overwide glyphs
+                    if (stringShouldWrap(sb.toString()) && sb.length > 1) {
+                        sb.deleteCharAt(sb.length - 1)
+                        break
+                    }
+                    consumed++
+                }
+
+                field.text = sb.toString()
+                remaining = remaining.substring(consumed)
+
+                if (remaining.isEmpty()) break
+
+                currentIndex++
+            }
+
+            if (lineNo < lines.lastIndex) currentIndex++
+        }
+
+        return currentIndex
     }
 
     private fun appendEmptyTextField(): TextFieldAPI {

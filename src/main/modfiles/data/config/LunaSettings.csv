@@ -1,16 +1,26 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
-tos_serviceHeader,Service Header,Header,API,,,,,Service
-tos_api,Service,Radio,Openrouter,"Chat-Completion, Openrouter",,,,Service
-tos_apiUrl,API Url,String,https://openrouter.ai/api/v1/chat/completions,,The endpoint to connect to.,,,Service
-tos_apiKey,API Key,String,"",,An authentification token provided by a service. Usually required.,,,Service
-tos_ignoredFactions,Ignored Factions,String,"neutral, remnant, omega, mercenary, ML_bounty, scavengers, sleeper, poor, derelict, nex_derelict, threat, dweller, player, nex_temp",,Factions ignored during content creation,,,Service
-tos_ignoredMarkets,Ignored Markets,String,"",,"Market IDs ignored during content creation (comma-separated).",,,Service
-tos_ignoredConditions,Ignored Market Conditions,String,"",,"Market condition IDs filtered out of market context (comma-separated).",,,Service
+tos_serviceHeader,Service Header,Header,API,,,,,API
+tos_api,Service,Radio,Openrouter,"Chat-Completion, Openrouter",,,,API
+tos_apiUrl,API Url,String,https://openrouter.ai/api/v1/chat/completions,,The endpoint to connect to.,,,API
+tos_apiKey,API Key,String,"",,An authentification token provided by a service. Usually required.,,,API
+tos_ignoredFactions,Ignored Factions,String,"neutral, remnant, omega, mercenary, ML_bounty, scavengers, sleeper, poor, derelict, nex_derelict, threat, dweller, player, nex_temp",,Factions ignored during content creation,,,API
+tos_ignoredMarkets,Ignored Markets,String,"",,"Market IDs ignored during content creation (comma-separated).",,,API
+tos_ignoredConditions,Ignored Market Conditions,String,"",,"Market condition IDs filtered out of market context (comma-separated).",,,API
+tos_settingsText,-Note-,Text,Affects all saves.,,,,,Settings
+tos_guardrailsEnabled,Add Guardrails,Boolean,true,,Add Guardrails to every message. The guardrails aim to keep the model on track and allow for content appropriate for Starsectors dystopian setting while restricting certain topics. Effectivity varies depending on the model. Enabled by default.,,,Settings
+tos_maxTokens,Max Tokens,Int,1000,,The max amount of tokens that are returned in an answer. A token is roughly 0.8 words. Thinking models may need considerably more tokens as the thinking process also takes from this budget.,0,10000,Settings
+tos_persistentMemory,Persistent Memory,Boolean,false,,"When enabled, prompts the model to create a summary of the conversation along with a in-game timestamp. The summary is persisted. ",,,Settings
+tos_persistentMemoryBudget,Memory Budget in words,Int,600,,The amount of words the model can spend on character memory.,200,10000,Settings
+tos_reasoningEffort,Reasoning Effort,Radio,medium,"none,minimal,low,medium,high,xhigh,max",Only affects models capable of reasoning. Common values are medium or high.,,,Settings
+tos_toolHeader,Tool Calling Header,Header,Tool Calling,,,,,Tool Calling
+tos_toolText,-Note-,Text,Tool Calls allow the model to directly access Starsector via a set of pre-defined tools during conversations. [This may happen without player consent] - 9 out of 10 REDACTED recommend turning this setting on.,,,,,Tool Calling
+tos_enableToolCalls,Enable Tool Calling,Boolean,false,,Enable use of allowed tools.,,,Tool Calling
+tos_enableToolEndConversation,End Conversations,Boolean,false,,NPCs may decide to end a comms call or won't accept comm requests.,,,Tool Calling
+tos_enableToolBuyCommodity,Buy Commodities,Boolean,false,,Allow certain NPCs and archetypes to buy commodities from you,,,Tool Calling
+tos_enableToolSellCommodity,Sell Commodities,Boolean,false,,Allow certain Npcs and archetypes to sell commodities to you,,,Tool Calling
+tos_enableToolPutBountyOnPlayer,Create a bounty,Boolean,false,,NPCs may decide to put a bounty on your fleet depending on their perceived wealth and your fleet value.,,,Tool Calling
+tos_enableToolNexDiplomacy,Read the sector intel feed,Boolean,false,,Allow NPCs access the Nexerelin Intel screen.,,,Tool Calling
 tos_samplerText,-Note-,Text,Default settings for newly created characters. Can be changed on a per-character basis. Character settings persist across saves and [take precedence] over the defaults listed here.,,,,,Sampler
 tos_temperature,Temperature,Double,1,,"A lower temperature makes it more likely that the conversation stays on track but might get repetitive, a higher temperature allows for a more diverse output that's prone to incoherence.",0,2,Sampler
 tos_topK,Top k,Double,0,,Limits the pool of words in a conversation to the K highest candidates.,0,500,Sampler
 tos_topP,Top p,Double,0.95,,Limits the pool of words in a conversation to those of whose probabilities sum up to P.,0,1,Sampler
-tos_settingsText,-Note-,Text,Affects all saves.,,,,,Sampler
-tos_guardrailsEnabled,Add Guardrails,Boolean,true,,Add Guardrails to every message. The guardrails aim to keep the model on track and allow for content appropriate for Starsectors dystopian setting while restricting certain topics. Effectivity varies depending on the model. Enabled by default.,,,Settings
-tos_maxTokens,Max Tokens,Int,1000,,The max amount of tokens that are returned in an answer. A token is roughly 0.8 words. Thinking models may need considerably more tokens as the thinking process also takes from this budget.,0,25000,Settings
-tos_reasoningEffort,Reasoning Effort,Radio,medium,"none,minimal,low,medium,high,xhigh",Only affects models capable of reasoning. Common values are medium or high.,,,Settings

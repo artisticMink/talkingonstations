@@ -4,8 +4,8 @@ tos.mixin.toggle,maver.talkingonstations.command.MixinToggleCommand,talkingonsta
 tos.mixin.reload,maver.talkingonstations.command.MixinReloadCommand,talkingonstations,"",""
 tos.person.random.toggle,maver.talkingonstations.command.PersonTypesToggleCommand,talkingonstations,"",""
 tos.person.random.reload,maver.talkingonstations.command.PersonTypesReloadCommand,talkingonstations,"",""
-tos.inspect,maver.talkingonstations.command.InspectCommand,talkingonstations,<className> [item],
 tos.person.random.list,maver.talkingonstations.command.PersonTypesListCommand,talkingonstations,,
 tos.person.market.list,maver.talkingonstations.command.MarketPersonsListCommand,talkingonstations,,
 tos.mixin.show,maver.talkingonstations.command.MixinShowCommand,talkingonstations,<mixin> [market_id],
 tos.person.market.show,maver.talkingonstations.command.MarketPersonShowCommand,talkingonstations,<id>,Render the merged system prompt for a MarketPerson (looked up by id) as the LLM would see it.
+tos.tools.list,maver.talkingonstations.command.ToolCallingListCommand,talkingonstations,,List loaded tool-calling tools and their enabled state.

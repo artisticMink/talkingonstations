@@ -18,6 +18,9 @@ open class LLMContext(private val gameInformation: GameInfoInterface) {
 
     protected val publicMessages: MutableList<Message> = mutableListOf()
 
+    /** Live game state, exposed so the tool loop can hand it to `execute`. */
+    val gameInfo: GameInfoInterface get() = gameInformation
+
     /**
      * Template variables substituted into system instructions and public
      * message content.

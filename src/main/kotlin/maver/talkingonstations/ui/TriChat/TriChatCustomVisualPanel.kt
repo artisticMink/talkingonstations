@@ -15,8 +15,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import maver.talkingonstations.TosInspector
-import maver.talkingonstations.chat.ChatRoles
-import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
 import maver.talkingonstations.ui.ButtonId
 import maver.talkingonstations.ui.TextArea

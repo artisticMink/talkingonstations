@@ -13,6 +13,7 @@ import maver.talkingonstations.httpapi.body.ChatCompletionRequestBody
 import maver.talkingonstations.httpapi.body.ChatCompletionResponseBody
 import maver.talkingonstations.httpapi.body.ChatCompletionsMessage
 import maver.talkingonstations.httpapi.exception.HttpApiRequestException
+import maver.talkingonstations.llm.ToolInterface
 import maver.talkingonstations.llm.dto.ApiSettings
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
@@ -33,6 +34,7 @@ class ChatCompletionHttpApi : HttpApiInterface {
     private val defaultModelId: String
     private val defaultModelName: String
 
+    override var supportsToolCalling: Boolean = false
     override lateinit var apiSettings: ApiSettings
 
     init {
@@ -50,7 +52,7 @@ class ChatCompletionHttpApi : HttpApiInterface {
             ?: throw Exception("defaultModel '$defaultModelId' not found in models map of $configPath")
     }
 
-    override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message {
+    override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message {
         val modelId = models[model.name] ?: defaultModelId
         val chatMessages = mutableListOf(ChatCompletionsMessage.fromInstructions(instructions))
         chatMessages.addAll(ChatCompletionsMessage.fromMessages(messages))

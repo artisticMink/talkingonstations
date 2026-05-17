@@ -1,11 +1,13 @@
 package maver.talkingonstations.httpapi
 
+import maver.talkingonstations.llm.ToolInterface
 import maver.talkingonstations.llm.dto.ApiSettings
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
 
 interface HttpApiInterface {
     var apiSettings: ApiSettings
+    var supportsToolCalling: Boolean
 
     /**
      * Part of a suspended function chain.
@@ -34,7 +36,7 @@ interface HttpApiInterface {
      * @param messages - A list of message blocks, the chat history
      * @param model - Model id and its settings
      */
-    suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings): Message
+    suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message
 
     /**
      * Must return an identifier that lines up with the identifier provided by [maver.talkingonstations.TosSettings]

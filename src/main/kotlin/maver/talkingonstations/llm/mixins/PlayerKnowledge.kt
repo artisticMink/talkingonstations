@@ -20,7 +20,7 @@ class PlayerKnowledge : ContextMixinInterface {
         val playerBackground = player.memoryWithoutUpdate.getString(TosMemoryKeys.PLAYER_PROFILE)
 
         h2("${playerName()}")
-        if(playerBackground.isNotEmpty()) {
+        if(playerBackground != null && playerBackground.isNotEmpty()) {
             h3("Background")
             p(playerBackground)
         }

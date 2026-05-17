@@ -21,4 +21,9 @@ enum class ChatRoles {
      * Should not be sent to the API client.
      */
     INFO,
+
+    /**
+     * Indicates a tool calling response
+     */
+    TOOL
 }

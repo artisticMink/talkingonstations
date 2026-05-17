@@ -19,6 +19,7 @@ class HttpApiLoader : TosClassLoader<HttpApiInterface>(
 
     override fun configureInstance(instance: HttpApiInterface, row: JSONObject) {
         instance.apiSettings = apiSettings
+        instance.supportsToolCalling = row.optBoolean("supportsToolCalling")
         TosInspector.info("Created HTTP API ${instance.getName()}", this::class)
     }
 

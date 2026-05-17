@@ -2,11 +2,7 @@ package maver.talkingonstations
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.ui.CustomPanelAPI
-import com.fs.starfarer.api.ui.TooltipMakerAPI
-import maver.talkingonstations.characters.market.MarketPersonLoader
 import maver.talkingonstations.ui.debug.DebugProbe
-import java.lang.ref.WeakReference
-import kotlin.collections.removeAll
 import kotlin.reflect.KClass
 
 object TosInspector {
@@ -14,12 +10,12 @@ object TosInspector {
         Global.getLogger(classRef.java).info(message)
     }
 
-    fun error(message: String, classRef: KClass<*>) {
-        Global.getLogger(classRef.java).error(message)
+    fun error(message: String?, classRef: KClass<*>, exception: Exception? = null) {
+        Global.getLogger(classRef.java).error(message, exception)
     }
 
     fun debug(message: String, classRef: KClass<*>) {
-        Global.getLogger(classRef.java).debug(message)
+        Global.getLogger(classRef.java).info(message)
     }
 
     fun addVisualProbe(panel: CustomPanelAPI, tlX: Float = 0f, tlY: Float = 0f) {

@@ -27,6 +27,9 @@ object TosSettings {
     val enableCharacterMemory: Boolean get() = LunaSettings.getBoolean(ID, "tos_persistentMemory") ?: false
     val characterMemoryBudget: Int get() = LunaSettings.getInt(ID, "tos_persistentMemoryBudget") ?: 0
 
+    val isToolCallingEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_enableToolCalls") ?: false
+    val showToolCallingIndicator: Boolean get() = LunaSettings.getBoolean(ID, "tos_showToolCalling") ?: false
+
     private fun commaSet(key: String): Set<String> =
         (LunaSettings.getString(ID, key) ?: "")
             .split(',')

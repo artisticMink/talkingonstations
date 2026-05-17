@@ -39,6 +39,7 @@ abstract class TosClassLoader<T : Any>(
      */
     private fun loadInstance(row: JSONObject): T? {
         val className = getClassName(row)
+        if (className.isBlank()) return null
 
         return try {
             val loadedClass = classLoader.loadClass(className)

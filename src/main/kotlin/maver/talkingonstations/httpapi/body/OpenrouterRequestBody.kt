@@ -17,12 +17,18 @@ data class OpenrouterRequestBody(
     val topP: Float,
     @SerialName("top_k")
     val topK: Float,
+    val tools: List<ToolCallDefinition>? = null,
 )
 
 @Serializable
 data class OpenrouterMessage(
     val role: String,
-    val content: String,
+    // Nullable: an assistant message that only requests tools carries no text.
+    val content: String? = null,
+    @SerialName("tool_calls")
+    val toolCalls: List<OpenrouterToolCallResult>? = null,
+    @SerialName("tool_call_id")
+    val toolCallId: String? = null,
 ) {
     companion object {
         fun fromInstructions(instructions: String) =
@@ -31,7 +37,23 @@ data class OpenrouterMessage(
         fun fromMessages(messages: List<Message>): List<OpenrouterMessage> =
             messages
                 .filter { it.role != ChatRoles.SYSTEM && it.role != ChatRoles.INFO }
-                .map { OpenrouterMessage(role = it.role.name.lowercase(), content = it.content) }
+                .map { message ->
+                    when (message.role) {
+                        // Tool Calling
+                        ChatRoles.TOOL -> OpenrouterMessage(
+                            role = "tool",
+                            content = message.content,
+                            toolCallId = message.toolCallId,
+                        )
+                        else -> OpenrouterMessage(
+                            role = message.role.name.lowercase(),
+                            content = message.content,
+                            toolCalls = message.toolCalls
+                                .ifEmpty { null }
+                                ?.map(OpenrouterToolCallResult::fromDomain),
+                        )
+                    }
+                }
     }
 }
 

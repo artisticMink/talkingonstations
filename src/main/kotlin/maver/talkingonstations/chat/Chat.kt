@@ -34,6 +34,7 @@ class Chat(
 ) : LLMContext(GameInfo(player, npc, market)) {
     var beforeContinueAsPlayer: ((message: String) -> Unit)? = null
     var afterChatResponse: ((message: String) -> Unit)? = null
+    var onProgress: ((message: Message) -> Unit) = {}
 
     private val chatHistory get() = publicMessages
     private val api = HttpApiRegistry.getSelectedApi()
@@ -59,17 +60,17 @@ class Chat(
 
     /**
      * Requests the next LLM response and appends it to the chat history.
-     * Invokes [afterChatResponse]
+     * Invokes [afterChatResponse], [onProgress]
      *
      * Note: This function performs a network call.
      */
     suspend fun continueChat() {
         if (chatHistory.isEmpty()) return
 
-        val responseMessage: Message = llmService.send(this, modelSettings)
+        val responseMessage: Message = llmService.send(this, modelSettings, onProgress)
 
         chatHistory.add(responseMessage)
-        afterChatResponse?.invoke(chatHistory.last().content)
+        chatHistory.lastOrNull()?.let { afterChatResponse?.invoke(it.content) }
     }
 
     /**
