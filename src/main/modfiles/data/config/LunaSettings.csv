@@ -15,12 +15,8 @@ tos_reasoningEffort,Reasoning Effort,Radio,medium,"none,minimal,low,medium,high,
 tos_toolHeader,Tool Calling Header,Header,Tool Calling,,,,,Tool Calling
 tos_toolText,-Note-,Text,Tool Calls allow the model to directly access Starsector via a set of pre-defined tools during conversations. [This may happen without player consent] - 9 out of 10 REDACTED recommend turning this setting on.,,,,,Tool Calling
 tos_enableToolCalls,Enable Tool Calling,Boolean,false,,Enable use of allowed tools.,,,Tool Calling
-tos_enableToolEndConversation,End Conversations,Boolean,false,,NPCs may decide to end a comms call or won't accept comm requests.,,,Tool Calling
-tos_enableToolBuyCommodity,Buy Commodities,Boolean,false,,Allow certain NPCs and archetypes to buy commodities from you,,,Tool Calling
-tos_enableToolSellCommodity,Sell Commodities,Boolean,false,,Allow certain Npcs and archetypes to sell commodities to you,,,Tool Calling
-tos_enableToolPutBountyOnPlayer,Create a bounty,Boolean,false,,NPCs may decide to put a bounty on your fleet depending on their perceived wealth and your fleet value.,,,Tool Calling
-tos_enableToolNexDiplomacy,Read the sector intel feed,Boolean,false,,Allow NPCs access the Nexerelin Intel screen.,,,Tool Calling
 tos_samplerText,-Note-,Text,Default settings for newly created characters. Can be changed on a per-character basis. Character settings persist across saves and [take precedence] over the defaults listed here.,,,,,Sampler
 tos_temperature,Temperature,Double,1,,"A lower temperature makes it more likely that the conversation stays on track but might get repetitive, a higher temperature allows for a more diverse output that's prone to incoherence.",0,2,Sampler
 tos_topK,Top k,Double,0,,Limits the pool of words in a conversation to the K highest candidates.,0,500,Sampler
 tos_topP,Top p,Double,0.95,,Limits the pool of words in a conversation to those of whose probabilities sum up to P.,0,1,Sampler
+tos_showToolCalling,Notify on tool calls,Boolean,false,,Shows a notification whenever the model requests a tool call.,,,Tool Calling

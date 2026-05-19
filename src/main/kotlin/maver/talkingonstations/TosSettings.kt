@@ -1,6 +1,5 @@
 package maver.talkingonstations
 
-import com.fs.starfarer.api.Global
 import lunalib.lunaSettings.LunaSettings
 
 /**
