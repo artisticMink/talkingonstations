@@ -1,12 +1,11 @@
 package maver.talkingonstations.chat
 
-import com.fs.starfarer.api.EveryFrameScript
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import kotlinx.coroutines.launch
 import maver.talkingonstations.TosBackgroundScope
 import maver.talkingonstations.TosInspector
+import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.TosStrings
 import maver.talkingonstations.httpapi.HttpApiRegistry
@@ -122,15 +121,7 @@ class Chat(
                         this::class,
                     )
                 } else {
-                    Global.getSector().addTransientScript(object : EveryFrameScript {
-                        private var done = false
-                        override fun isDone(): Boolean = done
-                        override fun runWhilePaused(): Boolean = true
-                        override fun advance(p0: Float) {
-                            npc.memory.set(TosMemoryKeys.MEMORY_STORAGE, summary.content)
-                            done = true
-                        }
-                    })
+                    TosEveryFrameScriptQueue.add { npc.memory.set(TosMemoryKeys.MEMORY_STORAGE, summary.content) }
                 }
             }
     }

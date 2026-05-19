@@ -15,6 +15,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import maver.talkingonstations.TosInspector
+import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.llm.dto.ModelSettings
 import maver.talkingonstations.ui.ButtonId
 import maver.talkingonstations.ui.TextArea
@@ -182,12 +183,16 @@ class TriChatCustomVisualPanel(
     private fun launch(block: suspend () -> Unit) {
         activeJob = scope.launch {
             try {
-                buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = false
-                buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = false
+                TosEveryFrameScriptQueue.add {
+                    buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = false
+                    buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = false
+                }
                 block()
             } finally {
-                buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = true
-                buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = true
+                TosEveryFrameScriptQueue.add {
+                    buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = true
+                    buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = true
+                }
             }
         }
 

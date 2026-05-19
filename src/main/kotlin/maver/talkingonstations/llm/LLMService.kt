@@ -18,7 +18,6 @@ import maver.talkingonstations.llm.dto.ToolResult
  * request -> response -> want tool?    yes -> run tool -> append result -> repeat
  *                                      no  -> return message
  *
- * Only returns the last message of a message chain that involved tool calling.
  */
 class LLMService(
     private val client: HttpApiInterface
@@ -27,53 +26,66 @@ class LLMService(
         const val MAX_TOOL_ITERATIONS = 5
     }
 
-    suspend fun send(context: LLMContext, model: ModelSettings, onProgress: (Message) -> Unit = {}): Message {
+    suspend fun send(
+        context: LLMContext,
+        model: ModelSettings,
+        onProgress: (Message) -> Unit = {}
+    ): Message {
         val tools = TosRegistry.getTools().filter { it.enabled }
         val history = context.getPublicMessageCopy().filter { message -> message.role !== ChatRoles.INFO }
         val receivedMessages = mutableListOf<Message>()
 
         try {
-            repeat(MAX_TOOL_ITERATIONS) { iteration ->
-                if (Global.getSettings().isDevMode) TosInspector.debug("Starting send round-triop - iteration $iteration", this::class)
-                val response = client.send(
-                    instructions = context.getSystemInstructionsMerged(),
-                    messages = history + receivedMessages,
-                    model = model,
-                    tools = if (!TosSettings.isToolCallingEnabled || iteration == MAX_TOOL_ITERATIONS - 1) emptyList() else tools,
-                )
+                repeat(MAX_TOOL_ITERATIONS) { iteration ->
+                    val toolBudgetExhausted = iteration == MAX_TOOL_ITERATIONS - 1
 
-                receivedMessages += response
-
-                if (response.role == ChatRoles.INFO) return receivedMessages.last()
-
-                // No requested tool calls, treat it as regular request
-                if (response.toolCalls.isEmpty()) return receivedMessages.last()
-
-                for (call in response.toolCalls) {
-                    if (Global.getSettings().isDevMode) TosInspector.debug("Model requested tool: ${call.name}", this::class)
-                    // Propagate tool progress back to user
-                    if (TosSettings.showToolCallingIndicator)
-                        onProgress(Message(
-                            role = ChatRoles.INFO,
-                            content = "{{npc}} is using ${call.name}",
-                            toolCallId = call.id
-                        ))
-
-                    // Actual hook into Starsector code
-                    val result = runTool(tools, call.name, call.arguments, context)
-                    receivedMessages += Message(
-                        role = ChatRoles.TOOL,
-                        content = result.text,
-                        toolCallId = call.id,
+                    if (Global.getSettings().isDevMode) TosInspector.debug(
+                        "Answering - iteration ${iteration + 1}",
+                        this::class
                     )
 
-                    // A tool call that results in the ended the message chain forcefully.
-                    // For example ending the conversation.
-                    if (result.terminal) return receivedMessages.last()
-                }
-            }
+                    val response = client.send(
+                        instructions = context.getSystemInstructionsMerged(),
+                        messages = history + receivedMessages,
+                        model = model,
+                        tools = if (!TosSettings.isToolCallingEnabled || toolBudgetExhausted) emptyList() else tools,
+                    )
 
-            return receivedMessages.last()
+                    receivedMessages += response
+
+                    // Soft error from HTTP API
+                    if (response.role == ChatRoles.INFO) return response
+
+                    // If there are no tool calls, the loop ends here in its first iteration
+                    if (response.toolCalls.isEmpty() || toolBudgetExhausted) return finalReply(response)
+
+                    for (call in response.toolCalls) {
+                        if (Global.getSettings().isDevMode) TosInspector.debug(
+                            "Model requested tool: ${call.name}",
+                            this::class
+                        )
+
+                        // Propagate tool progress back to user
+                        if (TosSettings.showToolCallingIndicator)
+                            onProgress(
+                                Message(
+                                    role = ChatRoles.INFO,
+                                    content = "{{npc}} is requesting ${call.name}",
+                                    toolCallId = call.id,
+                                )
+                            )
+
+                        // Actual hook into Starsector code
+                        val result = runTool(tools, call.name, call.arguments, context)
+                        receivedMessages += Message(
+                            role = ChatRoles.TOOL,
+                            content = result.text,
+                            toolCallId = call.id,
+                        )
+                    }
+                }
+
+            return Message(ChatRoles.INFO, "Please retry.")
         } catch (exception: HttpApiRequestException) {
             TosInspector.error("Request failed with status code ${exception.statusCode}", this::class)
             TosInspector.error("Response body: ${exception.responseBody}", this::class)
@@ -91,6 +103,12 @@ class LLMService(
             )
         }
     }
+
+    private fun finalReply(message: Message): Message {
+        if (message.content.isBlank()) return Message(ChatRoles.INFO, "The model returned nothing. Please retry.")
+        return message.copy(content = message.content, toolCalls = emptyList())
+    }
+
 
     private fun runTool(
         tools: List<ToolInterface>,

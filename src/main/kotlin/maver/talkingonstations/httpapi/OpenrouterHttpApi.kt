@@ -26,11 +26,17 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import okhttp3.coroutines.executeAsync
+import java.util.concurrent.TimeUnit
 
 class OpenrouterHttpApi : HttpApiInterface {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        // Fixes one instance of lazy class loading triggering SecurityException
+        .retryOnConnectionFailure(false)
+        // OpenRouter can be a bit of a slug sometimes
+        .connectTimeout(30000, TimeUnit.MILLISECONDS)
+        .readTimeout(30000, TimeUnit.MILLISECONDS)
+        .build()
     private val configPath = "${TosStrings.Path.CONFIG_FOLDER}api/openrouter.json"
 
     private val models: Map<String, String>
@@ -71,7 +77,7 @@ class OpenrouterHttpApi : HttpApiInterface {
             tools = if (supportsToolCalling) ToolCallDefinition.fromTools(tools).ifEmpty { null } else emptyList(),
         )
 
-        if (Global.getSettings().isDevMode) TosInspector.debug(requestBody.toString(), this::class)
+        //if (Global.getSettings().isDevMode) TosInspector.debug(requestBody.toString(), this::class)
 
         val jsonBody = Json.encodeToString(requestBody)
         val mediaType = "application/json; charset=utf-8".toMediaType()

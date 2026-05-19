@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
+import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.TosSettings
 import maver.talkingonstations.chat.Chat
@@ -37,9 +38,10 @@ class TosBeginConversation : BaseCommandPlugin() {
             person,
             person.market
         )
-        chat.beforeContinueAsPlayer = { message -> dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) }
-        chat.afterChatResponse = { message -> dialog.textPanel.addPara(message) }
-        chat.onProgress = { message -> dialog.textPanel.addPara(message.content, Misc.getHighlightColor()) }
+
+        chat.beforeContinueAsPlayer = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) } }
+        chat.afterChatResponse = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message) } }
+        chat.onProgress = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message.content, Misc.getHighlightColor()) } }
 
         val chatUi = TriChatCustomVisualPanel(
             dialog.visualPanel,
