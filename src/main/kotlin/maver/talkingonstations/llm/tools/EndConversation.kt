@@ -12,10 +12,6 @@ class EndConversation : ToolInterface {
 
     override fun getName(): String = "end_conversation"
 
-    /**
-     * Terminal tool: its `last_message` argument *is* the NPC's closing line,
-     * so the loop stops here with no further model round trip.
-     */
     override fun execute(params: Map<String, String>, game: GameInfoInterface): ToolResult =
-        ToolResult(text = params["last_message"].orEmpty(), terminal = true)
+        ToolResult(text = params["last_message"].orEmpty())
 }
