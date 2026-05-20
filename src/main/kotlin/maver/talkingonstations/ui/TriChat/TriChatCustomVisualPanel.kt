@@ -158,6 +158,9 @@ class TriChatCustomVisualPanel(
         mainPanel.addUIElement(bottomRightSection)
     }
 
+    fun getSendButton(): ButtonAPI? =  buttons[ButtonId.CHAT_SEND_BUTTON]
+    fun getRetryButton(): ButtonAPI? =  buttons[ButtonId.CHAT_RETRY_BUTTON]
+
     override fun buttonPressed(buttonId: Any?) {
         super.buttonPressed(buttonId)
 
@@ -184,14 +187,14 @@ class TriChatCustomVisualPanel(
         activeJob = scope.launch {
             try {
                 TosEveryFrameScriptQueue.add {
-                    buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = false
-                    buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = false
+                    getSendButton()?.isEnabled = false
+                    getRetryButton()?.isEnabled = false
                 }
                 block()
             } finally {
                 TosEveryFrameScriptQueue.add {
-                    buttons[ButtonId.CHAT_SEND_BUTTON]?.isEnabled = true
-                    buttons[ButtonId.CHAT_RETRY_BUTTON]?.isEnabled = true
+                    getSendButton()?.isEnabled = true
+                    getRetryButton()?.isEnabled = true
                 }
             }
         }

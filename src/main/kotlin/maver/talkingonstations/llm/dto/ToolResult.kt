@@ -5,10 +5,5 @@ package maver.talkingonstations.llm.dto
  */
 data class ToolResult(
     val text: String,
-    val type: ToolResultType = ToolResultType.DEFAULT
+    val forceEnd: Boolean = false,
 )
-
-enum class ToolResultType {
-    DEFAULT,
-    UI
-}

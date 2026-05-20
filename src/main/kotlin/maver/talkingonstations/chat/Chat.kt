@@ -1,5 +1,6 @@
 package maver.talkingonstations.chat
 
+import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import kotlinx.coroutines.launch
@@ -11,9 +12,11 @@ import maver.talkingonstations.TosStrings
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
 import maver.talkingonstations.llm.LLMService
+import maver.talkingonstations.llm.dto.ConversationUi
 import maver.talkingonstations.llm.dto.GameInfo
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
+import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
 
 /**
  * A conversation session between [player] and [npc] at a given [market].
@@ -30,7 +33,9 @@ class Chat(
     private val player: PersonAPI,
     private val npc: PersonAPI,
     private val market: MarketAPI,
-) : LLMContext(GameInfo(player, npc, market)) {
+    dialog: InteractionDialogAPI? = null,
+    chatUi: TriChatCustomVisualPanel? = null
+) : LLMContext(GameInfo(player, npc, market), if (dialog != null && chatUi != null) ConversationUi(dialog, chatUi) else null) {
     var beforeContinueAsPlayer: ((message: String) -> Unit)? = null
     var afterChatResponse: ((message: String) -> Unit)? = null
     var onProgress: ((message: Message) -> Unit) = {}
@@ -66,9 +71,9 @@ class Chat(
     suspend fun continueChat() {
         if (chatHistory.isEmpty()) return
 
-        val responseMessage: Message = llmService.send(this, modelSettings, onProgress)
+        val responseMessage: List<Message> = llmService.send(this, modelSettings, onProgress)
 
-        chatHistory.add(responseMessage)
+        chatHistory.addAll(responseMessage)
         chatHistory.lastOrNull()?.let { afterChatResponse?.invoke(it.content) }
     }
 
@@ -113,7 +118,7 @@ class Chat(
     fun summarizeToNpcMemory() {
             addPlayerMessage(TosStrings.Prompt.SUMMARY)
             TosBackgroundScope.scope.launch {
-                val summary = llmService.send(this@Chat, modelSettings)
+                val summary = llmService.send(this@Chat, modelSettings).last()
                 if (summary.role == ChatRoles.INFO) {
                     // ToDo: Add user-facing error message
                     TosInspector.error(

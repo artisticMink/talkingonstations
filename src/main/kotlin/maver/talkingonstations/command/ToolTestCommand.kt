@@ -8,6 +8,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.llm.ToolInterface
+import maver.talkingonstations.llm.dto.ConversationUi
 import maver.talkingonstations.llm.dto.GameInfo
 import maver.talkingonstations.llm.dto.ToolResult
 import org.lazywizard.console.BaseCommand
@@ -54,7 +55,7 @@ class ToolTestCommand : BaseCommand {
                 else -> error("Expected a JSON object or array of objects")
             }
             val params = entries.associate { (key, value) -> key to value.jsonPrimitive.content }
-            tool.execute(params, game)
+            tool.execute(params, game, null)
         } catch (exception: Exception) {
             Console.showMessage("${exception.javaClass.simpleName}: ${exception.message}")
             return BaseCommand.CommandResult.SUCCESS

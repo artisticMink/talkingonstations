@@ -33,15 +33,6 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
 
         options.clearOptions()
 
-        val chat = Chat(
-            Global.getSector().playerPerson,
-            person,
-            market
-        )
-
-        chat.beforeContinueAsPlayer = ::addPlayerDialogOption
-        chat.afterChatResponse = ::addNpcDialogOption
-
         dialog.showVisualPanel()
         dialog.visualPanel.showPersonInfo(person, true)
 
@@ -50,6 +41,17 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
             Global.getSector().playerPerson,
             person,
         )
+
+        val chat = Chat(
+            Global.getSector().playerPerson,
+            person,
+            market,
+            dialog,
+            barChatUi
+        )
+
+        chat.beforeContinueAsPlayer = ::addPlayerDialogOption
+        chat.afterChatResponse = ::addNpcDialogOption
 
         barChatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
         barChatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }

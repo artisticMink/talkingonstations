@@ -5,11 +5,13 @@ import com.fs.starfarer.api.campaign.econ.CommoditySpecAPI
 import maver.talkingonstations.llm.ToolInterface
 import maver.talkingonstations.llm.ToolParamInterface
 import maver.talkingonstations.llm.ToolUtils
+import maver.talkingonstations.llm.dto.ConversationUi
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.ToolResult
 import maver.talkingonstations.llm.markdown
 
 class SectorPriceCheckForCommodity : ToolInterface {
+    override val isTransient: Boolean = false
     override var enabled = false
     override lateinit var description: String
     override lateinit var parameters: ToolParamInterface
@@ -21,7 +23,7 @@ class SectorPriceCheckForCommodity : ToolInterface {
      *   "commodity_name": "The name of the commodity that will be price-checked"
      * }
      */
-    override fun execute(params: Map<String, String>, game: GameInfoInterface): ToolResult {
+    override fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUi?): ToolResult {
         val name = params["commodity_name"]
         if (name.isNullOrBlank()) return ToolResult("commodity_name parameter is empty. Bad Request.")
 

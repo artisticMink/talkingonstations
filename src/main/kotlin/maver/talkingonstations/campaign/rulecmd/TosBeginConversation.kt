@@ -33,21 +33,23 @@ class TosBeginConversation : BaseCommandPlugin() {
         // We need at least one HTTP API to make use of the UI
         if (HttpApiRegistry.getDefaultApi() == null) return false
 
-        val chat = Chat(
-            Global.getSector().playerPerson,
-            person,
-            person.market
-        )
-
-        chat.beforeContinueAsPlayer = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) } }
-        chat.afterChatResponse = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message) } }
-        chat.onProgress = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message.content, Misc.getHighlightColor()) } }
-
         val chatUi = TriChatCustomVisualPanel(
             dialog.visualPanel,
             Global.getSector().playerPerson,
             person,
         )
+
+        val chat = Chat(
+            Global.getSector().playerPerson,
+            person,
+            person.market,
+            dialog,
+            chatUi
+        )
+
+        chat.beforeContinueAsPlayer = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) } }
+        chat.afterChatResponse = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message) } }
+        chat.onProgress = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message.content, Misc.getHighlightColor()) } }
 
         chatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
         chatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
