@@ -9,15 +9,13 @@ import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.enum.Section
 
 /**
- * Represents a generic LLM interaction context that manages system instructions,
- * conversation messages, and context mixins. Extend to specialize for a
- * particular interaction type.
+ * A generic LLM interaction context that manages system instructions,
+ * conversation messages, and context mixins.
  */
-
 open class LLMContext(override val gameInfo: GameInfoInterface, override val conversationUi: ConversationUi? = null): LLMContextInterface {
-    private val mixins: List<ContextMixinInterface> = TosRegistry.getContextMixins()
+    override val messages: MutableList<Message> = mutableListOf()
 
-    protected val publicMessages: MutableList<Message> = mutableListOf()
+    private val mixins: List<ContextMixinInterface> = TosRegistry.getContextMixins()
 
     /**
      * Template variables substituted into system instructions and public
@@ -33,10 +31,12 @@ open class LLMContext(override val gameInfo: GameInfoInterface, override val con
     private fun applyTemplateVariables(text: String, vars: Map<String, String>): String =
         vars.entries.fold(text) { acc, (key, value) -> acc.replace(key, value) }
 
-    /**
-     * Merges all system instructions into a single string.
-     */
-    override fun getSystemInstructionsMerged(): String {
+    override fun getMessagesCopy(): List<Message> {
+        val vars = getTemplateVariables()
+        return messages.map { it.copy(content = applyTemplateVariables(it.content, vars)) }
+    }
+
+    override fun getSystemBlock(): String {
         val merged = markdown {
             h1("BASE INSTRUCTIONS")
             +renderSection(Section.INSTRUCTION)
@@ -56,9 +56,4 @@ open class LLMContext(override val gameInfo: GameInfoInterface, override val con
             .filter { it.section == section }
             .mapNotNull { it.render(gameInfo) }
             .joinToString("\n")
-
-    fun getPublicMessageCopy(): List<Message> {
-        val vars = getTemplateVariables()
-        return publicMessages.map { it.copy(content = applyTemplateVariables(it.content, vars)) }
-    }
 }

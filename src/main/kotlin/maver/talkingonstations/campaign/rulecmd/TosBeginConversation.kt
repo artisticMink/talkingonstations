@@ -56,8 +56,6 @@ class TosBeginConversation : BaseCommandPlugin() {
         chatUi.onSendButtonClick = { message -> chat.continueChatAsPlayer(message) }
         chatUi.onPlayerQuit = {
             // Persistent character memory
-            // Assumes the summary mixin is active, so
-            // we have the previous summary somewhere within the context
             if (TosSettings.enableCharacterMemory) {
                 chat.summarizeToNpcMemory()
             }

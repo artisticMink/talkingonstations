@@ -40,7 +40,7 @@ class Chat(
     var afterChatResponse: ((message: String) -> Unit)? = null
     var onProgress: ((message: Message) -> Unit) = {}
 
-    private val chatHistory get() = publicMessages
+    private val chatHistory get() = messages
     private val api = HttpApiRegistry.getSelectedApi()
     private val llmService: LLMService = LLMService(api)
 

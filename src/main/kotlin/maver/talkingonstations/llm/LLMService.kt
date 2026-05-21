@@ -15,9 +15,11 @@ import maver.talkingonstations.llm.dto.ToolResult
  * Initially a wrapper class for a client implementing [HttpApiInterface].
  * Now also contains the tool-calling loop, oh well.
  *
- * request -> response -> want tool?    yes -> run tool -> append result -> repeat
- *                                      no  -> return message
+ * request -> response -> want tool?    yes -> run tool         -> force end?  no  -> append result -> repeat
+ *                                      no  -> return message                  yes -> return message
  *
+ * Tools might either be persistent or transient. Transient call-result pairs are not returned to the context.
+ * Both persistent and transient tools may exist in the same temporary chain.
  */
 class LLMService(
     private val client: HttpApiInterface
@@ -32,20 +34,20 @@ class LLMService(
         onProgress: (Message) -> Unit = {}
     ): List<Message> {
         val tools = TosRegistry.getTools().filter { it.enabled }
-        val history = context.getPublicMessageCopy().filter { message -> message.role !== ChatRoles.INFO }
+        val history = context.getMessagesCopy().filter { message -> message.role !== ChatRoles.INFO }
         val receivedMessages = mutableListOf<Message>()
 
         try {
             repeat(MAX_TOOL_ITERATIONS) { iteration ->
-                val toolBudgetExhausted = iteration == MAX_TOOL_ITERATIONS - 1
+                val toolBudgetExhausted = iteration == MAX_TOOL_ITERATIONS
 
                 if (Global.getSettings().isDevMode) TosInspector.debug(
-                    "Answering - iteration ${iteration + 1}",
+                    "LLMService.send - iteration ${iteration + 1}",
                     this::class
                 )
 
                 val response = client.send(
-                    instructions = context.getSystemInstructionsMerged(),
+                    instructions = context.getSystemBlock(),
                     messages = history + receivedMessages,
                     model = model,
                     tools = if (!TosSettings.isToolCallingEnabled || toolBudgetExhausted) emptyList() else tools,
@@ -75,7 +77,6 @@ class LLMService(
                             )
                         )
 
-                    // Actual hook into Starsector code
                     val tool = tools.find { it.getName() == call.name }
                     if (tool == null) {
                         receivedMessages += Message(
@@ -86,10 +87,10 @@ class LLMService(
                         continue
                     }
 
-                    val result = runTool(tool, call.name, call.arguments, context)
+                    // Actual hook into Starsector code
+                    val result = runTool(tool, call.arguments, context)
 
                     // Tools can be one-off actions that end a conversation.
-                    //if (result.forceEnd) return returnNonTransient(receivedMessages)
                     if (result.forceEnd) return emptyList()
 
                     receivedMessages += Message(
@@ -124,22 +125,25 @@ class LLMService(
         }
     }
 
-    private fun returnNonTransient(receivedMessages: List<Message>): List<Message> {
-        val transientIds = receivedMessages
+    /**
+     * Returns the given message chain without transient tool calls or their response.
+     */
+    private fun returnNonTransient(messageChain: List<Message>): List<Message> {
+        val transientIds = messageChain
             .filter { it.role == ChatRoles.TOOL && it.isTransient }
-            .map { it.toolCallId }
+            .mapNotNull { it.toolCallId }
             .toSet()
 
-        return receivedMessages.mapNotNull { msg ->
+        val persistentIds = messageChain
+            .filter { it.role == ChatRoles.TOOL && !it.isTransient }
+            .mapNotNull { it.toolCallId }
+            .toSet()
+
+        return messageChain.mapNotNull { msg ->
             when {
                 msg.role == ChatRoles.TOOL && msg.toolCallId in transientIds -> null
                 msg.toolCalls.isNotEmpty() -> {
-                    val answeredIds = receivedMessages
-                        .filter { it.role == ChatRoles.TOOL && !it.isTransient }
-                        .mapNotNull { it.toolCallId }
-                        .toSet()
-
-                    val kept = msg.toolCalls.filter { it.id in answeredIds }
+                    val kept = msg.toolCalls.filter { it.id in persistentIds }
 
                     if (kept.isEmpty() && msg.content.isBlank()) null
                     else msg.copy(toolCalls = kept)
@@ -150,18 +154,23 @@ class LLMService(
         }
     }
 
-
+    /**
+     * Run a single tool with the given context
+     *
+     * @param tool The tool to be run
+     * @param arguments A map of arguments for the provided tool
+     * @param context The current [LLMContext]
+     */
     private fun runTool(
         tool: ToolInterface,
-        name: String,
         arguments: Map<String, String>,
         context: LLMContext,
     ): ToolResult {
         return try {
             tool.execute(arguments, context.gameInfo, context.conversationUi)
         } catch (exception: Exception) {
-            TosInspector.error("Tool '$name' threw: ${exception.message}", this::class)
-            ToolResult("Tool '$name' failed: ${exception.message}")
+            TosInspector.error("Tool '${tool.getName()}' threw: ${exception.message}", this::class)
+            ToolResult("Tool '${tool.getName()}' failed with: ${exception.message}")
         }
     }
 }

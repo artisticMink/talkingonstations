@@ -48,11 +48,11 @@ class MarketPersonShowCommand : BaseCommand {
         )
 
         if (toLog != null) {
-            Global.getLogger(javaClass).info("Context for ${person.name.fullName} at ${market.name}:\n${context.getSystemInstructionsMerged()}")
+            Global.getLogger(javaClass).info("Context for ${person.name.fullName} at ${market.name}:\n${context.getSystemBlock()}")
             Console.showMessage("Dumped context for ${person.name.fullName} to starsector.log")
         } else {
             Console.showMessage("Dumping context for ${person.name.fullName} at ${market.name}")
-            Console.showMessage(context.getSystemInstructionsMerged())
+            Console.showMessage(context.getSystemBlock())
             Console.showMessage("\n")
         }
 
