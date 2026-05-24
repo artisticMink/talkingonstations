@@ -2,6 +2,7 @@ package maver.talkingonstations.llm.mixins
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
+import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.loading.Description.Type
 import maver.talkingonstations.TosSettings
 import maver.talkingonstations.llm.ContextMixinInterface
@@ -59,5 +60,21 @@ class FactionLore : ContextMixinInterface {
             in -0.49f..0.49f -> p("${faction.displayName} has a neutral standing towards {{player}}")
             in -1f..-0.5f -> p("{{player}} has a terrible standing with ${faction.displayName}")
         }
+
+        val factions = Global.getSector().allFactions.filter { it.id !in excluded }
+        +getStandingsBlock(faction, factions)
+    }
+
+    private fun getStandingsBlock(faction: FactionAPI, others: List<FactionAPI>): String = markdown {
+        val standings = others
+            .filter { it.id != faction.id }
+            .mapNotNull { other ->
+                val level = faction.getRelationshipLevel(other)
+                if (level.displayName == RepLevel.NEUTRAL.displayName) null
+                else "${other.displayName}: ${level.displayName}"
+            }
+
+        h3("Standings")
+        list(standings)
     }
 }

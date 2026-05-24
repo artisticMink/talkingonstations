@@ -5,7 +5,6 @@ MarketLore,maver.talkingonstations.llm.mixins.MarketLore,"Adds information about
 MarketEconomy,maver.talkingonstations.llm.mixins.MarketEconomy,Adds information bout the open market when present on the planet. ,true,MARKET
 MarketMilitary,maver.talkingonstations.llm.mixins.MarketMilitary,Adds details about the colonies military strength and buildings.,true,MARKET
 FactionLore,maver.talkingonstations.llm.mixins.FactionLore,Adds publicly available information about the known factions of the Sector.,true,SECTOR
-FactionDiplomacy,maver.talkingonstations.llm.mixins.FactionDiplomacy,Adds detailed information about relationships between factions.,true,SECTOR
 BaseSystemInstruction,maver.talkingonstations.llm.mixins.BaseInstruction,Adds instructions for the llm about the context and how to respond.,true,INSTRUCTION
 GuardrailsInstruction,maver.talkingonstations.llm.mixins.GuardrailsInstruction,Adds guardrails to keep the experience close to T-rated.,true,INSTRUCTION
 CommsInstruction,maver.talkingonstations.llm.mixins.CommsInstruction,Adds specific comms scenario instructions.,true,INSTRUCTION
