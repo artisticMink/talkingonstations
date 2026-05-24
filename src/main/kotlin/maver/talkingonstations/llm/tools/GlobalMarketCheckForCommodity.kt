@@ -6,24 +6,25 @@ import maver.talkingonstations.llm.ToolInterface
 import maver.talkingonstations.llm.ToolParamInterface
 import maver.talkingonstations.llm.ToolUtils
 import maver.talkingonstations.llm.dto.ConversationUi
+import maver.talkingonstations.llm.dto.ConversationUiInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.ToolResult
 import maver.talkingonstations.llm.markdown
 
-class SectorPriceCheckForCommodity : ToolInterface {
+class GlobalMarketCheckForCommodity : ToolInterface {
     override val isTransient: Boolean = false
     override var enabled = false
     override lateinit var description: String
     override lateinit var parameters: ToolParamInterface
 
-    override fun getName(): String = "sector_price_check_for_commodity"
+    override fun getName(): String = "global_market_check_for_commodity"
 
     /**
      * {
      *   "commodity_name": "The name of the commodity that will be price-checked"
      * }
      */
-    override fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUi?): ToolResult {
+    override fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUiInterface?): ToolResult {
         val name = params["commodity_name"]
         if (name.isNullOrBlank()) return ToolResult("commodity_name parameter is empty. Bad Request.")
 
