@@ -29,17 +29,18 @@ class LLMService(
     }
 
     suspend fun send(
-        context: LLMContext,
+        context: LLMContextInterface,
         model: ModelSettings,
-        onProgress: (Message) -> Unit = {}
+        onProgress: (Message) -> Unit = {},
+        tools: List<ToolInterface> = TosRegistry.getTools().filter { it.enabled }
     ): List<Message> {
-        val tools = TosRegistry.getTools().filter { it.enabled }
         val history = context.getMessagesCopy().filter { message -> message.role !== ChatRoles.INFO }
         val receivedMessages = mutableListOf<Message>()
 
         try {
-            repeat(MAX_TOOL_ITERATIONS) { iteration ->
-                val toolBudgetExhausted = iteration == MAX_TOOL_ITERATIONS
+            val toolLoopLimit = if (tools.isNotEmpty()) MAX_TOOL_ITERATIONS else 1
+            repeat(toolLoopLimit) { iteration ->
+                val toolBudgetExhausted = iteration == toolLoopLimit -1
 
                 if (Global.getSettings().isDevMode) TosInspector.debug(
                     "LLMService.send - iteration ${iteration + 1}",
@@ -164,7 +165,7 @@ class LLMService(
     private fun runTool(
         tool: ToolInterface,
         arguments: Map<String, String>,
-        context: LLMContext,
+        context: LLMContextInterface,
     ): ToolResult {
         return try {
             tool.execute(arguments, context.gameInfo, context.conversationUi)

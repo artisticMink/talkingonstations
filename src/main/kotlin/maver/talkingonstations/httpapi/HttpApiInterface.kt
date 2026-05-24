@@ -42,14 +42,4 @@ interface HttpApiInterface {
      * Must return an identifier that lines up with the identifier provided by [maver.talkingonstations.TosSettings]
      */
     fun getName(): String
-
-    /**
-     * Must return a map of model names for this API human-readable -> identifier
-     */
-    fun getModels(): Map<String, String>
-
-    /**
-     * Must return a valid model identifier
-     */
-    fun getDefaultModelName(): String
 }

@@ -7,11 +7,13 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonObject
+import maver.talkingonstations.TosInspector
 import maver.talkingonstations.TosStrings
 import maver.talkingonstations.chat.ChatRoles
 import maver.talkingonstations.httpapi.body.ChatCompletionRequestBody
 import maver.talkingonstations.httpapi.body.ChatCompletionResponseBody
 import maver.talkingonstations.httpapi.body.ChatCompletionsMessage
+import maver.talkingonstations.httpapi.body.ToolCallDefinition
 import maver.talkingonstations.httpapi.exception.HttpApiRequestException
 import maver.talkingonstations.llm.ToolInterface
 import maver.talkingonstations.llm.dto.ApiSettings
@@ -23,54 +25,46 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import okhttp3.coroutines.executeAsync
+import java.util.concurrent.TimeUnit
 
 class ChatCompletionHttpApi : HttpApiInterface {
-    private val client = OkHttpClient()
-    private val configPath = "${TosStrings.Path.CONFIG_FOLDER}api/chat_completion.json"
+    private val client = OkHttpClient.Builder()
+        // Fixes one instance of lazy class loading triggering SecurityException
+        .retryOnConnectionFailure(false)
+        // Depending on the model it can take a while to produce a full reply.
+        .connectTimeout(30000, TimeUnit.MILLISECONDS)
+        .readTimeout(120000, TimeUnit.MILLISECONDS)
+        .build()
 
-    private val models: Map<String, String>
-    private val defaultModelId: String
-    private val defaultModelName: String
+    private val json = Json {
+        encodeDefaults = false
+        explicitNulls = false
+    }
 
     override var supportsToolCalling: Boolean = false
     override lateinit var apiSettings: ApiSettings
 
-    init {
-        val json = Global.getSettings().loadJSON(configPath, TosStrings.ModConfig.ID)
-        defaultModelId = json.getString("defaultModel")
-        val modelsJson = json.getJSONObject("models")
-        models = buildMap {
-            val keys = modelsJson.keys()
-            while (keys.hasNext()) {
-                val key = keys.next() as String
-                put(key, modelsJson.getString(key))
-            }
-        }
-        defaultModelName = models.entries.firstOrNull { it.value == defaultModelId }?.key
-            ?: throw Exception("defaultModel '$defaultModelId' not found in models map of $configPath")
-    }
-
     override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message {
-        val modelId = models[model.name] ?: defaultModelId
         val chatMessages = mutableListOf(ChatCompletionsMessage.fromInstructions(instructions))
         chatMessages.addAll(ChatCompletionsMessage.fromMessages(messages))
 
         val requestBody = ChatCompletionRequestBody(
-            model = modelId,
+            model = model.id,
             messages = chatMessages,
             maxTokens = model.maxTokens,
             temperature = model.temperature,
             topP = model.topP,
-            reasoningEffort = model.reasoningEffort
+            topK = model.topK,
+            reasoningEffort = model.reasoningEffort,
+            tools = if (supportsToolCalling) ToolCallDefinition.fromTools(tools).ifEmpty { null } else null,
         )
 
-        val jsonBody = Json.encodeToString(requestBody)
+        val jsonBody = json.encodeToString(requestBody)
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val header = Headers.headersOf(*getAuthHeader(), *getHeaders())
         val request = Request.Builder()
-            .url(apiSettings.url.toHttpUrl())
+            .url("${apiSettings.url.toHttpUrl()}")
             .headers(header)
             .post(jsonBody.toRequestBody(mediaType))
             .build()
@@ -81,6 +75,7 @@ class ChatCompletionHttpApi : HttpApiInterface {
             withContext(Dispatchers.IO) {
                 if (response.code != 200) {
                     Global.getLogger(javaClass).warn("Request failed with error code ${response.code}")
+                    TosInspector.info("Tried url: ${apiSettings.url.toHttpUrl()}", this::class)
                     throw HttpApiRequestException(
                         message = "Request failed",
                         statusCode = response.code,
@@ -109,8 +104,6 @@ class ChatCompletionHttpApi : HttpApiInterface {
     }
 
     override fun getName() = "Chat-Completion"
-    override fun getModels(): Map<String, String> = models
-    override fun getDefaultModelName(): String = defaultModelName
 
     private fun getHeaders() = arrayOf(
         "content-type", "application/json",
@@ -118,7 +111,8 @@ class ChatCompletionHttpApi : HttpApiInterface {
         "X-Title", "Starsector/TalkingOnStations"
     )
 
-    private fun getAuthHeader() = arrayOf(
-        "Authorization", "Bearer ${apiSettings.getApiKey()}",
-    )
+    private fun getAuthHeader(): Array<String> {
+        val key = apiSettings.getApiKey()
+        return if (key.isBlank()) arrayOf("Authorization", "") else arrayOf("Authorization", "Bearer $key")
+    }
 }

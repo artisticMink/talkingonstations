@@ -14,24 +14,44 @@ data class ChatCompletionRequestBody(
     val temperature: Float,
     @SerialName("top_p")
     val topP: Float,
+    @SerialName("top_k")
+    val topK: Float,
     @SerialName("reasoning_effort")
-    val reasoningEffort: String,
+    val reasoningEffort: String? = null,
+    val tools: List<ToolCallDefinition>? = null,
 )
 
 @Serializable
 data class ChatCompletionsMessage(
     val role: String,
-    val content: String,
+    val content: String? = null,
+    @SerialName("tool_calls")
+    val toolCalls: List<OpenrouterToolCallResult>? = null,
+    @SerialName("tool_call_id")
+    val toolCallId: String? = null,
 ) {
     companion object {
-        fun fromInstructions(instructions: String): ChatCompletionsMessage {
-            return ChatCompletionsMessage(role = "system", content = instructions)
-        }
+        fun fromInstructions(instructions: String) =
+            ChatCompletionsMessage(role = "system", content = instructions)
 
-        fun fromMessages(messages: List<Message>): List<ChatCompletionsMessage> {
-            return messages
+        fun fromMessages(messages: List<Message>): List<ChatCompletionsMessage> =
+            messages
                 .filter { it.role != ChatRoles.SYSTEM && it.role != ChatRoles.INFO }
-                .map { ChatCompletionsMessage(role = it.role.name.lowercase(), content = it.content) }
-        }
+                .map { message ->
+                    when (message.role) {
+                        ChatRoles.TOOL -> ChatCompletionsMessage(
+                            role = "tool",
+                            content = message.content,
+                            toolCallId = message.toolCallId,
+                        )
+                        else -> ChatCompletionsMessage(
+                            role = message.role.name.lowercase(),
+                            content = message.content,
+                            toolCalls = message.toolCalls
+                                .ifEmpty { null }
+                                ?.map(OpenrouterToolCallResult::fromDomain),
+                        )
+                    }
+                }
     }
 }

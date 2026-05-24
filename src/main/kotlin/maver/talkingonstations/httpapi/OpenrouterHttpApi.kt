@@ -37,37 +37,16 @@ class OpenrouterHttpApi : HttpApiInterface {
         .connectTimeout(30000, TimeUnit.MILLISECONDS)
         .readTimeout(30000, TimeUnit.MILLISECONDS)
         .build()
-    private val configPath = "${TosStrings.Path.CONFIG_FOLDER}api/openrouter.json"
-
-    private val models: Map<String, String>
-    private val defaultModelId: String
-    private val defaultModelName: String
 
     override var supportsToolCalling: Boolean = false
     override lateinit var apiSettings: ApiSettings
 
-    init {
-        val json = Global.getSettings().loadJSON(configPath, TosStrings.ModConfig.ID)
-        defaultModelId = json.getString("defaultModel")
-        val modelsJson = json.getJSONObject("models")
-        models = buildMap {
-            val keys = modelsJson.keys()
-            while (keys.hasNext()) {
-                val key = keys.next() as String
-                put(key, modelsJson.getString(key))
-            }
-        }
-        defaultModelName = models.entries.firstOrNull { it.value == defaultModelId }?.key
-            ?: throw Exception("defaultModel '$defaultModelId' not found in models map of $configPath")
-    }
-
     override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message {
-        val modelId = models[model.name] ?: defaultModelId
         val chatMessages = mutableListOf(OpenrouterMessage.fromInstructions(instructions))
         chatMessages.addAll(OpenrouterMessage.fromMessages(messages))
 
         val requestBody = OpenrouterRequestBody(
-            model = modelId,
+            model = model.id,
             messages = chatMessages,
             maxTokens = model.maxTokens,
             temperature = model.temperature,
@@ -122,8 +101,6 @@ class OpenrouterHttpApi : HttpApiInterface {
     }
 
     override fun getName() = "Openrouter"
-    override fun getModels(): Map<String, String> = models
-    override fun getDefaultModelName(): String = defaultModelName
 
     private fun getHeaders() = arrayOf(
         "content-type", "application/json",

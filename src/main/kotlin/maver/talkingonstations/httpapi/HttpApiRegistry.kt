@@ -5,11 +5,17 @@ import maver.talkingonstations.TosSettings
 object HttpApiRegistry {
     private val apiList: List<HttpApiInterface> = HttpApiLoader().load()
 
-    fun getSelectedApi(): HttpApiInterface {
+    fun getConversationApi(): HttpApiInterface {
         val identifier = TosSettings.api
 
         // Fallback to default api when requested api is not available
         // ToDo: Should have user-facing feedback.
+        return getApi(identifier) ?: getDefaultApi() ?: throw Exception("No API available")
+    }
+
+    fun getCombatChatterApi(): HttpApiInterface {
+        val identifier = TosSettings.modsCcApi
+
         return getApi(identifier) ?: getDefaultApi() ?: throw Exception("No API available")
     }
 

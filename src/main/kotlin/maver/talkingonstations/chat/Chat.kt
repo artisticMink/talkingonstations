@@ -8,6 +8,7 @@ import maver.talkingonstations.TosBackgroundScope
 import maver.talkingonstations.TosInspector
 import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.TosMemoryKeys
+import maver.talkingonstations.TosSettings
 import maver.talkingonstations.TosStrings
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
@@ -41,10 +42,10 @@ class Chat(
     var onProgress: ((message: Message) -> Unit) = {}
 
     private val chatHistory get() = messages
-    private val api = HttpApiRegistry.getSelectedApi()
+    private val api = HttpApiRegistry.getConversationApi()
     private val llmService: LLMService = LLMService(api)
 
-    var modelSettings: ModelSettings = ModelSettings.create(api.getDefaultModelName())
+    var modelSettings: ModelSettings = ModelSettings(TosSettings.apiModel)
 
     /**
      * Sends [content] as a player message and requests an LLM response.
