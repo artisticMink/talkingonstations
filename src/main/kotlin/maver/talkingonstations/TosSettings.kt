@@ -11,10 +11,11 @@ object TosSettings {
     val api: String get() = LunaSettings.getString(ID, "tos_api") ?: ""
     val apiUrl: String get() = LunaSettings.getString(ID, "tos_apiUrl") ?: ""
     val apiKey: String get() = LunaSettings.getString(ID, "tos_apiKey") ?: ""
+    val apiModel: String get() = LunaSettings.getString(ID, "tos_apiModel") ?: ""
 
-    val ignoredFactions: Set<String> get() = commaSet("tos_ignoredFactions")
-    val ignoredMarkets: Set<String> get() = commaSet("tos_ignoredMarkets")
-    val ignoredConditions: Set<String> get() = commaSet("tos_ignoredConditions")
+    val ignoredFactions: Set<String> get() = commaSet("neutral, remnant, omega, mercenary, ML_bounty, scavengers, sleeper, poor, derelict, nex_derelict, threat, dweller, player, nex_temp")
+    val ignoredMarkets: Set<String> get() = commaSet("")
+    val ignoredConditions: Set<String> get() = commaSet("")
 
     val temperature: Double get() = LunaSettings.getDouble(ID, "tos_temperature") ?: 1.0
     val topK: Double get() = LunaSettings.getDouble(ID, "tos_topK") ?: 0.0
@@ -29,8 +30,18 @@ object TosSettings {
     val isToolCallingEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_enableToolCalls") ?: false
     val showToolCallingIndicator: Boolean get() = LunaSettings.getBoolean(ID, "tos_showToolCalling") ?: false
 
-    private fun commaSet(key: String): Set<String> =
-        (LunaSettings.getString(ID, key) ?: "")
+    val modsCcApi: String get() = LunaSettings.getString(ID, "tos_cc_api") ?: ""
+    val modsCcApiUrl: String get() = LunaSettings.getString(ID, "tos_cc_apiUrl") ?: ""
+    val modsCcApiKey: String get() = LunaSettings.getString(ID, "tos_cc_apiKey") ?: ""
+    val modsCcApiModel: String get() = LunaSettings.getString(ID, "tos_cc_apiModel") ?: ""
+    val modsCcEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_cc_enabled") ?: false
+    val modsCcOnlyRewrite: Boolean get() = LunaSettings.getBoolean(ID, "tos_cc_onlyRewrite") ?: false
+    val modsCcWithDescription: Boolean get() = LunaSettings.getBoolean(ID, "tos_cc_withDescription") ?: false
+    val modsCcPersistenceEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_cc_persistenceEnabled") ?: false
+    val modsCcRequestInterval: Int get() = LunaSettings.getInt(ID, "tos_cc_requestInterval") ?: 20
+
+    private fun commaSet(list: String): Set<String> =
+        list
             .split(',')
             .map(String::trim)
             .filter(String::isNotEmpty)

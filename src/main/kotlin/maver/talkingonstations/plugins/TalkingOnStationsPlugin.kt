@@ -7,10 +7,13 @@ import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.events.ChatBarEventWithPersonCreator
 
 internal class TalkingOnStationsPlugin : BaseModPlugin() {
+    override fun onApplicationLoad() {
+        TosEveryFrameScriptQueue.setup()
+
+    }
+
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
-
-        TosEveryFrameScriptQueue.setup()
 
         // Load csv, json, etc.
         if (!TosRegistry.isInitialized()) {

@@ -1,9 +1,0 @@
-{
-  "defaultModel": "google/gemma-4-31b-it",
-  "models": {
-      "MiMo 2.5": "xiaomi/mimo-v2.5",
-      "Deepseek V4 Flash": "deepseek/deepseek-v4-flash",
-      "Gemma 4 31B": "google/gemma-4-31b-it",
-      "Mistral Small 4": "mistralai/mistral-small-2603"
-    }
-}
