@@ -40,7 +40,7 @@ class SelfKnowledge: ContextMixinInterface {
 
         h3("Background")
         if (marketPersonData != null && marketPersonData.background.isNotEmpty()) p(marketPersonData.background)
-        if (personExtension != null) p(personExtension.getBackground())
+        if (personExtension != null) p(personExtension.getLore())
 
         if (person.memoryWithoutUpdate.contains(TosMemoryKeys.ARCHETYPE)) {
             val archetype = TosRegistry.getArchetypes().find { it.getKey() == person.memoryWithoutUpdate.get(TosMemoryKeys.ARCHETYPE) }

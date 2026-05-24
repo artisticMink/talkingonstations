@@ -30,5 +30,19 @@ interface MarketPersonInterface {
      *
      * Appended after character background.
      */
-    fun getBackground(): String
+    fun getLore(): String
+
+    /**
+     * Can return additional context for [maver.talkingonstations.llm.mixins.SelfKnowledge]
+     *
+     * Appended after character background.
+     */
+    fun getScene(): String
+
+    /**
+     * Can return a list of allowed tools ids.
+     * The character has only access to these tools
+     */
+    fun getAllowedToolIds(): List<String>
+
 }

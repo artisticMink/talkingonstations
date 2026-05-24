@@ -15,7 +15,8 @@ class CommsInstruction : ContextMixinInterface {
         if (!npc.memoryWithoutUpdate.getBoolean(TosMemoryKeys.IS_MARKET_PERSON)) return null
 
         return markdown {
-            p("In this scene your character, {{npc}}, is connected with the {{player}}'s fleet currently in orbit via a comms relay. A sophisticated sci-fi zoom call. ")
+            h2("Scene setup")
+            p("Your character, {{npc}}, is connected with the {{player}} via a comms relay. A quite sophisticated sci-fi zoom call. ")
         }
     }
 }
