@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import maver.talkingonstations.llm.ToolInterface
 import maver.talkingonstations.llm.ToolParamInterface
 import maver.talkingonstations.llm.dto.ConversationUi
+import maver.talkingonstations.llm.dto.ConversationUiInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.ToolResult
 import maver.talkingonstations.llm.markdown
@@ -22,7 +23,7 @@ class CheckLocalMarket : ToolInterface {
      *
      * Returns price, stockpile, and shortage/excess.
      */
-    override fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUi?): ToolResult {
+    override fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUiInterface?): ToolResult {
         val market = gameInfo.market
             ?: return ToolResult("There is no market at this location. Market overview impossible.")
 

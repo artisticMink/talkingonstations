@@ -1,6 +1,6 @@
 package maver.talkingonstations.llm
 
-import maver.talkingonstations.llm.dto.ConversationUi
+import maver.talkingonstations.llm.dto.ConversationUiInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.ToolResult
 
@@ -12,6 +12,6 @@ interface ToolInterface {
     var parameters: ToolParamInterface
 
     fun getName(): String
-    fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUi?): ToolResult
+    fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUiInterface?): ToolResult
     fun getKey(): String = this::class.java.simpleName
 }

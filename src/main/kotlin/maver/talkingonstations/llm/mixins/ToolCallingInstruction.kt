@@ -12,7 +12,7 @@ class ToolCallingInstruction : ContextMixinInterface {
 
     override fun render(gameInfo: GameInfoInterface): String = markdown {
         h2("Tool Calling")
-        p("To interact with the player and the in-game world of starsector, there might be various tools available which you can use at your own discretion.")
-        p("Separate complex tool call tasks into multiple tool calls.")
+        p("You can use tool calls to fetch additional information or initiate narrative events you deem appropriate.")
+        p("Separate complex tool call tasks into multiple sequential tool calls.")
     }
 }
