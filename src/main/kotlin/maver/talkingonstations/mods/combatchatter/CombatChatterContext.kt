@@ -18,24 +18,23 @@ class CombatChatterContext(
           Weave a narrative into it if the opportunity arises. When first rewriting a line for a ship, pick a personality for this ship and stick to it for the remainder of the fight.
 
           Hard rules:
-          - Output ONLY the spoken line. No ship prefix, no quotes, no narration, no stage directions, no markdown, no explanation. No linebreaks.
+          - Your output is injected back into the game. Output ONLY one line. No thinking, no markdown, no explanation, no linebreaks.
           - Keep it short, 5 to 10 words, 20 words maximum.
           - Evaluate the situation (ship class, enemy, hull state, AI flags).
           - The user wants informative, engaging and varied messages - don't re-use the same lines too often. 
       """.trimIndent()
 
     private val creativeBlock = """
-          You are the radio chatter of a warship crew in Starsector, a gritty space opera.
+          You are the the crew of a spaceship, currently engaged in a fleet battle with an enemy fleet in the pc game Starsector (formerly Starfarer), a space opera.
 
           Your task: Examine the information given to you. Then, write one single combat chatter line that complies with the hard rules.
-          As the battle unfolds, you will see the history of radio chatter thus far. Weave a narrative into it if the opportunity arises. 
-          When first rewriting a line for a ship, pick a personality for this ship and stick to it.
+          As the battle unfolds, you will see the history of your fleets radio chatter. Weave a narrative into it should the opportunity arise. 
+          When first impersonating the crew of a ship, pick a personality for this ship and stick to it. Crews should behave authentic to their faction, situation and role in battle.
 
           Hard rules:
-          - Your output is injected back into the game. Output ONLY the spoken line. No quotes, no narration, no thinking, no markdown, no explanation, no linebreaks.
-          - Keep it short, 5 to 10 words, 20 words at maximum.
-          - Evaluate the situation (ship class, enemy, hull state, AI flags).
-          - The user wants informative, engaging and varied messages - don't re-use the same lines often. 
+          - Your output is injected back into the game. Output ONLY one line. No thinking, no markdown, no explanation, no linebreaks.
+          - Keep it short, 5 to 20 words.
+          - The user wants informative, engaging and atmospheric messages. Don't re-use the same lines with little variety
       """.trimIndent()
 
     override fun getSystemBlock(): String {

@@ -1,31 +1,31 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
-tos_settingsText,-Note-,Text,Affects all saves.,,,,,Settings
-tos_guardrailsEnabled,Add Guardrails,Boolean,true,,Add Guardrails to every message. The guardrails aim to keep the model on track and allow for content appropriate for Starsectors dystopian setting while restricting certain topics. Effectivity varies depending on the model. Enabled by default.,,,Settings
-tos_maxTokens,Max Tokens,Int,1000,,The max amount of tokens that are returned in an answer. A token is roughly 0.8 words. Thinking models may need considerably more tokens as the thinking process also takes from this budget.,0,10000,Settings
-tos_persistentMemory,Persistent Memory,Boolean,false,,"When enabled, prompts the model to create a summary of the conversation along with a in-game timestamp. The summary is persisted. ",,,Settings
-tos_persistentMemoryBudget,Memory Budget in words,Int,600,,The amount of words the model can spend on character memory.,200,10000,Settings
-tos_reasoningEffort,Reasoning Effort,Radio,medium,"none,minimal,low,medium,high,xhigh,max",Only affects models capable of reasoning. Common values are medium or high.,,,Settings
-tos_samplerText,-Note-,Text,Default settings for newly created characters. Can be changed on a per-character basis. Character settings persist across saves and [take precedence] over the defaults listed here.,,,,,Sampler
+tos_serviceHeader,Service Header,Header,API,,,,,Conversation
+tos_api,Service,Radio,Openrouter,"Chat-Completion, Openrouter","",,,Conversation
+tos_apiUrl,API Url,String,https://openrouter.ai/api/v1/chat/completions,,Url of the endpoint to connect to.,,,Conversation
+tos_apiKey,API Key,String,"",,Optional authentification token.,,,Conversation
+tos_apiModel,API Model,String,,,Model ID for endpoints that serve multiple models.,,,Conversation
+tos_reasoningEffort,Reasoning Effort,Radio,medium,"none,minimal,low,medium,high,xhigh,max",Only affects models capable of reasoning. Common values are medium or high.,,,Conversation
+tos_guardrailsEnabled,Add Guardrails,Boolean,true,,Guardrails aim to keep the model on track and allow for content appropriate for Starsectors setting while restricting certain topics.,,,Conversation
+tos_maxTokens,Max Response Tokens,Int,1000,,The max amount of tokens that are returned in an answer. A token is roughly 0.8 words. Thinking models may need considerably more tokens as the thinking process also takes from this budget.,0,10000,Conversation
+tos_persistentMemory,NPC Memory,Boolean,false,,NPCs will have some memory of when and what the last conversation was about. Only affects ToS comms NPCs. Adds a llm request to summarize the conversation on quitting. ,,,Conversation
+tos_persistentMemoryBudget,Memory Budget in words,Int,600,,The amount of words the model should spend on character memory.,200,10000,Conversation
 tos_temperature,Temperature,Double,1,,"A lower temperature makes it more likely that the conversation stays on track but might get repetitive, a higher temperature allows for a more diverse output that's prone to incoherence.",0,2,Sampler
 tos_topK,Top k,Double,0,,Limits the pool of words in a conversation to the K highest candidates.,0,500,Sampler
 tos_topP,Top p,Double,0.95,,Limits the pool of words in a conversation to those of whose probabilities sum up to P.,0,1,Sampler
 tos_toolHeader,Tool Calling Header,Header,Tool Calling,,,,,Tool Calling
-tos_toolText,-Note-,Text,Tool Calls allow the model to directly access Starsector via a set of pre-defined tools during conversations. [This may happen without player consent] - 9 out of 10 REDACTED recommend turning this setting on.,,,,,Tool Calling
-tos_enableToolCalls,Enable Tool Calling,Boolean,false,,Enable use of allowed tools.,,,Tool Calling
-tos_showToolCalling,Notify on tool calls,Boolean,false,,Shows a notification whenever the model requests a tool call.,,,Tool Calling
-tos_serviceHeader,Service Header,Header,API,,,,,Conversation
-tos_api,Service,Radio,Openrouter,"Chat-Completion, Openrouter",,,,Conversation
-tos_apiUrl,API Url,String,https://openrouter.ai/api/v1/chat/completions,,The endpoint to connect to.,,,Conversation
-tos_apiKey,API Key,String,"",,An authentification token provided by a service. Usually required.,,,Conversation
-tos_apiModel,API Model,String,,,,,,Conversation
-tos_cc_serviceHeader,Service Header,Header,Combat Chatter,,,,,Mods
-tos_cc_text,-Note-,Text,These settings only affect the Combat Chatter integration.,,,,,
-tos_cc_enabled,Enable CC Hook,Boolean,false,,,,,Mods
-tos_cc_onlyRewrite,Only rewrite chatter,Boolean,true,,,,,Mods
-tos_cc_requestInterval,Delay between rewrites,Int,20,,,5,120,Mods
-tos_cc_api,Service,Radio,Chat-Completion,"Chat-Completion, Openrouter",,,,Mods
-tos_cc_apiUrl,API Url,String,http://127.0.0.1:8080/v1/chat/completions,,The endpoint to connect to.,,,Mods
-tos_cc_apiKey,API Key,String,,,An authentification token provided by a service. Usually required.,,,Mods
-tos_cc_apiModel,API Model,String,,,,,,Mods
-tos_cc_persistenceEnabled,Continuous Chatter,Boolean,false,,,,,Mods
-tos_cc_withDescription,Add details,Boolean,false,,,,,Mods
+tos_toolText,-Note-,Text,Allows NPCs to interface with Starsector via tool calling. 9 out of 10 REDACTED recommend turning this option on.,,"",,,Tool Calling
+tos_enableToolCalls,Enable Tool Calling,Boolean,false,,Enable the use of tools. Such as looking up the price of a commodity.,,,Tool Calling
+tos_enableDangerousToolCalls,Enable dangerous tool calls,Boolean,false,,Enables the use of potentially dangerous tool calls. Such as placing a bounty on the players fleet.,,,Tool Calling
+tos_showToolCalling,Notify on tool calls,Boolean,false,,Shows a notification whenever a model requests a tool call.,,,Tool Calling
+tos_cc_serviceHeader,Service Header,Header,Combat Chatter,,,,,Combat Chatter
+tos_cc_enabled,Enable CC Hook,Boolean,false,,Rewrite combat messages from Combat Chatter by Histidine,,,Combat Chatter
+tos_cc_api,Service,Radio,Chat-Completion,"Chat-Completion, Openrouter",,,,Combat Chatter
+tos_cc_apiUrl,API Url,String,http://127.0.0.1:8080/v1/chat/completions,,Url of the endpoint to connect to.,,,Combat Chatter
+tos_cc_apiKey,API Key,String,,,Optional authentification token.,,,Combat Chatter
+tos_cc_apiModel,API Model,String,,,Model ID for endpoints that serve multiple models.,,,Combat Chatter
+tos_cc_reasoningEffort,Reasoning Effort,Radio,minimal,"none,minimal,low,medium,high,xhigh,max",Only affects models capable of reasoning.,,,Combat Chatter
+tos_cc_onlyRewrite,Only rewrite chatter,Boolean,true,,"Enrich lines coming from CC. If this is disabled, the model will make up the chatter entirely on its own on the basis of the information provided. Together with 'Add details' and 'Continious chatter' this can great results, but uses a lot of tokens.",,,Combat Chatter
+tos_cc_withFloaters,Rewrite floaters,Boolean,true,,Also process floating messages. These are smaller CC texts that pop up over ships or in the right chatterbox.,,,Combat Chatter
+tos_cc_requestInterval,Delay between rewrites,Int,10,,In seconds.,1,60,Combat Chatter
+tos_cc_persistenceEnabled,Continuous Chatter,Boolean,false,,Sends the whole combat-chatter history of the ongoing fight instead of one-offs.,,,Combat Chatter
+tos_cc_withDescription,Add details,Boolean,false,,"Add exhaustive details on factions involved in the fight, hullmods, wings, weapons and combat AI behavior. Will increase chatter quality at expense of tokens used.",,,Combat Chatter

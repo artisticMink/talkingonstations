@@ -41,6 +41,7 @@ class CombatChatterListener(
     private val plugin: CombatChatterPlugin
 ) : ChatterListener {
     val rewriteInterval = TimeUnit.SECONDS.toNanos(TosSettings.modsCcRequestInterval.toLong())
+    var rewriteInProgress = false
 
     private val approvedLines: MutableSet<ChatterLine> =
         Collections.newSetFromMap(IdentityHashMap<ChatterLine, Boolean>())
@@ -52,8 +53,7 @@ class CombatChatterListener(
     private val ccContext = CombatChatterContext(GameInfo(), mutableListOf<Message>(), null)
     private val modelSettings: ModelSettings = ModelSettings(
         id = TosSettings.modsCcApiModel,
-        topK = 64f,
-        reasoningEffort = "minimal"
+        reasoningEffort = TosSettings.modsCcReasoningEffort
     )
 
     init {
@@ -70,16 +70,19 @@ class CombatChatterListener(
         inMessageBox: Boolean,
         textColor: Color?,
     ): Boolean {
-        if (!TosSettings.modsCcEnabled) return true
-        if (floaty || line == null) return true
+        if (!TosSettings.modsCcEnabled || line == null) return true
+        if (!TosSettings.modsCcWithFloaters && floaty) return true
+
+        // Skip generated
+        if (approvedLines.remove(line)) return true
+
+        // Prevent race condition on context.messages
+        if (TosSettings.modsCcPersistenceEnabled && rewriteInProgress) return true
 
         // Only every so often
         val now = System.nanoTime()
         if (now - lastRewrite < rewriteInterval) return true
         lastRewrite = now
-
-        // Blocks everything but our enqueued lines
-        if (approvedLines.remove(line)) return true
 
         val myFaction = Misc.getCommissionFaction() ?: Global.getSector().playerFaction
         val myShip: ShipAPI? = combatEngine.ships.firstOrNull() { it.fleetMember === member }
@@ -98,21 +101,18 @@ class CombatChatterListener(
         val prompt = markdown {
             if (TosSettings.modsCcOnlyRewrite) {
                 h1("Line to rewrite")
-                l(text.trim { it == '"' })
+                l(text)
             }
 
             h2("Your Faction - ${myFaction.displayName}")
             if (TosSettings.modsCcWithDescription) {
                 p(Global.getSettings().getDescription(myFaction.id, Type.FACTION).text1)
-                p("Description: ${Global.getSettings().getDescription(myFaction.id, Type.FACTION).text1}")
             }
 
             if (enemyFactionId != null) {
-                h2("Enemy Faction")
-                l("Name: ${enemyFactionName(enemyFactionId)}")
+                h2("Enemy Faction - ${enemyFactionName(enemyFactionId)}")
                 if (TosSettings.modsCcWithDescription) {
-                    p(Global.getSettings().getDescription(myFaction.id, Type.FACTION).text1)
-                    p("Description: ${Global.getSettings().getDescription(enemyFactionId, Type.FACTION).text1}")
+                    p(Global.getSettings().getDescription(enemyFactionId, Type.FACTION).text1)
                 }
             }
 
@@ -122,11 +122,12 @@ class CombatChatterListener(
             }
 
             if (theirShip != null) {
-                h2("Targeted Enemy Ship")
+                h2("Targeted Enemy Ship - ${theirShip.name}")
                 +getShipStatus(theirShip)
             }
         }
 
+        rewriteInProgress = true
         TosBackgroundScope.scope.launch {
             val rewritten: String? = try {
                 ccContext.messages.add(
@@ -153,7 +154,7 @@ class CombatChatterListener(
             }
 
             if (!TosSettings.modsCcPersistenceEnabled) ccContext.messages.clear()
-            else if (rewritten?.isNotBlank() ?: false) {
+            else if (rewritten?.isNotBlank() == true) {
                 ccContext.messages.removeLast()
                 ccContext.messages.add(
                     Message(
@@ -161,10 +162,13 @@ class CombatChatterListener(
                         "${member.shipName}: $rewritten"
                     )
                 )
-            }
+            } else ccContext.messages.removeLast()
 
-            val finalText = rewritten?.takeIf { it.isNotBlank() } ?: text
-            plugin.postToCombatThread { enqueueMessage(member, finalText, textColor) }
+            val finalText = (rewritten?.takeIf { it.isNotBlank() } ?: text).replace("${member.shipName}:","").trim { it == '"' }
+            plugin.postToCombatThread {
+                rewriteInProgress = false
+                enqueueMessage(member, finalText, textColor, floaty)
+            }
         }
 
         // Finally refuse the canned line
@@ -186,7 +190,13 @@ class CombatChatterListener(
     /**
      * Queues the text for display as soon as possible
      */
-    private fun enqueueMessage(member: FleetMemberAPI, text: String, textColor: Color?, ignoreDelay: Boolean = false) {
+    private fun enqueueMessage(
+        member: FleetMemberAPI,
+        text: String,
+        textColor: Color?,
+        isFloater: Boolean = false,
+        ignoreDelay: Boolean = false
+    ) {
         val chatter = ChatterCombatPlugin.getInstance() ?: return
 
         val newLine = ChatterLine(text)
@@ -194,7 +204,7 @@ class CombatChatterListener(
 
         val message = ChatterMessage(member, newLine, ChatterLine.MessageType.REPLY).apply {
             color = textColor ?: Color.WHITE
-            floater = false
+            floater = isFloater
             force = ignoreDelay
         }
 
@@ -249,12 +259,12 @@ class CombatChatterListener(
     }
 
     private fun getCategory(member: FleetMemberAPI): String {
-        val category = if (member.isCapital) return "Capital Ship"
-        else if (member.isCarrier) return "Carrier"
-        else if (member.isCruiser) return "Cruiser"
-        else if (member.isDestroyer) return "Destroyer"
-        else if (member.isFrigate) return "Frigate"
-        else if (member.isFighterWing) return "Fighter Wing"
+        val category = if (member.isCapital) "Capital Ship"
+        else if (member.isCarrier) "Carrier"
+        else if (member.isCruiser) "Cruiser"
+        else if (member.isDestroyer) "Destroyer"
+        else if (member.isFrigate) "Frigate"
+        else if (member.isFighterWing) "Fighter Wing"
         else "Spaceship"
 
         val prefix = if (member.isCivilian) "Civilian " else ""
@@ -277,7 +287,7 @@ class CombatChatterListener(
                     }
                 else
                     markdown {
-                        l("- spec.weaponName")
+                        l("- ${spec.weaponName}")
                     }
             }
     }

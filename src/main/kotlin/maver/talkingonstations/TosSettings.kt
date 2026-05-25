@@ -28,6 +28,7 @@ object TosSettings {
     val characterMemoryBudget: Int get() = LunaSettings.getInt(ID, "tos_persistentMemoryBudget") ?: 0
 
     val isToolCallingEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_enableToolCalls") ?: false
+    val isDangerousToolCallingEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_enableDangerousToolCalls") ?: false
     val showToolCallingIndicator: Boolean get() = LunaSettings.getBoolean(ID, "tos_showToolCalling") ?: false
 
     val modsCcApi: String get() = LunaSettings.getString(ID, "tos_cc_api") ?: ""
@@ -39,6 +40,8 @@ object TosSettings {
     val modsCcWithDescription: Boolean get() = LunaSettings.getBoolean(ID, "tos_cc_withDescription") ?: false
     val modsCcPersistenceEnabled: Boolean get() = LunaSettings.getBoolean(ID, "tos_cc_persistenceEnabled") ?: false
     val modsCcRequestInterval: Int get() = LunaSettings.getInt(ID, "tos_cc_requestInterval") ?: 20
+    val modsCcReasoningEffort: String get() = LunaSettings.getString(ID, "tos_cc_reasoningEffort") ?: "minimal"
+    val modsCcWithFloaters: Boolean get() = LunaSettings.getBoolean(ID, "tos_cc_withFloaters") ?: false
 
     private fun commaSet(list: String): Set<String> =
         list
