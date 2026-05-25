@@ -7,6 +7,7 @@ import maver.talkingonstations.TosSettings
 import maver.talkingonstations.chat.ChatRoles
 import maver.talkingonstations.httpapi.HttpApiInterface
 import maver.talkingonstations.httpapi.exception.HttpApiRequestException
+import maver.talkingonstations.llm.dto.ApiSettings
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
 import maver.talkingonstations.llm.dto.ToolResult
@@ -22,7 +23,8 @@ import maver.talkingonstations.llm.dto.ToolResult
  * Both persistent and transient tools may exist in the same temporary chain.
  */
 class LLMService(
-    private val client: HttpApiInterface
+    private val client: HttpApiInterface,
+    private val apiSettings: ApiSettings,
 ) {
     private companion object {
         const val MAX_TOOL_ITERATIONS = 5
@@ -48,6 +50,7 @@ class LLMService(
                 )
 
                 val response = client.send(
+                    apiSettings = apiSettings,
                     instructions = context.getSystemBlock(),
                     messages = history + receivedMessages,
                     model = model,

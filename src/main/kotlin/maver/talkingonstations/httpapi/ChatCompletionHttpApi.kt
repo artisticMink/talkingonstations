@@ -8,7 +8,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonObject
 import maver.talkingonstations.TosInspector
-import maver.talkingonstations.TosStrings
 import maver.talkingonstations.chat.ChatRoles
 import maver.talkingonstations.httpapi.body.ChatCompletionRequestBody
 import maver.talkingonstations.httpapi.body.ChatCompletionResponseBody
@@ -43,9 +42,14 @@ class ChatCompletionHttpApi : HttpApiInterface {
     }
 
     override var supportsToolCalling: Boolean = false
-    override lateinit var apiSettings: ApiSettings
 
-    override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message {
+    override suspend fun send(
+        apiSettings: ApiSettings,
+        instructions: String,
+        messages: List<Message>,
+        model: ModelSettings,
+        tools: List<ToolInterface>,
+    ): Message {
         val chatMessages = mutableListOf(ChatCompletionsMessage.fromInstructions(instructions))
         chatMessages.addAll(ChatCompletionsMessage.fromMessages(messages))
 
@@ -62,7 +66,7 @@ class ChatCompletionHttpApi : HttpApiInterface {
 
         val jsonBody = json.encodeToString(requestBody)
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val header = Headers.headersOf(*getAuthHeader(), *getHeaders())
+        val header = Headers.headersOf(*getAuthHeader(apiSettings), *getHeaders())
         val request = Request.Builder()
             .url("${apiSettings.url.toHttpUrl()}")
             .headers(header)
@@ -111,7 +115,7 @@ class ChatCompletionHttpApi : HttpApiInterface {
         "X-Title", "Starsector/TalkingOnStations"
     )
 
-    private fun getAuthHeader(): Array<String> {
+    private fun getAuthHeader(apiSettings: ApiSettings): Array<String> {
         val key = apiSettings.getApiKey()
         return if (key.isBlank()) arrayOf("Authorization", "") else arrayOf("Authorization", "Bearer $key")
     }

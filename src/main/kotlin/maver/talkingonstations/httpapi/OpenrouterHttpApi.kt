@@ -7,8 +7,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.jsonObject
-import maver.talkingonstations.TosInspector
-import maver.talkingonstations.TosStrings
 import maver.talkingonstations.chat.ChatRoles
 import maver.talkingonstations.httpapi.body.OpenrouterMessage
 import maver.talkingonstations.httpapi.body.OpenrouterReasoning
@@ -39,9 +37,14 @@ class OpenrouterHttpApi : HttpApiInterface {
         .build()
 
     override var supportsToolCalling: Boolean = false
-    override lateinit var apiSettings: ApiSettings
 
-    override suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message {
+    override suspend fun send(
+        apiSettings: ApiSettings,
+        instructions: String,
+        messages: List<Message>,
+        model: ModelSettings,
+        tools: List<ToolInterface>,
+    ): Message {
         val chatMessages = mutableListOf(OpenrouterMessage.fromInstructions(instructions))
         chatMessages.addAll(OpenrouterMessage.fromMessages(messages))
 
@@ -60,7 +63,7 @@ class OpenrouterHttpApi : HttpApiInterface {
 
         val jsonBody = Json.encodeToString(requestBody)
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val header = Headers.headersOf(*getAuthHeader(), *getHeaders())
+        val header = Headers.headersOf(*getAuthHeader(apiSettings), *getHeaders())
         val request = Request.Builder()
             .url(apiSettings.url.toHttpUrl())
             .headers(header)
@@ -108,7 +111,7 @@ class OpenrouterHttpApi : HttpApiInterface {
         "X-Title", "Starsector/TalkingOnStations",
     )
 
-    private fun getAuthHeader() = arrayOf(
+    private fun getAuthHeader(apiSettings: ApiSettings) = arrayOf(
         "Authorization", "Bearer ${apiSettings.getApiKey()}",
     )
 }

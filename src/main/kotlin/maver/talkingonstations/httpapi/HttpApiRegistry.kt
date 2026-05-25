@@ -5,19 +5,9 @@ import maver.talkingonstations.TosSettings
 object HttpApiRegistry {
     private val apiList: List<HttpApiInterface> = HttpApiLoader().load()
 
-    fun getConversationApi(): HttpApiInterface {
-        val identifier = TosSettings.api
+    fun getConversationApi(): HttpApiInterface = getApi(TosSettings.api) ?: getDefaultApi() ?: noApiAvailable()
 
-        // Fallback to default api when requested api is not available
-        // ToDo: Should have user-facing feedback.
-        return getApi(identifier) ?: getDefaultApi() ?: throw Exception("No API available")
-    }
-
-    fun getCombatChatterApi(): HttpApiInterface {
-        val identifier = TosSettings.modsCcApi
-
-        return getApi(identifier) ?: getDefaultApi() ?: throw Exception("No API available")
-    }
+    fun getCombatChatterApi(): HttpApiInterface = getApi(TosSettings.modsCcApi) ?: getDefaultApi() ?: noApiAvailable()
 
     fun getApi(name: String): HttpApiInterface? {
         return apiList.find { it.getName() == name }
@@ -30,4 +20,7 @@ object HttpApiRegistry {
     fun getApiNames(): List<String> {
         return apiList.map { it.getName() }
     }
+
+    private fun noApiAvailable(): Nothing =
+        throw IllegalStateException("No HTTP API driver available — check Api.csv loading errors in starsector.log")
 }

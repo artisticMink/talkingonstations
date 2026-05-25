@@ -6,7 +6,6 @@ import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
 
 interface HttpApiInterface {
-    var apiSettings: ApiSettings
     var supportsToolCalling: Boolean
 
     /**
@@ -32,11 +31,18 @@ interface HttpApiInterface {
      * Should return [maver.talkingonstations.httpapi.exception.HttpApiRequestException] on unrecoverable errors
      * and a message object with the INFO role on soft errors.
      *
+     * @param apiSettings - The api settings used for the call
      * @param instructions - System message block
      * @param messages - A list of message blocks, the chat history
      * @param model - Model id and its settings
      */
-    suspend fun send(instructions: String, messages: List<Message>, model: ModelSettings, tools: List<ToolInterface>): Message
+    suspend fun send(
+        apiSettings: ApiSettings,
+        instructions: String,
+        messages: List<Message>,
+        model: ModelSettings,
+        tools: List<ToolInterface>,
+    ): Message
 
     /**
      * Must return an identifier that lines up with the identifier provided by [maver.talkingonstations.TosSettings]

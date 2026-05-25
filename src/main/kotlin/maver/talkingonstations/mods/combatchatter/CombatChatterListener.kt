@@ -58,8 +58,8 @@ class CombatChatterListener(
 
     init {
         val api = HttpApiRegistry.getCombatChatterApi()
-        api.apiSettings = ApiSettings(TosSettings.api, TosSettings.modsCcApiUrl, TosSettings.modsCcApiKey)
-        llmService = LLMService(api)
+        val apiSettings = ApiSettings(api.getName(), TosSettings.modsCcApiUrl, TosSettings.modsCcApiKey)
+        llmService = LLMService(api, apiSettings)
     }
 
     override fun preShowChatMessage(
