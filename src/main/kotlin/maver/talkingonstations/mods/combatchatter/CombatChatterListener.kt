@@ -118,12 +118,12 @@ class CombatChatterListener(
 
             if (myShip != null) {
                 h2("Your Ship - ${myShip.name}")
-                +getShipStatus(myShip)
+                if (myShip.fleetMember != null) +getShipStatus(myShip)
             }
 
             if (theirShip != null) {
                 h2("Targeted Enemy Ship - ${theirShip.name}")
-                +getShipStatus(theirShip)
+                if (theirShip.fleetMember != null) +getShipStatus(theirShip)
             }
         }
 
@@ -159,12 +159,12 @@ class CombatChatterListener(
                 ccContext.messages.add(
                     Message(
                         ChatRoles.ASSISTANT,
-                        "${member.shipName}: $rewritten"
+                        rewritten
                     )
                 )
             } else ccContext.messages.removeLast()
 
-            val finalText = (rewritten?.takeIf { it.isNotBlank() } ?: text).replace("${member.shipName}:","").trim { it == '"' }
+            val finalText = (rewritten?.takeIf { it.isNotBlank() } ?: text).trim { it == '"' }
             plugin.postToCombatThread {
                 rewriteInProgress = false
                 enqueueMessage(member, finalText, textColor, floaty)
