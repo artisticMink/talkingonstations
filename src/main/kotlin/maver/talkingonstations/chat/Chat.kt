@@ -13,6 +13,7 @@ import maver.talkingonstations.TosStrings
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
 import maver.talkingonstations.llm.LLMService
+import maver.talkingonstations.llm.dto.ApiSettings
 import maver.talkingonstations.llm.dto.ConversationUi
 import maver.talkingonstations.llm.dto.GameInfo
 import maver.talkingonstations.llm.dto.Message
@@ -43,7 +44,8 @@ class Chat(
 
     private val chatHistory get() = messages
     private val api = HttpApiRegistry.getConversationApi()
-    private val llmService: LLMService = LLMService(api)
+    private val apiSettings = ApiSettings(api.getName(), TosSettings.apiUrl, TosSettings.apiKey)
+    private val llmService: LLMService = LLMService(api, apiSettings)
 
     var modelSettings: ModelSettings = ModelSettings(TosSettings.apiModel)
 
