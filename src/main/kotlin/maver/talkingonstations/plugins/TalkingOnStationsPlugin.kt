@@ -5,9 +5,11 @@ import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager
 import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.events.ChatBarEventWithPersonCreator
+import maver.talkingonstations.mods.lunasettings.LunaSettingsRegistration
 
 internal class TalkingOnStationsPlugin : BaseModPlugin() {
     override fun onApplicationLoad() {
+        LunaSettingsRegistration.register()
         TosEveryFrameScriptQueue.setup()
 
     }
