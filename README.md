@@ -1,5 +1,49 @@
-# talkingonstations
+# Talking on Stations
 A comprehensive LLM integration for Starsector
+
+## Extending the mod
+
+Most features of Talking on Stations are realized via [maver.talkingonstations.TosCsvLoader](src/main/kotlin/maver/talkingonstations/TosCsvLoader.kt) which uses Starsectors getMergedSpreadsheetDataForMod(). To extend any of the following features, a csv of the same name has to be placed in `<your_mod_folder>/data/config/tos/`
+
+Merged loads: 
+* Api.csv
+* Archetypes.csv
+* ContextMixin.csv
+* MarketPerson.csv
+* Tools.csv
+
+## Custom HTTP API
+
+### HttpApiInterface
+
+Every HTTP API has to implement [maver.talkingonstations.httpapi.HttpApiInterface](src/main/kotlin/maver/talkingonstations/httpapi/HttpApiInterface.kt). Please consult the interface documentation.
+
+The only functionally necessary convention is that send() must return an instance of [maver.talkingonstations.llm.dto.Message](src/main/kotlin/maver/talkingonstations/llm/dto/Message.kt), which in most circumstances will look similar to this:
+
+```kotlin
+return Message(
+    role = ChatRoles.ASSISTANT,
+    content = "The answer is: 42"
+)
+```
+
+Running the http request within a IO context and returning user-facing error messages is not necessary but strongly encouraged for a good user experience. An example implementation can be found here: [maver.talkingonstations.httpapi.OpenrouterHttpApi](src/main/kotlin/maver/talkingonstations/httpapi/OpenrouterHttpApi.kt)
+
+### Register your API
+
+For your API to become available, an Api.csv must be present with two columns:
+* fullyQualifiedClassName - As the name implies, the full name of your class. I.e. maver.talkingonstations.httpapi.OpenrouterHttpApi
+* supportsToolCalling - Whether the API can process tool calls. Either true or false. If in doubt, set false.
+
+### Fetching your API
+
+After loading a save, your API will be available via [maver.talkingonstations.httpapi.HttpApiRegistry](src/main/kotlin/maver/talkingonstations/httpapi/HttpApiRegistry.kt)
+```kotlin
+// Get your API
+val myApi: HttpApiInterface = HttpApiRegistry.getApi("Your APIs getName() result")
+// Get all API names
+val names: List<String>  = HttpApiRegistry.getApiNames()
+```
 
 ## Build the mod
 
@@ -27,4 +71,4 @@ A folder called libs/ with these jars:
 * lwjgl.jar
 * lwjgl_util.jar
 
-A file `gradle.properites` in the root directory with `starsectorModFolder=<absolute-path-to-your-mod-folder>`
+A file `gradle.properties.` in the root directory with `starsectorModFolder=<absolute-path-to-your-mod-folder>`
