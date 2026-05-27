@@ -62,6 +62,9 @@ class ChatCompletionHttpApi : HttpApiInterface {
             topK = model.topK,
             reasoningEffort = model.reasoningEffort,
             tools = if (supportsToolCalling) ToolCallDefinition.fromTools(tools).ifEmpty { null } else null,
+            frequencyPenalty = model.frequencyPenalty,
+            repetitionPenalty = model.repetitionPenalty,
+            presencePenalty = model.presencePenalty,
         )
 
         val jsonBody = json.encodeToString(requestBody)

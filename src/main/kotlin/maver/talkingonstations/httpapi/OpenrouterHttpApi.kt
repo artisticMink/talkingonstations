@@ -57,6 +57,9 @@ class OpenrouterHttpApi : HttpApiInterface {
             topK = model.topK,
             reasoning = OpenrouterReasoning(model.reasoningEffort),
             tools = if (supportsToolCalling) ToolCallDefinition.fromTools(tools).ifEmpty { null } else emptyList(),
+            frequencyPenalty = model.frequencyPenalty,
+            repetitionPenalty = model.repetitionPenalty,
+            presencePenalty = model.presencePenalty,
         )
 
         //if (Global.getSettings().isDevMode) TosInspector.debug(requestBody.toString(), this::class)

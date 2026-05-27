@@ -19,6 +19,12 @@ data class ChatCompletionRequestBody(
     @SerialName("reasoning_effort")
     val reasoningEffort: String? = null,
     val tools: List<ToolCallDefinition>? = null,
+    @SerialName("frequency_penalty")
+    val frequencyPenalty: Float,
+    @SerialName("presence_penalty")
+    val presencePenalty: Float,
+    @SerialName("repetition_penalty")
+    val repetitionPenalty: Float,
 )
 
 @Serializable

@@ -17,6 +17,12 @@ data class OpenrouterRequestBody(
     val topP: Float,
     @SerialName("top_k")
     val topK: Float,
+    @SerialName("frequency_penalty")
+    val frequencyPenalty: Float,
+    @SerialName("presence_penalty")
+    val presencePenalty: Float,
+    @SerialName("repetition_penalty")
+    val repetitionPenalty: Float,
     val tools: List<ToolCallDefinition>? = null,
 )
 

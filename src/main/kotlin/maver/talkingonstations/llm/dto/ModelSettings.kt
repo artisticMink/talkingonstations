@@ -9,4 +9,7 @@ data class ModelSettings(
     val topP: Float = TosSettings.topP.toFloat(),
     val topK: Float = TosSettings.topK.toFloat(),
     val reasoningEffort: String = TosSettings.reasoningEffort,
+    val frequencyPenalty: Float = TosSettings.frequencyPenalty.toFloat(),
+    val presencePenalty: Float = TosSettings.presencePenalty.toFloat(),
+    val repetitionPenalty: Float = TosSettings.repetitionPenalty.toFloat(),
 )
