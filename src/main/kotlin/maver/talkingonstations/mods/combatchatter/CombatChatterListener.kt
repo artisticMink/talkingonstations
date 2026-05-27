@@ -20,6 +20,7 @@ import maver.talkingonstations.llm.dto.GameInfo
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
 import maver.talkingonstations.llm.markdown
+import org.histidine.chatter.ChatterConfig
 import org.histidine.chatter.ChatterDataManager
 import org.histidine.chatter.ChatterLine
 import org.histidine.chatter.ChatterMessage
@@ -53,7 +54,13 @@ class CombatChatterListener(
     private val ccContext = CombatChatterContext(GameInfo(), mutableListOf<Message>(), null)
     private val modelSettings: ModelSettings = ModelSettings(
         id = TosSettings.modsCcApiModel,
-        reasoningEffort = TosSettings.modsCcReasoningEffort
+        temperature = TosSettings.modsCcTemperature.toFloat(),
+        topP = TosSettings.modsCcTopP.toFloat(),
+        topK = TosSettings.modsCcTopK.toFloat(),
+        reasoningEffort = TosSettings.modsCcReasoningEffort,
+        frequencyPenalty = TosSettings.modsCcFrequencyPenalty.toFloat(),
+        repetitionPenalty = TosSettings.modsCcRepetitionPenalty.toFloat(),
+        presencePenalty = TosSettings.modsCcPresencePenalty.toFloat(),
     )
 
     init {
@@ -77,7 +84,7 @@ class CombatChatterListener(
         if (approvedLines.remove(line)) return true
 
         // Prevent race condition on context.messages
-        if (TosSettings.modsCcPersistenceEnabled && rewriteInProgress) return true
+        if (rewriteInProgress) return true
 
         // Only every so often
         val now = System.nanoTime()
@@ -104,6 +111,9 @@ class CombatChatterListener(
                 l(text)
             }
 
+            if (ChatterConfig.chatterBoxOfficerMode)
+                p("Important: Officer Chat Mode is active. Take this into account and emphasize a more character-driven, involved chatter.")
+
             h2("Your Faction - ${myFaction.displayName}")
             if (TosSettings.modsCcWithDescription) {
                 p(Global.getSettings().getDescription(myFaction.id, Type.FACTION).text1)
@@ -117,7 +127,7 @@ class CombatChatterListener(
             }
 
             if (myShip != null) {
-                h2("Your Ship - ${myShip.name}")
+                h2("Your ship - ${myShip.name}.")
                 if (myShip.fleetMember != null) +getShipStatus(myShip)
             }
 
@@ -153,18 +163,14 @@ class CombatChatterListener(
                 null
             }
 
-            if (!TosSettings.modsCcPersistenceEnabled) ccContext.messages.clear()
-            else if (rewritten?.isNotBlank() == true) {
+            val finalText = rewritten ?: text
+            if (!TosSettings.modsCcPersistenceEnabled) {
+                ccContext.messages.clear()
+            } else {
                 ccContext.messages.removeLast()
-                ccContext.messages.add(
-                    Message(
-                        ChatRoles.ASSISTANT,
-                        rewritten
-                    )
-                )
-            } else ccContext.messages.removeLast()
+                ccContext.messages.add(Message(ChatRoles.ASSISTANT, finalText))
+            }
 
-            val finalText = (rewritten?.takeIf { it.isNotBlank() } ?: text).trim { it == '"' }
             plugin.postToCombatThread {
                 rewriteInProgress = false
                 enqueueMessage(member, finalText, textColor, floaty)
@@ -195,7 +201,7 @@ class CombatChatterListener(
         text: String,
         textColor: Color?,
         isFloater: Boolean = false,
-        ignoreDelay: Boolean = false
+        ignoreDelay: Boolean = true
     ) {
         val chatter = ChatterCombatPlugin.getInstance() ?: return
 
@@ -232,12 +238,17 @@ class CombatChatterListener(
             h3("Combat Readiness")
             l("${member.repairTracker.cr * 100}%")
 
-            val activeAiFlags = ShipwideAIFlags.AIFlags.entries
-                .filter { ship.aiFlags?.hasFlag(it) == true }
-                .joinToString(",") { it.name }
-
-            h3("AI Behavior")
-            l(activeAiFlags)
+            // Resolve ai flags to a narrative text
+            val flags = ship.aiFlags
+            if (flags != null) {
+                val behaviors = ShipwideAIFlags.AIFlags.entries
+                    .filter { flags.hasFlag(it) }
+                    .mapNotNull { CcUtils.aiFlagDescriptions[it]?.random() }
+                if (behaviors.isNotEmpty()) {
+                    h3("What this ship is doing")
+                    list(behaviors)
+                }
+            }
         }
     }
 
