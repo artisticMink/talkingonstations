@@ -8,8 +8,9 @@ import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BaseBarEventWithPerson
 import com.fs.starfarer.api.util.Misc
+import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.TosRegistry
-import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
+import maver.talkingonstations.ui.trichat.TriChatCustomVisualPanel
 import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.httpapi.HttpApiRegistry
 
@@ -46,12 +47,23 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
             Global.getSector().playerPerson,
             person,
             market,
-            dialog,
-            barChatUi
         )
 
         chat.beforeContinueAsPlayer = ::addPlayerDialogOption
         chat.afterChatResponse = ::addNpcDialogOption
+
+        // Same end-of-conversation signal as the comms screen, different
+        // presentation: this is an in-person scene, nobody "severs" anything.
+        chat.onEnded = { farewell ->
+            barChatUi.markEnded()
+            TosEveryFrameScriptQueue.add {
+                dialog.textPanel.addPara(farewell)
+                dialog.textPanel.addPara(
+                    "They turn away and melt back into the crowd.",
+                    Misc.getHighlightColor()
+                )
+            }
+        }
 
         barChatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
         barChatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
