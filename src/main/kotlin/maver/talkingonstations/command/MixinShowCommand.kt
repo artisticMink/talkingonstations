@@ -40,7 +40,7 @@ class MixinShowCommand : BaseCommand {
             )
         )
         if (rendered == null) {
-            Console.showMessage("(mixin opted out — render returned null for this context)")
+            Console.showMessage("(mixin opted out, render returned null for this context)")
         } else {
             Console.showMessage(rendered)
         }

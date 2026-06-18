@@ -1,18 +1,16 @@
 package maver.talkingonstations.characters.market
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CommDirectoryAPI
 import com.fs.starfarer.api.campaign.CommDirectoryEntryAPI
 import com.fs.starfarer.api.campaign.PersonImportance
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Voices
-import maver.talkingonstations.TosClassLoader
 import maver.talkingonstations.TosCsvLoader
 import maver.talkingonstations.TosInspector
 import maver.talkingonstations.TosMemoryKeys
-import maver.talkingonstations.TosStrings
 import maver.talkingonstations.characters.market.dto.MarketPersonData
 import maver.talkingonstations.extensions.toEnumOrDefault
 import org.json.JSONObject
@@ -64,10 +62,12 @@ class MarketPersonLoader : TosCsvLoader(
                 personExtension = extension,
             )
 
-            val existingMarket = Global.getSector().economy.getMarket(marketPersonData.market)
-                .let { existingMarket ->
-                    existingMarket ?: throw Exception("Market ${marketPersonData.market} not found")
-                }
+            val existingMarket: MarketAPI? = Global.getSector().economy.getMarket(marketPersonData.market)
+
+            if (existingMarket == null) {
+                TosInspector.error("Market ${marketPersonData.market} not found", this::class)
+                return@mapNotNull null
+            }
 
             val person = createPerson(marketPersonData)
 
@@ -96,7 +96,7 @@ class MarketPersonLoader : TosCsvLoader(
         }
 
         return Global.getFactory().createPerson().apply {
-            id = "tos_${data.name}_${data.hashCode()}"
+            id = "tos_marketperson_${data.id}"
             setFaction(data.faction)
             gender = Gender.valueOf(data.gender.name)
             postId = data.post ?: Ranks.POST_CITIZEN
