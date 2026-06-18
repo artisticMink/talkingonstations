@@ -1,5 +1,8 @@
 {
   "ruleCommandPackages":[
     "maver.talkingonstations.campaign.rulecmd"
-  ]
+  ],
+  "plugins":{
+    "TosCombatChatterPlugin":"maver.talkingonstations.mods.combatchatter.CombatChatterPlugin"
+  }
 }
