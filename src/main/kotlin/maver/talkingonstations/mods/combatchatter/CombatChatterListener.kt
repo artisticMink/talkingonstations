@@ -19,6 +19,7 @@ import maver.talkingonstations.llm.dto.ApiSettings
 import maver.talkingonstations.llm.dto.GameInfo
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ModelSettings
+import maver.talkingonstations.llm.dto.TurnResult
 import maver.talkingonstations.llm.markdown
 import org.histidine.chatter.ChatterConfig
 import org.histidine.chatter.ChatterDataManager
@@ -51,7 +52,7 @@ class CombatChatterListener(
     var lastRewrite = 0L
 
     private val llmService: LLMService
-    private val ccContext = CombatChatterContext(GameInfo(), mutableListOf<Message>(), null)
+    private val ccContext = CombatChatterContext(GameInfo(), mutableListOf<Message>())
     private val modelSettings: ModelSettings = ModelSettings(
         id = TosSettings.modsCcApiModel,
         temperature = TosSettings.modsCcTemperature.toFloat(),
@@ -147,13 +148,18 @@ class CombatChatterListener(
                     )
                 )
 
-                val responseMessages = llmService.send(
+                val result = llmService.send(
                     context = ccContext,
                     model = modelSettings,
                     tools = emptyList()
                 )
 
-                responseMessages.lastOrNull().takeIf { it?.role == ChatRoles.ASSISTANT }?.content
+                // Chatter only cares about one outcome; Ended/Failed both fall
+                // through to null and the canned line is used as-is.
+                (result as? TurnResult.Reply)?.messages
+                    ?.lastOrNull()
+                    ?.takeIf { it.role == ChatRoles.ASSISTANT }
+                    ?.content
             } catch (t: Throwable) {
                 TosInspector.error(
                     "Chatter rewrite failed",
@@ -163,7 +169,7 @@ class CombatChatterListener(
                 null
             }
 
-            val finalText = rewritten ?: text
+            val finalText = (rewritten ?: text).split("\n\n")[0].trim { it == '"' }
             if (!TosSettings.modsCcPersistenceEnabled) {
                 ccContext.messages.clear()
             } else {

@@ -2,22 +2,20 @@ package maver.talkingonstations.mods.combatchatter
 
 import maver.talkingonstations.TosSettings
 import maver.talkingonstations.llm.LLMContextInterface
-import maver.talkingonstations.llm.dto.ConversationUiInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.Message
 
 class CombatChatterContext(
     override val gameInfo: GameInfoInterface,
     override val messages: MutableList<Message>,
-    override val conversationUi: ConversationUiInterface?,
 ) : LLMContextInterface {
 
     private val systemBlock = """
   You are one crew voice on the open radio channel of a warship in the
-  PC game Starsector. Your fleet is in combat. You are speaking for your ship.
+  PC game Starsector. Your fleet is in combat. You are speaking as your ship, tasked to write exactly one line of combat chatter.
 
   OUTPUT FORMAT (read twice, obey exactly):
-  - One line of plain text. One short sentence.
+  - One single line of plain text.
   - Aim for 6 to 12 words. Never more than 15.
   - Plain text only. No markdown, no asterisks, no bullets, no emoji,
     no surrounding quotes of any kind.
@@ -27,7 +25,7 @@ class CombatChatterContext(
 
   STYLE:
   - In-the-moment voice, mic-keyed mid-fight.
-  - Anchor on AT MOST ONE concrete detail from the briefing
+  - Anchor on AT MOST ONE concrete detail from the briefing.
   - The briefing describes your faction in prose. Speak in your
     faction's register: lift its vocabulary, formality, and cadence
     from that description. A pious faction sounds different from a
