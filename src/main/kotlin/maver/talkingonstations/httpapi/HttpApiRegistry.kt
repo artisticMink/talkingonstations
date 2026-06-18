@@ -22,5 +22,5 @@ object HttpApiRegistry {
     }
 
     private fun noApiAvailable(): Nothing =
-        throw IllegalStateException("No HTTP API driver available — check Api.csv loading errors in starsector.log")
+        throw IllegalStateException("No HTTP API driver available, check Api.csv loading errors in starsector.log")
 }

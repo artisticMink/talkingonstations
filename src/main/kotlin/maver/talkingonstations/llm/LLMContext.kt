@@ -3,7 +3,6 @@ package maver.talkingonstations.llm
 import com.fs.starfarer.api.Global
 import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.TosSettings
-import maver.talkingonstations.llm.dto.ConversationUi
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.enum.Section
@@ -12,7 +11,7 @@ import maver.talkingonstations.llm.enum.Section
  * A generic LLM interaction context that manages system instructions,
  * conversation messages, and context mixins.
  */
-open class LLMContext(override val gameInfo: GameInfoInterface, override val conversationUi: ConversationUi? = null): LLMContextInterface {
+open class LLMContext(override val gameInfo: GameInfoInterface): LLMContextInterface {
     override val messages: MutableList<Message> = mutableListOf()
 
     private val mixins: List<ContextMixinInterface> = TosRegistry.getContextMixins()

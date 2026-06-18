@@ -6,5 +6,5 @@ package maver.talkingonstations.llm.dto
 data class ToolCall(
     val id: String,
     val name: String,
-    val arguments: Map<String, String> = emptyMap(),
+    val arguments: String = "{}",
 )

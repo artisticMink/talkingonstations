@@ -9,9 +9,13 @@ class ToolCallingListCommand: BaseCommand {
         p0: String,
         p1: BaseCommand.CommandContext
     ): BaseCommand.CommandResult {
+        // Every loaded tool is enabled by definition: disabled CSV rows are
+        // filtered out before instantiation.
         Console.showMessage("Loaded tools:")
         Console.showMessage(
-            TosRegistry.getTools().joinToString { "${it.getKey()} (${it.getName()}) -> ${it.enabled}\n" }
+            TosRegistry.getTools().joinToString("\n") { tool ->
+                "${tool.getKey()} (${tool.name}) params: [${tool.parameters.joinToString { it.name }}]"
+            }
         )
 
         return BaseCommand.CommandResult.SUCCESS

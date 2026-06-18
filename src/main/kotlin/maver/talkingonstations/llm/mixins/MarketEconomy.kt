@@ -76,7 +76,7 @@ class MarketEconomy : ContextMixinInterface {
 
     private fun tradePosture(market: MarketAPI): List<String> = buildList {
         if (market.isFreePort) {
-            add("Registered as a Free Port — customs is nominal and galactic trade law is ignored locally.")
+            add("Registered as a Free Port, customs is nominal and galactic trade law is ignored locally.")
         } else {
             add("Tariffs are ${tariffDescriptor(market.tariff.modifiedValue)}.")
             val factionIllegal = market.faction.illegalCommodities

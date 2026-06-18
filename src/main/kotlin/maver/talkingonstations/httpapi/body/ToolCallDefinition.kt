@@ -12,21 +12,25 @@ data class ToolCallDefinition(
         fun fromTools(tools: List<ToolInterface>): List<ToolCallDefinition> =
             tools.map(::fromTool)
 
-        fun fromTool(tool: ToolInterface): ToolCallDefinition {
-            val params = tool.parameters.parameters
-            return ToolCallDefinition(
+        /**
+         * @see [ToolInterface]
+         */
+        fun fromTool(tool: ToolInterface): ToolCallDefinition =
+            ToolCallDefinition(
                 function = FunctionDeclaration(
-                    name = tool.getName(),
+                    name = tool.name,
                     description = tool.description,
                     parameters = FunctionParameters(
-                        properties = params.mapValues { (_, description) ->
-                            SchemaProperty(type = "string", description = description)
+                        properties = tool.parameters.associate { param ->
+                            param.name to SchemaProperty(
+                                type = param.type.jsonType,
+                                description = param.description,
+                            )
                         },
-                        required = params.keys.toList(),
+                        required = tool.parameters.filter { it.required }.map { it.name },
                     ),
                 ),
             )
-        }
     }
 }
 

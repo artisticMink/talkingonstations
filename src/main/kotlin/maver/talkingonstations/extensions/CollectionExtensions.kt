@@ -2,7 +2,6 @@ package maver.talkingonstations.extensions
 
 import java.util.TreeMap
 import kotlin.random.Random
-
 /**
  * Returns a random element from the list based on weights.
  *

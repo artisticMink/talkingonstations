@@ -3,7 +3,6 @@ package maver.talkingonstations.httpapi.body
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import maver.talkingonstations.chat.ChatRoles
 import maver.talkingonstations.llm.dto.Message
@@ -30,24 +29,13 @@ data class ChatCompletionResponseBody(
             ToolCall(
                 id = call.id,
                 name = call.function.name,
-                arguments = parseArguments(call.function.arguments),
+                arguments = call.function.arguments,
             )
         }
+
         // content is null when the model only returns tool calls.
         return Message(role, message.content.orEmpty(), toolCalls)
     }
-
-    /**
-     * OpenAI-style tool arguments arrive as a JSON-encoded string. v1 keeps
-     * every parameter a string, so decode to a flat map; a malformed payload
-     * yields an empty map rather than failing the whole response.
-     */
-    private fun parseArguments(raw: String): Map<String, String> =
-        try {
-            Json.decodeFromString<Map<String, String>>(raw)
-        } catch (exception: Exception) {
-            emptyMap()
-        }
 }
 
 @OptIn(ExperimentalSerializationApi::class)

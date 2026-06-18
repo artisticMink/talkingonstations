@@ -1,22 +1,33 @@
 package maver.talkingonstations.llm.tools
 
 import maver.talkingonstations.llm.ToolInterface
-import maver.talkingonstations.llm.ToolParamInterface
-import maver.talkingonstations.llm.dto.ConversationUi
-import maver.talkingonstations.llm.dto.ConversationUiInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
+import maver.talkingonstations.llm.dto.ParamType
+import maver.talkingonstations.llm.dto.ToolArguments
+import maver.talkingonstations.llm.dto.ToolParameter
 import maver.talkingonstations.llm.dto.ToolResult
 
-class EndConversation() : ToolInterface {
-    override val isTransient: Boolean = true
-    override var enabled = false
-    override lateinit var description: String
-    override lateinit var parameters: ToolParamInterface
+/**
+ * Let's the model end the conversation.
+ */
+class EndConversation : ToolInterface {
+    override val name = "end_conversation"
+    override val description = "End the conversation. Equivalent to hanging up or leaving the room."
+    override val isTransient = true
 
-    override fun getName(): String = "end_conversation"
+    // Shouldn't bounce back to the model just because it forgot the goodbye line.
+    override val parameters = listOf(
+        ToolParameter(
+            name = "last_message",
+            type = ParamType.STRING,
+            description = "The last message the player will see before the scene ends.",
+            required = false,
+        )
+    )
 
-    override fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUiInterface?): ToolResult {
-        conversationUi?.forceEnd(params["last_message"] ?: "Only static noise remains....")
-        return ToolResult("Connection ended.")
-    }
+    override fun execute(args: ToolArguments, gameInfo: GameInfoInterface): ToolResult =
+        ToolResult(
+            text = args.optString("last_message") ?: "Only static remains...",
+            forceEnd = true,
+        )
 }

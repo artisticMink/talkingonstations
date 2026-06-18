@@ -1,15 +1,11 @@
 package maver.talkingonstations.command
 
 import com.fs.starfarer.api.Global
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.llm.ToolInterface
-import maver.talkingonstations.llm.dto.ConversationUi
 import maver.talkingonstations.llm.dto.GameInfo
+import maver.talkingonstations.llm.dto.ToolArgumentException
+import maver.talkingonstations.llm.dto.ToolArguments
 import maver.talkingonstations.llm.dto.ToolResult
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.console.Console
@@ -30,7 +26,7 @@ class ToolTestCommand : BaseCommand {
         val marketId = parts.getOrNull(2) ?: DEFAULT_MARKET_ID
 
         val tool: ToolInterface? = TosRegistry.getTools()
-            .find { it.getName() == toolName || it.getKey() == toolName }
+            .find { it.name == toolName || it.getKey() == toolName }
         if (tool == null) {
             Console.showMessage("Tool '$toolName' not found. Use tos.tools.list to see loaded tools.")
             return BaseCommand.CommandResult.SUCCESS
@@ -49,13 +45,13 @@ class ToolTestCommand : BaseCommand {
         )
 
         val result: ToolResult = try {
-            val entries = when (val root = Json.parseToJsonElement(parameterString)) {
-                is JsonArray -> root.flatMap { it.jsonObject.entries }
-                is JsonObject -> root.entries
-                else -> error("Expected a JSON object or array of objects")
-            }
-            val params = entries.associate { (key, value) -> key to value.jsonPrimitive.content }
-            tool.execute(params, game, null)
+            // Same parse + validate path as production (LLMService.runTool), so
+            // a passing console test means a real call would pass too.
+            val args = ToolArguments.parse(parameterString, tool.parameters)
+            tool.execute(args, game)
+        } catch (exception: ToolArgumentException) {
+            Console.showMessage("Invalid arguments: ${exception.message}")
+            return BaseCommand.CommandResult.SUCCESS
         } catch (exception: Exception) {
             Console.showMessage("${exception.javaClass.simpleName}: ${exception.message}")
             return BaseCommand.CommandResult.SUCCESS

@@ -61,7 +61,7 @@ class ChatCompletionHttpApi : HttpApiInterface {
             topP = model.topP,
             topK = model.topK,
             reasoningEffort = model.reasoningEffort,
-            tools = if (supportsToolCalling) ToolCallDefinition.fromTools(tools).ifEmpty { null } else null,
+            tools = ToolCallDefinition.fromTools(tools).ifEmpty { null },
             frequencyPenalty = model.frequencyPenalty,
             repetitionPenalty = model.repetitionPenalty,
             presencePenalty = model.presencePenalty,

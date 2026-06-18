@@ -3,30 +3,30 @@ package maver.talkingonstations.llm.tools
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.CommoditySpecAPI
 import maver.talkingonstations.llm.ToolInterface
-import maver.talkingonstations.llm.ToolParamInterface
 import maver.talkingonstations.llm.ToolUtils
-import maver.talkingonstations.llm.dto.ConversationUi
-import maver.talkingonstations.llm.dto.ConversationUiInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
+import maver.talkingonstations.llm.dto.ParamType
+import maver.talkingonstations.llm.dto.ToolArguments
+import maver.talkingonstations.llm.dto.ToolParameter
 import maver.talkingonstations.llm.dto.ToolResult
 import maver.talkingonstations.llm.markdown
 
 class GlobalMarketCheckForCommodity : ToolInterface {
-    override val isTransient: Boolean = false
-    override var enabled = false
-    override lateinit var description: String
-    override lateinit var parameters: ToolParamInterface
+    override val name = "global_market_check_for_commodity"
+    override val description = "Sector-wide price check for a single commodity. " +
+            "Requires a comm relay in range. Returns the best-paying markets currently buying the commodity."
+    override val isTransient = false
+    override val parameters = listOf(
+        ToolParameter(
+            name = "commodity_name",
+            type = ParamType.STRING,
+            description = "The name of a single commodity",
+        )
+    )
 
-    override fun getName(): String = "global_market_check_for_commodity"
-
-    /**
-     * {
-     *   "commodity_name": "The name of the commodity that will be price-checked"
-     * }
-     */
-    override fun execute(params: Map<String, String>, gameInfo: GameInfoInterface, conversationUi: ConversationUiInterface?): ToolResult {
-        val name = params["commodity_name"]
-        if (name.isNullOrBlank()) return ToolResult("commodity_name parameter is empty. Bad Request.")
+    override fun execute(args: ToolArguments, gameInfo: GameInfoInterface): ToolResult {
+        // Presence and non-blankness were validated against [parameters] upstream.
+        val name = args.string("commodity_name")
 
         if (!Global.getSector().intelManager.isPlayerInRangeOfCommRelay) {
             return ToolResult("This market is not in range of a hyperspace comm relay. Price check impossible.")

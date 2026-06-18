@@ -4,7 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Skills
-import maver.talkingonstations.TosMemoryKeys
+import maver.talkingonstations.TosSettings
 import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.enum.Section
@@ -17,10 +17,10 @@ class PlayerKnowledge : ContextMixinInterface {
     override lateinit var section: Section
 
     override fun render(gameInfo: GameInfoInterface): String = markdown {
-        val playerBackground = player.memoryWithoutUpdate.getString(TosMemoryKeys.PLAYER_PROFILE)
+        val playerBackground = TosSettings.playerProfile
 
         h2("${playerName()}")
-        if(playerBackground != null && playerBackground.isNotEmpty()) {
+        if(playerBackground.isNotEmpty()) {
             h3("Background")
             p(playerBackground)
         }

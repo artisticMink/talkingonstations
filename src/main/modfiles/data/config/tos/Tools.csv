@@ -1,6 +1,6 @@
-fullyQualifiedClassName,description,parameters,enabled
-maver.talkingonstations.llm.tools.EndConversation,End the conversation. Equivalent to hanging up or leaving the room.,"{""last_message"":""The last message the player will see before the scene ends.""}",true
-maver.talkingonstations.llm.tools.GlobalMakretCheckForCommodity,Sector-wide price check for a single commodity. Requires a comm relay in range. Returns the best-paying markets currently buying the commodity.,"{""commodity_name"":""The name of a single commodity""}",true
-maver.talkingonstations.llm.tools.CheckLocalMarket,"Returns price, stock, and shortage/excess status for every commodity on the local market. No parameters needed.",{},true
-maver.talkingonstations.llm.tools.BuyCommodity,The npc can buy a commodity from the player,"{""commodity_name"":""The name of the commodity to buy from the player."", amount:""Integer, the amount of commodities to buy.""",true
-maver.talkingonstations.llm.tools.SellCommodity,The npc can sell a commodity from the player - if they have enough credits,"{""commodity_name"":""The name of the commodity to sell to the player."", amount:""Integer, the amount of commodities to sell.""",true
+fullyQualifiedClassName,enabled
+maver.talkingonstations.llm.tools.EndConversation,true
+maver.talkingonstations.llm.tools.GlobalMarketCheckForCommodity,true
+maver.talkingonstations.llm.tools.CheckLocalMarket,true
+maver.talkingonstations.llm.tools.BuyCommodity,false
+maver.talkingonstations.llm.tools.SellCommodity,false
