@@ -9,5 +9,4 @@ BaseSystemInstruction,maver.talkingonstations.llm.mixins.BaseInstruction,Adds in
 GuardrailsInstruction,maver.talkingonstations.llm.mixins.GuardrailsInstruction,Adds guardrails to keep the experience close to T-rated.,true,INSTRUCTION
 CommsInstruction,maver.talkingonstations.llm.mixins.CommsInstruction,Adds specific comms scenario instructions.,true,INSTRUCTION
 BarInstruction,maver.talkingonstations.llm.mixins.BarInstruction,Add specific planetside bar scenario instructions.,true,INSTRUCTION
-ToolCallingInstruction,maver.talkingonstations.llm.mixins.ToolCallingInstruction,Add specific planetside bar scenario instructions.,true,INSTRUCTION
 NpcMemory,maver.talkingonstations.llm.mixins.NpcMemory,Add tool calling instructions,true,INSTRUCTION
