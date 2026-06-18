@@ -10,13 +10,11 @@ plugins {
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.serialization") version "2.3.21"
     id("com.gradleup.shadow") version "9.4.1"
-    id("application")
 }
 
 repositories {
     mavenCentral()
 }
-
 
 // Target Java 17
 java {
@@ -33,20 +31,16 @@ tasks.withType<KotlinCompile> {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
-    implementation("com.squareup.okhttp3:okhttp-coroutines:5.3.2")
+    implementation("com.squareup.okhttp3:okhttp-coroutines:5.3.2") {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-jvm")
+    }
+
+
 
     // LazyLib will provide kotlin runtime and coroutines
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
-}
-
-sourceSets {
-    main {
-        java {
-            // Prevents decompiling of starfarer.api.jar
-            srcDirs("/starfarer-api/")
-        }
-    }
 }
 
 // Prefer fat jar
@@ -60,9 +54,6 @@ tasks.jar {
 tasks.withType<ShadowJar> {
     archiveBaseName.set("TalkingOnStations")
     archiveClassifier.set("")
-
-    // Workaround for https://github.com/GradleUp/shadow/issues/713
-    dependsOn("distTar", "distZip")
 }
 
 /**
