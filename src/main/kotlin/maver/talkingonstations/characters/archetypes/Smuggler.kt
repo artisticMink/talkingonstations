@@ -7,7 +7,6 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.characters.RandomPerson
-import maver.talkingonstations.extensions.replaceFromMap
 import maver.talkingonstations.llm.dto.GameInfoInterface
 
 
@@ -33,7 +32,7 @@ class Smuggler(factionId: String? = null): CharacterArchetypeInterface {
     }
 
     override fun getText(gameInfo: GameInfoInterface): String {
-        return "You specialize in {{commodity}}".replaceFromMap(templateVars)
+        TODO()
     }
 
     private fun getRandomFaction(): String {

@@ -12,7 +12,6 @@ import com.fs.starfarer.api.ui.TextFieldAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIPanelAPI
 import com.fs.starfarer.api.util.Misc
-import org.lazywizard.console.overlay.v2.misc.setOpacity
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
