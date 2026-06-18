@@ -6,11 +6,12 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import maver.talkingonstations.TosEveryFrameScriptQueue
+import maver.talkingonstations.TosInspector
 import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.TosSettings
 import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.httpapi.HttpApiRegistry
-import maver.talkingonstations.ui.TriChat.TriChatCustomVisualPanel
+import maver.talkingonstations.ui.trichat.TriChatCustomVisualPanel
 
 /**
  * Hook, gets executed whenever a conversation with a market contact is started.
@@ -43,13 +44,21 @@ class TosBeginConversation : BaseCommandPlugin() {
             Global.getSector().playerPerson,
             person,
             person.market,
-            dialog,
-            chatUi
         )
 
         chat.beforeContinueAsPlayer = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addParagraph(message, Misc.getBasePlayerColor()) } }
         chat.afterChatResponse = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message) } }
         chat.onProgress = { message -> TosEveryFrameScriptQueue.add { dialog.textPanel.addPara(message.content, Misc.getHighlightColor()) } }
+        chat.onEnded = { message ->
+            chatUi.markEnded()
+            TosEveryFrameScriptQueue.add {
+                dialog.textPanel.addPara(message)
+                dialog.textPanel.addPara(
+                    "Your comms officer informs you that the connection has been severed.",
+                    Misc.getHighlightColor()
+                )
+            }
+        }
 
         chatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
         chatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
