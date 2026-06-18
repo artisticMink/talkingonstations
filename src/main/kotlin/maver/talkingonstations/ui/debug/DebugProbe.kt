@@ -21,11 +21,6 @@ import java.awt.datatransfer.StringSelection
  * Controls:
  *  - LMB-drag (interior): move with the mouse
  *  - LMB-drag (edge/corner): resize along that edge/corner (8px grab zone)
- *  - Arrow keys:         nudge by 1 px (Shift+arrow = 10 px)
- *  - +/- keys:           grow/shrink both dimensions by 25 px
- *  - Ctrl+C:             copy "// probe: TL=… TR=… BL=… BR=… | w=… h=…" to the clipboard
- *
- * Live label inside the rect shows the same corner coordinates every frame.
  */
 class DebugProbe(
     host: CustomPanelAPI,
@@ -53,15 +48,11 @@ class DebugProbe(
 
     init {
         val tooltip = panel.createUIElement(w, h, false)
-        label = tooltip.addPara("—", 0f)
+        label = tooltip.addPara("-", 0f)
         tooltip.position.inTL(4f, 4f)
         panel.addUIElement(tooltip)
     }
 
-    /**
-     * Call *instead of* `host.addComponent(probe.panel).inTL(x, y)`.
-     * Records the TL offset internally so drag/arrow moves can update it.
-     */
     fun placeInTL(host: CustomPanelAPI, tlX: Float, tlY: Float) {
         this.tlX = tlX
         this.tlY = tlY
@@ -113,7 +104,6 @@ class DebugProbe(
                 evt.isMouseMoveEvent && activeHandle != Handle.NONE -> {
                     // evt.y is OpenGL Y-up; flip to the top-down convention used by inTL / tlY.
                     applyHandle(activeHandle, evt.x - anchorMouseX, -(evt.y - anchorMouseY))
-                    // dont consume mouse-move
                 }
                 evt.isKeyDownEvent -> handleKey(evt)
             }

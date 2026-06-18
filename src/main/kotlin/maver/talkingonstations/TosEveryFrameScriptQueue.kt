@@ -12,7 +12,7 @@ object TosEveryFrameScriptQueue {
 
     fun add(block: () -> Unit) = queue.add(block)
 
-    fun setup() = Global.getSector().addTransientScript(object : EveryFrameScript {
+    fun setup() = Global.getSector()?.addTransientScript(object : EveryFrameScript {
         override fun isDone() = false
         override fun runWhilePaused() = true
         override fun advance(amount: Float) {
@@ -21,7 +21,6 @@ object TosEveryFrameScriptQueue {
                 try { block() } catch (e: Exception) { TosInspector.error("Queued block failed", this::class, e) }
             }
         }
-
     })
 
 }

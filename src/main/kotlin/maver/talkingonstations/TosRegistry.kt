@@ -42,8 +42,6 @@ object TosRegistry {
         tools = ToolLoader().load()
     }
 
-    fun isInitialized() = ::contextMixins.isInitialized
-
     fun getContextMixins() = contextMixins
     fun reloadContextMixins() { contextMixins = ContextMixinLoader().load() }
     fun enableContextMixin(key: String) = contextMixins.find { it.getKey() == key }?.enabled = true

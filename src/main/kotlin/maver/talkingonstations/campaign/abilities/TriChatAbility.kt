@@ -3,7 +3,7 @@ package maver.talkingonstations.campaign.abilities
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.impl.campaign.abilities.BaseDurationAbility
 import com.fs.starfarer.api.ui.TooltipMakerAPI
-import maver.talkingonstations.ui.TriChat.TriChatProfileInteractionDialogPlugin
+import maver.talkingonstations.ui.trichat.TriChatProfileInteractionDialogPlugin
 
 class TriChatAbility: BaseDurationAbility() {
     override fun setCooldownLeft(p0: Float) { }
@@ -22,7 +22,6 @@ class TriChatAbility: BaseDurationAbility() {
             TriChatProfileInteractionDialogPlugin(),
             Global.getSector().playerFleet
         )
-
     }
 
     override fun applyEffect(p0: Float, p1: Float) {

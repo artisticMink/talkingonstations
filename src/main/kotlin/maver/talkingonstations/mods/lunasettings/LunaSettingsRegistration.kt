@@ -30,23 +30,26 @@ object LunaSettingsRegistration {
             MOD_ID, "tos_api", "Service", "",
             "Openrouter", HttpApiRegistry.getApiNames().joinToString(), TAB_CONVERSATION
         )
-        LunaSettings.SettingsCreator.addString(
-            MOD_ID, "tos_apiUrl", "API Url", "Url of the endpoint to connect to.",
-            "https://openrouter.ai/api/v1/chat/completions", TAB_CONVERSATION
-        )
-        LunaSettings.SettingsCreator.addString(
-            MOD_ID, "tos_apiKey", "API Key", "Optional authentification token.",
-            "", TAB_CONVERSATION
-        )
-        LunaSettings.SettingsCreator.addString(
-            MOD_ID, "tos_apiModel", "API Model", "Model ID for endpoints that serve multiple models.",
-            "", TAB_CONVERSATION
-        )
-        LunaSettings.SettingsCreator.addRadio(
-            MOD_ID, "tos_reasoningEffort", "Reasoning Effort",
-            "Only affects models capable of reasoning. Common values are medium or high.",
-            "medium", REASONING_CHOICES, TAB_CONVERSATION
-        )
+        LunaSettings.SettingsCreator.addText(MOD_ID, "tos_api", "Conversation models are set up for a save. After starting a save, look for the [Tri-Chat Profile] skill in your ability bar.", TAB_CONVERSATION)
+        /**
+         *         LunaSettings.SettingsCreator.addString(
+         *             MOD_ID, "tos_apiUrl", "API Url", "Url of the endpoint to connect to.",
+         *             "https://openrouter.ai/api/v1/chat/completions", TAB_CONVERSATION
+         *         )
+         *         LunaSettings.SettingsCreator.addString(
+         *             MOD_ID, "tos_apiKey", "API Key", "Optional authentification token.",
+         *             "", TAB_CONVERSATION
+         *         )
+         *         LunaSettings.SettingsCreator.addString(
+         *             MOD_ID, "tos_apiModel", "API Model", "Model ID for endpoints that serve multiple models.",
+         *             "", TAB_CONVERSATION
+         *         )
+         *         LunaSettings.SettingsCreator.addRadio(
+         *             MOD_ID, "tos_reasoningEffort", "Reasoning Effort",
+         *             "Only affects models capable of reasoning. Common values are medium or high.",
+         *             "medium", REASONING_CHOICES, TAB_CONVERSATION
+         *         )
+         */
         LunaSettings.SettingsCreator.addBoolean(
             MOD_ID, "tos_guardrailsEnabled", "Add Guardrails",
             "Guardrails aim to keep the model on track and allow for content appropriate for Starsectors setting while restricting certain topics.",

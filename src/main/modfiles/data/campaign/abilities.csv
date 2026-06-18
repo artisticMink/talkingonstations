@@ -1,2 +1,2 @@
 name,id,type,tags,activationDays,activationCooldown,durationDays,deactivationDays,deactivationCooldown,unlockedAtStart,defaultForAIFleet,musicSuppression,uiOn,uiOff,uiLoop,worldOn,worldOff,worldLoop,icon,plugin,ai,desc,sortOrder
-Open TriChat,tos_opentrichat,DURATION,,0,0.1,0,0,0.1,TRUE,,,ui_scavenge_on,,,,,,graphics/icons/cargo/crew03.png,maver.talkingonstations.campaign.abilities.TriChatAbility,,Open TriChat Profile,9000
+Open TriChat,tos_opentrichat,DURATION,,0,0.1,0,0,0.1,TRUE,,,ui_scavenge_on,,,,,,graphics/icons/cargo/crew03.png,maver.talkingonstations.campaign.abilities.TriChatAbility,,Open TriChat Profile,10050
