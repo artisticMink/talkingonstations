@@ -15,6 +15,8 @@ object TosProfileStore {
 
     private const val K_VERSION = "version"
     private const val K_PROFILE = "profile"
+    private const val K_COMMISSION_BG = "commissionBackground"
+    private const val K_FACTION_BG = "factionBackground"
     private const val K_API = "api"
     private const val K_MODEL = "model"
     private const val K_REASONING = "reasoningEffort"
@@ -80,6 +82,8 @@ object TosProfileStore {
         val root = JSONObject()
         root.put(K_VERSION, VERSION)
         cfg.profile?.let { root.put(K_PROFILE, it) }
+        cfg.commissionBackground?.let { root.put(K_COMMISSION_BG, it) }
+        cfg.factionBackground?.let { root.put(K_FACTION_BG, it) }
 
         val api = JSONObject()
         cfg.model?.let { api.put(K_MODEL, it) }
@@ -98,6 +102,8 @@ object TosProfileStore {
 
     private fun fromJson(root: JSONObject, cfg: TosProfileConfig) {
         if (root.has(K_PROFILE)) cfg.profile = root.optString(K_PROFILE).takeIf { it.isNotBlank() }
+        if (root.has(K_COMMISSION_BG)) cfg.commissionBackground = root.optString(K_COMMISSION_BG).takeIf { it.isNotBlank() }
+        if (root.has(K_FACTION_BG)) cfg.factionBackground = root.optString(K_FACTION_BG).takeIf { it.isNotBlank() }
 
         val api = root.optJSONObject(K_API) ?: return
         if (api.has(K_MODEL)) cfg.model = api.optString(K_MODEL).takeIf { it.isNotBlank() }

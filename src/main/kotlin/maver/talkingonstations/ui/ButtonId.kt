@@ -10,5 +10,6 @@ enum class ButtonId(val id: Int) {
     PROFILE_TAB(201),
     API_SETTINGS_TAB(202),
     PROFILE_CLOSE(203),
-    STATUS(204)
+    STATUS(204),
+    FACTION_TAB(205)
 }

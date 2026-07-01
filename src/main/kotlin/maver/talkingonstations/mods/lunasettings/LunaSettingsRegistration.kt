@@ -51,6 +51,11 @@ object LunaSettingsRegistration {
          *         )
          */
         LunaSettings.SettingsCreator.addBoolean(
+            MOD_ID, "tos_npcStartsChat", "NPC starts the chat",
+            "The NPC will first check whether they want to talk to the player and respond with a welcome message.",
+            true, TAB_CONVERSATION
+        )
+        LunaSettings.SettingsCreator.addBoolean(
             MOD_ID, "tos_guardrailsEnabled", "Add Guardrails",
             "Guardrails aim to keep the model on track and allow for content appropriate for Starsectors setting while restricting certain topics.",
             true, TAB_CONVERSATION

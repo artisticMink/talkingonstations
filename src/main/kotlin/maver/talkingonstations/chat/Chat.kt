@@ -9,6 +9,7 @@ import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.TosMemoryKeys
 import maver.talkingonstations.TosSettings
 import maver.talkingonstations.TosStrings
+import maver.talkingonstations.campaign.TosCampaignNotifier
 import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.LLMContext
 import maver.talkingonstations.llm.LLMService
@@ -61,6 +62,34 @@ class Chat(
 
         addPlayerMessage(content)
         beforeContinueAsPlayer?.invoke(content)
+        continueChat()
+    }
+
+    /**
+     * Sends [content] as a npc message and requests an LLM response.
+     *
+     * @param content The npc message content
+     *
+     * Note: This function performs a network call.
+     */
+    suspend fun continueChatAsNPC(content: String) {
+        if (content.isEmpty() || ended) return
+
+        addNpcMessage(content)
+        continueChat()
+    }
+
+    /**
+     * Sends [content] as a system message and requests an LLM response.
+     *
+     * @param content The system message content
+     *
+     * Note: This function performs a network call.
+     */
+    suspend fun continueChatAsSystem(content: String) {
+        if (content.isEmpty() || ended) return
+
+        addSystemMessage(content)
         continueChat()
     }
 
@@ -133,6 +162,15 @@ class Chat(
         )
     }
 
+    fun addSystemMessage(content: String) {
+        chatHistory.add(
+            Message(
+                role = ChatRoles.SYSTEM,
+                content = content
+            )
+        )
+    }
+
     fun getChatMessages(): List<Message> = chatHistory.toList()
     fun getPlayer(): PersonAPI = player
     fun getNpc(): PersonAPI = npc
@@ -145,14 +183,16 @@ class Chat(
     fun summarizeToNpcMemory() {
         addPlayerMessage(TosStrings.Prompt.SUMMARY)
         TosBackgroundScope.scope.launch {
+            TosCampaignNotifier.enqueue("Updating memory for ${npc.nameString}...", npc.nameString)
             when (val result = llmService.send(this@Chat, modelSettings, tools = emptyList())) {
                 is TurnResult.Reply -> {
                     val summary = result.messages.last()
                     TosEveryFrameScriptQueue.add { npc.memory.set(TosMemoryKeys.MEMORY_STORAGE, summary.content) }
+                    TosCampaignNotifier.enqueue("...finished memory update for ${npc.nameString}", npc.nameString)
                 }
 
                 else -> {
-                    // ToDo: Add user-facing error message
+                    TosCampaignNotifier.enqueue("...failed memory update for ${npc.nameString}", npc.nameString)
                     TosInspector.error(
                         "Post-chat summary failed for ${npc.nameString}",
                         this::class,

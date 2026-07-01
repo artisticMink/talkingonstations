@@ -4,6 +4,11 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.graphics.SpriteAPI
 import java.awt.Color
 
+/**
+ * Border running around a panel.
+ *
+ * 8 + 1 sprites for border and fill.
+ */
 class DecorativeFrame(private val tileSet: String = "graphics/ui/bgs/panel00") {
 
     private fun load(suffix: String): SpriteAPI? {
@@ -30,37 +35,39 @@ class DecorativeFrame(private val tileSet: String = "graphics/ui/bgs/panel00") {
 
     var fillCenter: Boolean = true
 
-    private fun draw(sprite: SpriteAPI?, x: Float, y: Float, w: Float, h: Float, alpha: Float, tint: Color?) {
-        if (sprite == null || w <= 0f || h <= 0f) return
-        sprite.setSize(w, h)
+    /**
+     * Draws the sprite at x,y
+     */
+    private fun draw(sprite: SpriteAPI?, x: Float, y: Float, width: Float, height: Float, alpha: Float, tint: Color?) {
+        if (sprite == null || width <= 0f || height <= 0f) return
+
+        sprite.setSize(width, height)
         sprite.color = tint ?: Color.WHITE
         sprite.alphaMult = alpha
         sprite.render(x, y)
     }
 
     /**
-     * @param x,y  bottom-left corner of the frame
-     * @param w,h  frame size
-     * @param alphaMult  pass through the value renderBelow receives
+     * Render the border of a rectangle.
      */
-    fun render(x: Float, y: Float, w: Float, h: Float, alphaMult: Float) {
+    fun render(startX: Float, startY: Float, width: Float, height: Float, alphaMult: Float) {
         val cw = topLeft?.width ?: 32f
         val ch = topLeft?.height ?: 32f
-        val innerW = w - cw * 2f
-        val innerH = h - ch * 2f
+        val innerWidth = width - cw * 2f
+        val innerHeight = height - ch * 2f
 
-        if (fillCenter) draw(center, x + cw, y + ch, innerW, innerH, alphaMult, null)
+        if (fillCenter) draw(center, startX + cw, startY + ch, innerWidth, innerHeight, alphaMult, null)
 
-        // edges (stretched along their run)
-        draw(bot, x + cw, y, innerW, ch, alphaMult, borderTint)
-        draw(top, x + cw, y + h - ch, innerW, ch, alphaMult, borderTint)
-        draw(left, x, y + ch, cw, innerH, alphaMult, borderTint)
-        draw(right, x + w - cw, y + ch, cw, innerH, alphaMult, borderTint)
+        // Edges
+        draw(bot, startX + cw, startY, innerWidth, ch, alphaMult, borderTint)
+        draw(top, startX + cw, startY + height - ch, innerWidth, ch, alphaMult, borderTint)
+        draw(left, startX, startY + ch, cw, innerHeight, alphaMult, borderTint)
+        draw(right, startX + width - cw, startY + ch, cw, innerHeight, alphaMult, borderTint)
 
-        // corners (native size)
-        draw(botLeft, x, y, cw, ch, alphaMult, borderTint)
-        draw(botRight, x + w - cw, y, cw, ch, alphaMult, borderTint)
-        draw(topLeft, x, y + h - ch, cw, ch, alphaMult, borderTint)
-        draw(topRight, x + w - cw, y + h - ch, cw, ch, alphaMult, borderTint)
+        // Corners
+        draw(botLeft, startX, startY, cw, ch, alphaMult, borderTint)
+        draw(botRight, startX + width - cw, startY, cw, ch, alphaMult, borderTint)
+        draw(topLeft, startX, startY + height - ch, cw, ch, alphaMult, borderTint)
+        draw(topRight, startX + width - cw, startY + height - ch, cw, ch, alphaMult, borderTint)
     }
 }

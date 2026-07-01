@@ -7,6 +7,8 @@ package maver.talkingonstations.config
  */
 class TosProfileConfig {
     var profile: String? = null
+    var commissionBackground: String? = null
+    var factionBackground: String? = null
 
     var model: String? = null
     var reasoningEffort: String? = null
