@@ -27,7 +27,7 @@ return Message(
 )
 ```
 
-Running the http request within a IO context and returning user-facing error messages is not necessary but strongly encouraged for a good user experience. An example implementation can be found here: [OpenrouterHttpApi](src/main/kotlin/maver/talkingonstations/httpapi/Openrouterkt)
+Running the http request within a IO context and returning user-facing error messages is not necessary but strongly encouraged for a good user experience. An example implementation can be found here: [OpenrouterHttpApi](src/main/kotlin/maver/talkingonstations/httpapi/OpenrouterHttpApi.kt)
 
 ### Register your API
 

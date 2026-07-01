@@ -20,7 +20,7 @@ class MarketLore : ContextMixinInterface {
         if (market.id in TosSettings.ignoredMarkets) return null
 
         return markdown {
-            h2("Current location: ${market.name}")
+            h2(market.name)
             p(intro(market))
             p("${market.name} is ${sizeDescriptor(market.size)} and its day-to-day rule is ${stabilityDescriptor(market.stabilityValue)}.")
 

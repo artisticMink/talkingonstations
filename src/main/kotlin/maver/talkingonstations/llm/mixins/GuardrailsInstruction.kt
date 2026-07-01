@@ -4,7 +4,6 @@ import maver.talkingonstations.TosSettings
 import maver.talkingonstations.llm.ContextMixinInterface
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.enum.Section
-import maver.talkingonstations.llm.markdown
 
 /**
  * Basic Guardrails to prevent M rated content
@@ -16,9 +15,9 @@ class GuardrailsInstruction : ContextMixinInterface {
     override fun render(gameInfo: GameInfoInterface): String? {
         if (!TosSettings.guardrailsEnabled) return null
 
-        return markdown {
-            h2("Guardrails")
-            p("ToDo: Basic safety guardrails that allow for grimdark Starsector content within limits.")
-        }
+        // ToDo: Basic safety guardrails that allow for grimdark Starsector content within limits.
+        // Emit nothing until real guardrail text exists - shipping a "ToDo" note to the model
+        // is worse than staying silent, so this opts out via null until then.
+        return null
     }
 }

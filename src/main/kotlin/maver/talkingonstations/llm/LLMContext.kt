@@ -1,8 +1,10 @@
 package maver.talkingonstations.llm
 
 import com.fs.starfarer.api.Global
+import lunalib.lunaSettings.LunaSettings
 import maver.talkingonstations.TosRegistry
 import maver.talkingonstations.TosSettings
+import maver.talkingonstations.TosStrings
 import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.enum.Section
@@ -14,7 +16,13 @@ import maver.talkingonstations.llm.enum.Section
 open class LLMContext(override val gameInfo: GameInfoInterface): LLMContextInterface {
     override val messages: MutableList<Message> = mutableListOf()
 
-    private val mixins: List<ContextMixinInterface> = TosRegistry.getContextMixins()
+    private val mixins: MutableList<ContextMixinInterface> = TosRegistry.getContextMixins().toMutableList()
+
+    /**
+     * Mixins should always be loaded through the [ContextMixinLoader] if possible,
+     * to take advantage of mod load order.
+     */
+    fun addMixin(mixin: ContextMixinInterface) = mixins.add(mixin)
 
     /**
      * Template variables substituted into system instructions and public
@@ -37,14 +45,16 @@ open class LLMContext(override val gameInfo: GameInfoInterface): LLMContextInter
 
     override fun getSystemBlock(): String {
         val merged = markdown {
-            h1("BASE INSTRUCTIONS")
+            p(TosStrings.Prompt.PREAMBLE)
+            h1("Instructions")
             +renderSection(Section.INSTRUCTION)
-            h1("CHARACTER SHEETS")
-            +renderSection(Section.PERSON)
-            h1("CURRENT LOCATION")
+            if (TosSettings.isToolCallingEnabled) p(TosStrings.Prompt.TOOL_CALLING)
+            h1("Reference Dossier")
+            +renderSection(Section.CHARACTERS)
+            +renderSection(Section.PLAYER)
             +renderSection(Section.MARKET)
-            h1("STATE OF THE PERSEAN SECTOR")
             +renderSection(Section.SECTOR)
+            +renderSection(Section.SCENE)
         }
 
         return applyTemplateVariables(merged, getTemplateVariables())

@@ -6,7 +6,7 @@ import maver.talkingonstations.llm.dto.GameInfoInterface
 import maver.talkingonstations.llm.enum.Section
 import maver.talkingonstations.llm.markdown
 
-class CommsInstruction : ContextMixinInterface {
+class CommsScene : ContextMixinInterface {
     override var enabled: Boolean = false
     override lateinit var section: Section
 
@@ -15,8 +15,8 @@ class CommsInstruction : ContextMixinInterface {
         if (!npc.memoryWithoutUpdate.getBoolean(TosMemoryKeys.IS_MARKET_PERSON)) return null
 
         return markdown {
-            h2("Scene setup")
-            p("Your character, {{npc}}, is connected with the {{player}} via a comms relay. A quite sophisticated sci-fi zoom call. ")
+            h2("Setup")
+            p("Your character, {{npc}}, is now connected with {{player}} via a comms relay. A quite sophisticated sci-fi zoom call. ")
         }
     }
 }

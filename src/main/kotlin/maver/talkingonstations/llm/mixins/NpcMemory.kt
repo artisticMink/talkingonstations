@@ -11,7 +11,7 @@ import maver.talkingonstations.llm.markdown
  */
 class NpcMemory: ContextMixinInterface {
     override var enabled: Boolean = true
-    override var section: Section = Section.PERSON
+    override var section: Section = Section.SCENE
 
     override fun render(gameInfo: GameInfoInterface): String? {
         val summary = gameInfo.npc?.memory?.get(TosMemoryKeys.MEMORY_STORAGE)
@@ -21,8 +21,7 @@ class NpcMemory: ContextMixinInterface {
         ) {
             return markdown {
                 h2("History")
-                p("{{npc}} has an established history with {{player}}.")
-                p("The last time they interacted was ")
+                p("{{npc}} has an established history with {{player}}. A summary of their most recent interaction follows.")
                 p(summary)
             }
         }

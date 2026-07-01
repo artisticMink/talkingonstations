@@ -56,9 +56,7 @@ class LLMService(
             else -> tools.filter { !it.isDangerous || TosSettings.isDangerousToolCallingEnabled }
         }
 
-        val instructions =
-            if (effectiveTools.isEmpty()) context.getSystemBlock()
-            else context.getSystemBlock() + "\n" + TosStrings.Prompt.TOOL_CALLING
+        val instructions = context.getSystemBlock()
 
         try {
             val toolLoopLimit = if (effectiveTools.isNotEmpty()) MAX_TOOL_ITERATIONS else 1
@@ -66,11 +64,6 @@ class LLMService(
                 // Most cases will be faulty tool calls.
                 // ToDo: Perhaps lock tool calling for session after x faulty attempts. Incapable model etc.
                 val toolBudgetExhausted = iteration == toolLoopLimit - 1
-
-                if (Global.getSettings().isDevMode) TosInspector.debug(
-                    "LLMService.send - iteration ${iteration + 1}",
-                    this::class
-                )
 
                 val response = client.send(
                     apiSettings = apiSettings,
