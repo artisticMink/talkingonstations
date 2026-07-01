@@ -1,6 +1,36 @@
 # Talking on Stations
 A comprehensive LLM integration for Starsector
 
+## Settings
+
+### Luna Settings
+
+Settings located here affect all saves and contain fundamental settings like the choice of API, tool calling options and other mod integrations. 
+
+### Profile
+
+Settings located here only affect the current savegame and will only persist when the game is saved, with exception API Keys which are saved separately.
+
+To open the Profile, go to the ability panel in the main campagne screen and add the 'Open TriChat' ability. By using this ability the characters profile opens.
+
+#### Personal Tab
+
+Everything in background field will be sent to the llm as custom character lore.
+
+#### Faction Tab
+
+Here you can add custom info about the player commission (i.e. got awarded the purple lobster medal for bravery in the face of a fuel shortage) or the player faction should it exists.
+
+#### Settings Tab
+
+Allows you to set up the api endpoint that will be used for all tasks. Please read the [API KEY SAFETY] section.
+
+### API KEY SAFETY
+
+Any api keys are saved to `Starsector/saves/common/talkingonstations/credentials.json.data`. This is a regular text file that can be read by other starsector mods which then can phone it home. There is no reasonable way to prevent this, to mitigate this consider:
+* Limit the rights of the API keys you use to only the necessary
+* Limit the usage of your API key to something you deem reasonable.
+
 ## Extending the mod
 
 Most features of Talking on Stations are realized via [TosCsvLoader](src/main/kotlin/maver/talkingonstations/TosCsvLoader.kt) which uses Starsectors getMergedSpreadsheetDataForMod(). To extend any of the following features, a csv of the same name has to be placed in `<your_mod_folder>/data/config/tos/`
