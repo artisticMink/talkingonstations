@@ -67,11 +67,6 @@ class TriChatCustomVisualPanel(
     }
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob() + coroutineErrorHandler)
 
-    init {
-        mainPanel.position.inTL(0f, 0f)
-        drawUi()
-    }
-
     // Content
     private val contentLeftX = bandX + UIConstants.CONTENT_PAD
     private val bandTopY = screenH * UIConstants.ANCHOR_FRACTION + UIConstants.BAND_TOP_OFFSET_FROM_CENTER
@@ -93,6 +88,11 @@ class TriChatCustomVisualPanel(
         UIConstants.CARD_W, UIConstants.CARD_H, UIConstants.CARD_PAD,
         UIConstants.PORTRAIT_SIZE, UIConstants.CREST_SIZE,
     )
+
+    init {
+        mainPanel.position.inTL(0f, 0f)
+        drawUi()
+    }
 
     /**
      * Draws everything in the foreground
@@ -210,10 +210,13 @@ class TriChatCustomVisualPanel(
                 launch { onSendButtonClick?.invoke(input) }
             }
 
-            ButtonId.CHAT_RETRY_BUTTON -> launch { onRetryButtonClick?.invoke() }
+            ButtonId.CHAT_RETRY_BUTTON ->
+                launch { onRetryButtonClick?.invoke() }
+
             // Aborts the request
-            ButtonId.STATUS -> activeJob?.cancel(CancellationException("Aborted by player"))
-            ButtonId.DEBUG_CHAT_PRINT_HISTORY -> onDebugButtonClick?.invoke()
+            ButtonId.STATUS ->
+                activeJob?.cancel(CancellationException("Aborted by player"))
+
             else -> {}
         }
     }
@@ -226,7 +229,10 @@ class TriChatCustomVisualPanel(
         }
     }
 
-    private fun launch(block: suspend () -> Unit) {
+    /**
+     * Executes the given block in the ui scope
+     */
+    fun launch(block: suspend () -> Unit) {
         activeJob = scope.launch {
             try {
                 TosEveryFrameScriptQueue.add {
