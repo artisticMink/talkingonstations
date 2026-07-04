@@ -10,7 +10,15 @@ class LobsterFlipper() : MarketPersonInterface {
         return ""
     }
 
-    override fun getBackground(): String {
+    override fun getLore(): String {
         return ""
+    }
+
+    override fun getScene(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAllowedToolIds(): List<String> {
+        TODO("Not yet implemented")
     }
 }

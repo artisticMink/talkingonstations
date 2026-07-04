@@ -13,6 +13,7 @@ import maver.talkingonstations.httpapi.HttpApiRegistry
 import maver.talkingonstations.llm.enum.Section
 import maver.talkingonstations.llm.markdown
 import maver.talkingonstations.llm.mixins.CommsScene
+import maver.talkingonstations.ui.trichat.TriChatContextDialogDelegate
 import maver.talkingonstations.ui.trichat.TriChatCustomVisualPanel
 
 /**
@@ -60,6 +61,13 @@ class TosBeginConversation : BaseCommandPlugin() {
 
         chatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
         chatUi.onSendButtonClick = { message -> chat.continueChatAsPlayer(message) }
+        chatUi.onDebugButtonClick = {
+            dialog.showCustomVisualDialog(
+                TriChatContextDialogDelegate.WIDTH,
+                TriChatContextDialogDelegate.HEIGHT,
+                TriChatContextDialogDelegate(chat),
+            )
+        }
         chatUi.onPlayerQuit = {
             // Persistent npc memory
             if (TosSettings.enableCharacterMemory) {

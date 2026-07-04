@@ -8,4 +8,6 @@ data class Message(
     val toolCalls: List<ToolCall> = listOf(),
     val toolCallId: String? = null,
     val isTransient: Boolean = false,
+    val reasoning: String? = null,
+    val usage: Usage? = null,
 )

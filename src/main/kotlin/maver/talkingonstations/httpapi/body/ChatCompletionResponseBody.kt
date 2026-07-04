@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import maver.talkingonstations.chat.ChatRoles
 import maver.talkingonstations.llm.dto.Message
 import maver.talkingonstations.llm.dto.ToolCall
+import maver.talkingonstations.llm.dto.Usage
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
@@ -33,8 +34,18 @@ data class ChatCompletionResponseBody(
             )
         }
 
+        // Try to catch varying field names
+        val reasoning = listOfNotNull(message.reasoning, message.reasoningContent)
+            .firstOrNull { it.isNotBlank() }
+
         // content is null when the model only returns tool calls.
-        return Message(role, message.content.orEmpty(), toolCalls)
+        return Message(
+            role = role,
+            content = message.content.orEmpty(),
+            toolCalls = toolCalls,
+            reasoning = reasoning,
+            usage = usage?.let { Usage(it.promptTokens, it.completionTokens, it.totalTokens) },
+        )
     }
 }
 
@@ -54,6 +65,9 @@ data class ChatCompletionsChoice(
 data class ChatCompletionsChoiceMessage(
     val role: String,
     val content: String? = null,
+    val reasoning: String? = null,
+    @SerialName("reasoning_content")
+    val reasoningContent: String? = null,
     @SerialName("tool_calls")
     val toolCalls: List<OpenrouterToolCallResult> = emptyList(),
 )

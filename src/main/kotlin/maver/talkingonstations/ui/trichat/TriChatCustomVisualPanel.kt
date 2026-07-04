@@ -136,6 +136,7 @@ class TriChatCustomVisualPanel(
             Triple("Send", ButtonId.CHAT_SEND_BUTTON, textArea),
             Triple("Retry", ButtonId.CHAT_RETRY_BUTTON, null),
             Triple("Quit", ButtonId.CHAT_QUIT_BUTTON, null),
+            Triple("Context", ButtonId.DEBUG_CHAT_PRINT_HISTORY, null),
         )
 
         val offset = (UIConstants.BTN_WIDTH + UIConstants.BTN_GAP)
@@ -213,6 +214,9 @@ class TriChatCustomVisualPanel(
             ButtonId.CHAT_RETRY_BUTTON ->
                 launch { onRetryButtonClick?.invoke() }
 
+            ButtonId.DEBUG_CHAT_PRINT_HISTORY ->
+                onDebugButtonClick?.invoke()
+
             // Aborts the request
             ButtonId.STATUS ->
                 activeJob?.cancel(CancellationException("Aborted by player"))
@@ -238,7 +242,7 @@ class TriChatCustomVisualPanel(
                 TosEveryFrameScriptQueue.add {
                     getSendButton()?.isEnabled = false
                     getRetryButton()?.isEnabled = false
-                    getStatusButton()?.apply { text = "In progress..."; isEnabled = true }
+                    getStatusButton()?.apply { text = "Working..."; isEnabled = true }
                 }
                 block()
             } finally {
@@ -311,7 +315,8 @@ class TriChatCustomVisualPanel(
         const val INPUT_W = 490f
         const val INPUT_H = 120f
 
-        const val BTN_WIDTH = 110f
+        // Five buttons + status fill the input width exactly: 5 * 90 + 4 * 10 = INPUT_W
+        const val BTN_WIDTH = 90f
         const val BTN_HEIGHT = 26f
         const val BTN_GAP = 10f
         const val BTN_GAP_V = 10f

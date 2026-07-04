@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.intel.bar.events.BaseBarEventWithPerso
 import com.fs.starfarer.api.util.Misc
 import maver.talkingonstations.TosEveryFrameScriptQueue
 import maver.talkingonstations.TosRegistry
+import maver.talkingonstations.ui.trichat.TriChatContextDialogDelegate
 import maver.talkingonstations.ui.trichat.TriChatCustomVisualPanel
 import maver.talkingonstations.chat.Chat
 import maver.talkingonstations.httpapi.HttpApiRegistry
@@ -52,8 +53,6 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
         chat.beforeContinueAsPlayer = ::addPlayerDialogOption
         chat.afterChatResponse = ::addNpcDialogOption
 
-        // Same end-of-conversation signal as the comms screen, different
-        // presentation: this is an in-person scene, nobody "severs" anything.
         chat.onEnded = { farewell ->
             barChatUi.markEnded()
             TosEveryFrameScriptQueue.add {
@@ -66,6 +65,13 @@ class ChatBarEventWithPerson : BaseBarEventWithPerson() {
         }
 
         barChatUi.onModelSelectClick = { modelSettings -> chat.modelSettings = modelSettings }
+        barChatUi.onDebugButtonClick = {
+            dialog.showCustomVisualDialog(
+                TriChatContextDialogDelegate.WIDTH,
+                TriChatContextDialogDelegate.HEIGHT,
+                TriChatContextDialogDelegate(chat),
+            )
+        }
         barChatUi.onRetryButtonClick = { dialog.textPanel.replaceLastParagraph(""); chat.retryLastMessage() }
         barChatUi.onSendButtonClick = { message -> chat.continueChatAsPlayer(message) }
         barChatUi.onPlayerQuit = ::onPlayerQuit

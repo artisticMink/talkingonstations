@@ -250,27 +250,27 @@ class TriChatProfileDialogDelegate(
         }
 
         addScroller(page, maxOf(viewH, totalH)) { content ->
-            var y = 0f
+            var heightOffset = 0f
             // Commission
             if (commissionFaction != null) {
-                y += addFactionBlock(content, viewW, y, "Commission", commissionFaction, playerRankLabel(player))
+                heightOffset += addFactionBlock(content, viewW, heightOffset, "Commission", commissionFaction, playerRankLabel(player))
                 commissionInitial = TosSettings.commissionBackground
-                commissionBackgroundTextArea = addTextArea(content, viewW, y, "Commission Background", commissionInitial)
-                y += backgroundSectionHeight()
+                commissionBackgroundTextArea = addTextArea(content, viewW, heightOffset, "Commission Background", commissionInitial)
+                heightOffset += backgroundSectionHeight()
             }
             // Faction
             if (ownFaction != null) {
-                y += addFactionBlock(content, viewW, y, "Your Faction", ownFaction, null)
+                heightOffset += addFactionBlock(content, viewW, heightOffset, "Your Faction", ownFaction, null)
                 factionInitial = TosSettings.factionBackground
-                factionBackgroundTextArea = addTextArea(content, viewW, y, "Faction Background", factionInitial)
-                y += backgroundSectionHeight()
+                factionBackgroundTextArea = addTextArea(content, viewW, heightOffset, "Faction Background", factionInitial)
+                heightOffset += backgroundSectionHeight()
             }
             // No faction
             if (commissionFaction == null && ownFaction == null) {
                 val none = content.createUIElement(viewW, UIConstants.FACTION_NOTE_H, false)
                 none.addSectionHeading("Your Faction", Alignment.MID, 0f)
                 none.addPara("You are an independent captain, with no commission or faction of your own.", 6f)
-                none.position.inTL(0f, y)
+                none.position.inTL(0f, heightOffset)
                 content.addUIElement(none)
             }
         }

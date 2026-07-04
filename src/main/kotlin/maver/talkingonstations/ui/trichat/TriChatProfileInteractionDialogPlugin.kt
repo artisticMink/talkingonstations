@@ -5,6 +5,9 @@ import com.fs.starfarer.api.campaign.InteractionDialogPlugin
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 
+/**
+ * Renders the player profile
+ */
 class TriChatProfileInteractionDialogPlugin : InteractionDialogPlugin {
     private companion object {
         const val WIDTH = 800f
